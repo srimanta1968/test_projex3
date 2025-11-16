@@ -1,0 +1,185 @@
+{
+  "sequence_number": 0,
+  "task_id": "foundation-task-0",
+  "title": "🏗️ Project Foundation & Authentication Setup",
+  "description": "Essential project setup including server initialization, database connection, user authentication, and login/register functionality. This MUST be completed before any feature development.",
+  "task_type": "foundation",
+  "task_role": "developer",
+  "status": "pending",
+  "started_at": null,
+  "completed_at": null,
+  "total_sub_tasks": 8,
+  "completed_sub_tasks": 0,
+  "in_progress_sub_tasks": 0,
+  "pending_sub_tasks": 8,
+  "current_sub_task_index": 1,
+  "acceptance_criteria": [
+    "Server starts successfully on configured port",
+    "Database connection is established and tested",
+    "User registration endpoint works (POST /api/auth/register)",
+    "User login endpoint works (POST /api/auth/login)",
+    "JWT authentication middleware validates tokens correctly",
+    "Login and Register pages are accessible and functional",
+    "Test framework is configured and sample tests pass"
+  ],
+  "acceptance_criteria_met": [],
+  "sub_tasks": [
+    {
+      "sequence_number": 1,
+      "title": "Initialize project with package.json and configuration files",
+      "description": "Create package.json, tsconfig.json, .gitignore, and install essential dependencies",
+      "status": "pending",
+      "files_to_generate": [
+        "package.json",
+        "tsconfig.json",
+        ".gitignore",
+        ".env.example"
+      ],
+      "estimated_tokens": 1500,
+      "started_at": null,
+      "completed_at": null,
+      "files_generated": [],
+      "notes": "",
+      "dependencies": []
+    },
+    {
+      "sequence_number": 2,
+      "title": "Create express server entry point and middleware",
+      "description": "Set up Express/NestJS/Fastify server, body parser, CORS, error handling middleware",
+      "status": "pending",
+      "files_to_generate": [
+        "server/src/server.ts",
+        "server/src/app.ts",
+        "server/src/middleware/*.ts"
+      ],
+      "estimated_tokens": 2000,
+      "started_at": null,
+      "completed_at": null,
+      "files_generated": [],
+      "notes": "",
+      "dependencies": [
+        "Task 0 Sub-task 1"
+      ]
+    },
+    {
+      "sequence_number": 3,
+      "title": "Set up postgresql database connection pool (Node.js/TypeScript)",
+      "description": "🚨 CRITICAL: Configure database connection using .env file parameters. NEVER hardcode credentials!\n\n**Language:** Node.js/TypeScript\n**Database:** postgresql\n**Dependencies:** pg, @types/pg, dotenv\n\n**STEP 1: Create server/src/config/database.ts**\n\n**MANDATORY: Use environment variables from .env file:**\n```typescript\nimport { Pool } from 'pg';\nimport * as dotenv from 'dotenv';\n\ndotenv.config();\n\nconst dbConfig = {\n  host: process.env.DB_HOST || 'localhost',\n  port: parseInt(process.env.DB_PORT || '5432'),\n  database: process.env.DB_NAME || 'mydb',\n  user: process.env.DB_USER || 'postgres',\n  password: process.env.DB_PASSWORD || 'postgres',\n  max: 20,\n  idleTimeoutMillis: 30000,\n  connectionTimeoutMillis: 2000,\n};\n\nexport const pool = new Pool(dbConfig);\n\n// Graceful shutdown\nprocess.on('SIGTERM', () => {\n  pool.end();\n});\n```\n\n**STEP 2: Create test connection file**\n\nTest the connection IMMEDIATELY after creating the database connection file:\n```typescript\nimport { pool } from './database';\n\nexport async function testDatabaseConnection(): Promise<boolean> {\n  try {\n    console.log('🔍 Testing PostgreSQL connection...');\n    const client = await pool.connect();\n    const result = await client.query('SELECT NOW() as server_time, version() as pg_version');\n    console.log('✅ Database connected successfully!');\n    console.log(`   Server time: ${result.rows[0].server_time}`);\n    console.log(`   PostgreSQL: ${result.rows[0].pg_version.split(' ')[1]}`);\n    client.release();\n    return true;\n  } catch (error: any) {\n    console.error('❌ Database connection failed!');\n    console.error(`   Error: ${error.message}`);\n    console.error('🔧 Troubleshooting:');\n    console.error('   1. Check if PostgreSQL is running: docker ps');\n    console.error('   2. Verify .env file exists and has correct DB credentials');\n    console.error('   3. Check DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD');\n    return false;\n  }\n}\n\nif (require.main === module) {\n  testDatabaseConnection().then(() => process.exit(0)).catch(() => process.exit(1));\n}\n```\n\n**STEP 3: RUN THE CONNECTION TEST**\n\nAfter creating both files, IMMEDIATELY test:\n```bash\n# Install dependencies if not already installed\nnpm install\n\n# Run the connection test\nnpx ts-node server/src/config/testConnection.ts\n\n# Expected output: ✅ Database connected successfully!\n# If you see ❌ error, FIX IT before continuing!\n```\n\n**🚨 CRITICAL: DO NOT PROCEED to next sub-task until connection test passes!**\n\n**If connection test fails:**\n1. Check .env file has correct DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD\n2. Verify Docker container is running: `docker ps`\n3. Check database logs: `docker logs <container_name>`\n4. Fix the issue, then re-run test\n\n**Query Example (for reference):**\n```typescript\nconst result = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);\nconst users = result.rows;\n```",
+      "status": "pending",
+      "files_to_generate": [
+        "server/src/config/database.ts",
+        "server/src/config/testConnection.ts"
+      ],
+      "estimated_tokens": 2500,
+      "started_at": null,
+      "completed_at": null,
+      "files_generated": [],
+      "notes": "",
+      "dependencies": [
+        "Task 0 Sub-task 1"
+      ]
+    },
+    {
+      "sequence_number": 4,
+      "title": "Implement User model and authentication system",
+      "description": "🚨 CRITICAL: BEFORE creating auth files, CHECK if they already exist!\n\n**STEP 1: Check for Existing Auth System**\n\nRun these checks FIRST:\n```bash\n# Check if auth files already exist\nls -la server/src/models/User.ts 2>/dev/null\nls -la server/src/services/AuthService.ts 2>/dev/null\nls -la server/src/middleware/authMiddleware.ts 2>/dev/null\nls -la server/src/routes/authRoutes.ts 2>/dev/null\nls -la server/src/utils/jwt.ts 2>/dev/null\nls -la server/src/utils/password.ts 2>/dev/null\n```\n\n**DECISION LOGIC:**\n\n**SCENARIO A: ALL FILES EXIST** ✅\n- DO NOT recreate them!\n- Read each file to understand the existing implementation\n- Mark this sub-task as \"completed\" (reusing existing)\n- Update notes: \"Reusing existing auth system\"\n- Skip to next sub-task\n\n**SCENARIO B: SOME FILES EXIST** ⚠️\n- Read existing files to understand the implementation\n- Create ONLY the missing files\n- Ensure compatibility with existing code\n- Import and use existing utilities\n- Example: If User.ts exists but AuthService.ts doesn't:\n  ```typescript\n  // Import existing User model\n  import { User } from '../models/User';\n  // Create new AuthService using existing User\n  ```\n\n**SCENARIO C: NO FILES EXIST** 🆕\n- Create complete auth system from scratch\n- Follow implementation below...\n\n**STEP 2: Implementation (ONLY if needed)**\n\nIf creating auth system, implement:\n\n1. **User Model** (server/src/models/User.ts)\n   - User interface with id, email, password, etc.\n   - CreateUserDTO, LoginDTO, UserResponseDTO\n\n2. **Password Utilities** (server/src/utils/password.ts)\n   - bcrypt hashing and comparison\n\n3. **JWT Utilities** (server/src/utils/jwt.ts)\n   - Token generation and verification\n   - Use JWT_SECRET from .env\n\n4. **AuthService** (server/src/services/AuthService.ts)\n   - register(email, password)\n   - login(email, password)\n   - validateToken(token)\n\n5. **Auth Middleware** (server/src/middleware/authMiddleware.ts)\n   - protect routes requiring authentication\n\n6. **Auth Routes** (server/src/routes/authRoutes.ts)\n   - POST /auth/register\n   - POST /auth/login\n   - GET /auth/me (protected)\n\n**🚨 IMPORTANT:**\n- Use .env for JWT_SECRET, JWT_EXPIRES_IN\n- Hash passwords with bcrypt (never store plain text!)\n- Return tokens + user data (without password)\n- Protect routes with authMiddleware",
+      "status": "pending",
+      "files_to_generate": [
+        "server/src/models/User.ts",
+        "server/src/services/AuthService.ts",
+        "server/src/routes/authRoutes.ts",
+        "server/src/middleware/authMiddleware.ts",
+        "server/src/utils/jwt.ts",
+        "server/src/utils/password.ts"
+      ],
+      "estimated_tokens": 3500,
+      "started_at": null,
+      "completed_at": null,
+      "files_generated": [],
+      "notes": "",
+      "dependencies": [
+        "Task 0 Sub-task 2",
+        "Task 0 Sub-task 3"
+      ]
+    },
+    {
+      "sequence_number": 5,
+      "title": "Create react app structure and routing",
+      "description": "Set up React/Vue/Angular app, routing, folder structure, base components",
+      "status": "pending",
+      "files_to_generate": [
+        "client/src/App.tsx",
+        "client/src/index.tsx",
+        "client/src/router/*.tsx"
+      ],
+      "estimated_tokens": 2000,
+      "started_at": null,
+      "completed_at": null,
+      "files_generated": [],
+      "notes": "",
+      "dependencies": [
+        "Task 0 Sub-task 1"
+      ]
+    },
+    {
+      "sequence_number": 6,
+      "title": "Create Login and Register pages with form validation",
+      "description": "Build login/register UI, form validation, API integration, auth state management",
+      "status": "pending",
+      "files_to_generate": [
+        "client/src/pages/Login.tsx",
+        "client/src/pages/Register.tsx",
+        "client/src/services/authService.ts",
+        "client/src/context/AuthContext.tsx",
+        "client/src/hooks/useAuth.ts"
+      ],
+      "estimated_tokens": 3000,
+      "started_at": null,
+      "completed_at": null,
+      "files_generated": [],
+      "notes": "",
+      "dependencies": [
+        "Task 0 Sub-task 5",
+        "Task 0 Sub-task 4 (backend auth API)"
+      ]
+    },
+    {
+      "sequence_number": 7,
+      "title": "Configure testing framework and utilities",
+      "description": "Set up Jest/Vitest, testing library, test utilities, mocks, and sample tests",
+      "status": "pending",
+      "files_to_generate": [
+        "jest.config.js",
+        "tests/setup.ts",
+        "tests/utils/*.ts"
+      ],
+      "estimated_tokens": 1500,
+      "started_at": null,
+      "completed_at": null,
+      "files_generated": [],
+      "notes": "",
+      "dependencies": [
+        "Task 0 Sub-task 1"
+      ]
+    },
+    {
+      "sequence_number": 8,
+      "title": "🚨 CRITICAL: Validate Node.js/TypeScript Server Setup",
+      "description": "🚨 **MANDATORY CHECKPOINT** - This is THE MOST IMPORTANT sub-task!\n\n**DO NOT SKIP THIS! The server MUST run successfully before proceeding to feature development.**\n\n**Language:** Node.js/TypeScript\n**Framework:** express\n**Database:** postgresql\n\nThis validates that:\n✅ All dependencies are installed correctly\n✅ Code compiles without errors\n✅ Server starts and runs on the correct port\n✅ Database connection works\n✅ API endpoints are accessible\n✅ Environment variables are loaded\n\n---\n\n## 🔍 VALIDATION WORKFLOW\n\n### **STEP 1: Check Node.js Runtime**\n\n```bash\n# 1. Verify Node.js is installed\nnode --version  # Should show 18.0.0+\n\n# 2. Check if dependency file exists\nls -la package.json\n\n# 3. Verify required start files exist\nls -la server/src/**/*\n```\n\n---\n\n### **STEP 2: Install All Dependencies**\n\n```bash\n# Install all dependencies\nnpm install\n\n# Verify installation succeeded\necho \"Exit code: $?\"  # Should be 0\n```\n\n**🚨 IF INSTALLATION FAILS:**\n1. Read the error message carefully\n2. Check for missing system dependencies\n3. Verify npm is up to date\n4. Fix the issue before proceeding\n5. Re-run installation until successful\n\n---\n\n### **STEP 3: Code Compilation/Type Check**\n\n```bash\n# Compile/check code\nnpx tsc --noEmit\n\n# Check exit code\necho \"Exit code: $?\"  # Should be 0 (success)\n```\n\n**🚨 IF COMPILATION FAILS:**\n1. Read ALL error messages\n2. Fix type errors, import errors, missing dependencies\n3. Re-run until zero errors\n4. **DO NOT proceed** until compilation succeeds\n\n---\n\n\n### **STEP 4: Environment Variables Check**\n\n```bash\n# 1. Check if .env file exists\nls -la .env\n\n# 2. If .env doesn't exist, copy from template\ncp .env.example .env\n\n# 3. Verify critical variables are set\ncat .env | grep -E \"PORT|DB_HOST|DB_PORT|DB_NAME|JWT_SECRET\"\n```\n\n**🚨 IF .env IS MISSING VARIABLES:**\n1. Edit .env file and add missing variables\n2. Use reasonable defaults for development\n3. Never commit .env to git!\n\n---\n\n### **STEP 5: Database Connection Validation**\n\n```bash\n# Run the database connection test we created earlier\nnpx ts-node server/src/config/testConnection.ts\n\n# Expected output: ✅ Database connected successfully!\n```\n\n**🚨 IF DATABASE CONNECTION FAILS:**\n1. Check Docker is running: `docker ps`\n2. Start database container if not running: `docker compose up -d`\n3. Wait 10 seconds for database to initialize\n4. Check database logs: `docker logs <container_name>`\n5. Verify .env has correct DB credentials\n6. Re-run connection test until it passes\n\n---\n\n### **STEP 6: Start the Server (DRY RUN)**\n\n```bash\n# Start the server in development mode\nnpm run dev\n```\n\n**Alternative methods:**\n```bash\n# Method 1: Using package manager script\nnpm run dev\n\n# Method 2: Build + run\nnpm run build && npx ts-node server/src/server.ts\n```\n\n**✅ EXPECTED OUTPUT (Node.js/TypeScript example):**\n```\n🔍 Testing database connection...\n✅ Database connected successfully!\n   Server time: 2025-11-06T10:30:00.000Z\n   PostgreSQL version: PostgreSQL 15.3\n\n🚀 Server started successfully!\n   Listening on: http://localhost:3000\n   Environment: development\n   Database: Connected\n   Routes loaded: 12\n```\n\n**🚨 IF SERVER FAILS TO START:**\n- **Port already in use:** Change PORT in .env or kill existing process\n- **Module not found:** Run `npm install` again\n- **Database error:** Fix database connection first (Step 5)\n- **TypeScript error:** Fix compilation errors (Step 3)\n- **Syntax error:** Review recent code changes, fix syntax\n\n---\n\n### **STEP 7: Test API Endpoints**\n\n**While server is running, open NEW terminal:**\n\n**Test health endpoint:**\n```bash\n# Test server is responding\ncurl http://localhost:3000/health\n# OR\ncurl http://localhost:3000/\n\n# Expected: {\"status\":\"ok\"} or similar\n```\n\n**Test auth endpoints (if auth is set up):**\n```bash\n# Test register endpoint\ncurl -X POST http://localhost:3000/api/auth/register \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\":\"test@example.com\",\"password\":\"Test123!\",\"name\":\"Test User\"}'\n\n# Expected: {\"user\":{...},\"token\":\"...\"}\n\n# Test login endpoint\ncurl -X POST http://localhost:3000/api/auth/login \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\":\"test@example.com\",\"password\":\"Test123!\"}'\n\n# Expected: {\"user\":{...},\"token\":\"...\"}\n```\n\n**✅ IF ALL TESTS PASS:**\n- Server starts without errors ✅\n- Health endpoint responds ✅\n- Auth endpoints work ✅\n- Database queries succeed ✅\n\n**🎉 FOUNDATION IS READY! Proceed to feature development.**\n\n**🚨 IF TESTS FAIL:**\n1. Read error responses carefully\n2. Check server logs for errors\n3. Verify routes are registered correctly\n4. Check middleware configuration\n5. Ensure database has required tables\n6. Fix issues and re-test\n\n---\n\n### **STEP 8: Stop Server & Document Results**\n\n```bash\n# Stop the server (Ctrl+C in server terminal)\n\n# Document results in sub-task notes\n# Update this sub-task status to \"completed\"\n# Add notes:\n#   - Server starts successfully on port 3000\n#   - Database connection works\n#   - Auth endpoints tested and working\n#   - Ready for feature development\n```\n\n---\n\n## 🚨 **CRITICAL RULES**\n\n1. **DO NOT PROCEED** to Task 1 (feature development) until this validation passes\n2. **DO NOT SKIP** any validation steps\n3. **FIX ALL ERRORS** before marking this sub-task complete\n4. **DOCUMENT** any issues encountered and how they were fixed\n5. **TEST THOROUGHLY** - a working foundation saves hours later\n\n---\n\n## 📋 **VALIDATION CHECKLIST**\n\nMark each as complete:\n- [ ] Runtime/language version verified\n- [ ] Dependencies installed successfully\n- [ ] TypeScript compiles without errors (if applicable)\n- [ ] .env file exists with all required variables\n- [ ] Database connection test passes\n- [ ] Server starts without errors\n- [ ] Server listens on correct port\n- [ ] Health endpoint responds\n- [ ] Auth endpoints work (if implemented)\n- [ ] No errors in server logs\n\n**ALL MUST BE ✅ before proceeding!**",
+      "status": "pending",
+      "files_to_generate": [],
+      "estimated_tokens": 1000,
+      "started_at": null,
+      "completed_at": null,
+      "files_generated": [],
+      "notes": "",
+      "dependencies": [
+        "Task 0 Sub-task 2 (server setup)",
+        "Task 0 Sub-task 3 (database)",
+        "Task 0 Sub-task 4 (auth)"
+      ]
+    }
+  ],
+  "files_generated": [],
+  "is_foundation": true
+}

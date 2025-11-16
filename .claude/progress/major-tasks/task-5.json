@@ -1,0 +1,84 @@
+{
+  "sequence_number": 5,
+  "task_id": "5b233618-b8f2-404e-ba90-e3644569c7ef",
+  "title": "Conduct Testing for Financial Dashboard Features",
+  "description": "Perform testing on the financial dashboard to ensure all features (data retrieval, updates, UI responsiveness) are functioning correctly.",
+  "task_type": "testing",
+  "task_role": "developer",
+  "status": "pending",
+  "started_at": null,
+  "completed_at": null,
+  "total_sub_tasks": 4,
+  "completed_sub_tasks": 0,
+  "in_progress_sub_tasks": 0,
+  "pending_sub_tasks": 4,
+  "current_sub_task_index": 1,
+  "acceptance_criteria": [
+    "All features of the dashboard are tested for functionality and performance.",
+    "Bugs and issues are documented and tracked.",
+    "User acceptance testing is completed with feedback collected."
+  ],
+  "acceptance_criteria_met": [],
+  "sub_tasks": [
+    {
+      "sequence_number": 1,
+      "title": "Set up test environment and configuration",
+      "description": "Configure Jest, testing libraries, and test database",
+      "status": "pending",
+      "files_to_generate": [
+        "jest.config.js",
+        "tests/utils/*.ts"
+      ],
+      "estimated_tokens": 1000,
+      "started_at": null,
+      "completed_at": null,
+      "files_generated": [],
+      "notes": ""
+    },
+    {
+      "sequence_number": 2,
+      "title": "Write unit tests for all components/services",
+      "description": "Create comprehensive unit test coverage",
+      "status": "pending",
+      "files_to_generate": [
+        "tests/**/*.test.ts",
+        "server/tests/**/*.test.ts",
+        "client/tests/**/*.test.ts"
+      ],
+      "estimated_tokens": 3000,
+      "started_at": null,
+      "completed_at": null,
+      "files_generated": [],
+      "notes": ""
+    },
+    {
+      "sequence_number": 3,
+      "title": "Write integration tests for API flows",
+      "description": "Test complete user flows and API integrations",
+      "status": "pending",
+      "files_to_generate": [
+        "tests/integration/*.test.ts"
+      ],
+      "estimated_tokens": 2500,
+      "started_at": null,
+      "completed_at": null,
+      "files_generated": [],
+      "notes": ""
+    },
+    {
+      "sequence_number": 4,
+      "title": "Document test results and coverage",
+      "description": "Generate coverage reports and document test results",
+      "status": "pending",
+      "files_to_generate": [
+        "TEST_RESULTS.md"
+      ],
+      "estimated_tokens": 500,
+      "started_at": null,
+      "completed_at": null,
+      "files_generated": [],
+      "notes": ""
+    }
+  ],
+  "files_generated": []
+}

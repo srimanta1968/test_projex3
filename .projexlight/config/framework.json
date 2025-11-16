@@ -1,0 +1,16 @@
+{
+  "backend": {
+    "framework": "express",
+    "language": "typescript",
+    "database": "postgresql"
+  },
+  "frontend": {
+    "framework": "react",
+    "language": "typescript",
+    "styling": "tailwind"
+  },
+  "testing": {
+    "unitTest": "jest",
+    "e2eTest": "playwright"
+  }
+}

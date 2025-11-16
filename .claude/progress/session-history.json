@@ -1,0 +1,12 @@
+{
+  "sessions": [],
+  "current_session": null,
+  "total_sessions": 0,
+  "next_session_should": {
+    "resume_from_task": "task-0.json",
+    "resume_from_task_path": ".claude/progress/major-tasks/task-0.json",
+    "resume_from_sub_task": 0,
+    "focus": "Initialize project with package.json and configuration files",
+    "last_session_status": "not_started"
+  }
+}

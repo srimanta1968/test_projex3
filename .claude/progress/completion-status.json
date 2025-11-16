@@ -1,0 +1,31 @@
+{
+  "sprint_id": "c76487ad-2a54-4fa9-a36d-ba65447b16cd",
+  "sprint_name": "Sprint1",
+  "project_id": "469248c6-e31b-499b-8699-a088702fba74",
+  "project_name": "Banking Portal",
+  "overall_completion_percentage": 0,
+  "tasks_by_status": {
+    "pending": 5,
+    "in_progress": 0,
+    "completed": 0
+  },
+  "epics_completion": [
+    {
+      "epic_id": "e985b012-17b3-4c39-9eca-98818ee05544",
+      "epic_title": "Financial Reports and Analytics",
+      "completion_percentage": 0,
+      "tasks_total": 5,
+      "tasks_completed": 0
+    }
+  ],
+  "features_completion": [
+    {
+      "feature_id": "b536583b-1d20-4f6e-95f2-4d1f21e34c05",
+      "feature_title": "Financial Dashboard Overview",
+      "completion_percentage": 0,
+      "tasks_total": 5,
+      "tasks_completed": 0
+    }
+  ],
+  "last_updated": "2025-11-16T08:09:10.493Z"
+}

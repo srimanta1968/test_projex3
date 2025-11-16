@@ -1,0 +1,340 @@
+# 🔍 ProjexLight MCP Server
+
+**Automated duplicate detection and API testing for your development workflow.**
+
+---
+
+## 📋 What is MCP?
+
+**MCP (Model Context Protocol) Server** provides automated code quality checks during development:
+
+### **Pre-Commit Scanning**
+- ✅ **Duplicate API Detection** - Finds duplicate API endpoints before commit
+- ✅ **Duplicate Component Detection** - Finds duplicate React/Vue components
+- ✅ **LLM-Powered Analysis** - Uses AI to detect functional duplicates
+- ✅ **Blocks Commits** - Prevents duplicate code from entering repository
+
+### **Pre-Push Testing**
+- ✅ **Automatic API Discovery** - Scans changed files for API endpoints
+- ✅ **LLM-Generated Test Data** - Creates realistic test data automatically
+- ✅ **CURL Test Execution** - Tests APIs with generated data
+- ✅ **Component Scanning** - Detects shared components and relationships
+
+---
+
+## 🚀 Quick Start
+
+### **Step 1: Start MCP Server**
+
+```bash
+cd mcp-server
+docker-compose up -d
+```
+
+### **Step 2: Verify It's Running**
+
+```bash
+curl http://localhost:8766/health
+```
+
+**Expected Response:**
+```json
+{
+  "status": "healthy",
+  "uptime": "2m 15s",
+  "workspace": "/workspace",
+  "projectId": "proj-abc123"
+}
+```
+
+### **Step 3: Initialize Git** (when ready)
+
+```bash
+cd ..  # Back to project root
+git init
+git remote add origin https://github.com/your-repo.git
+```
+
+**✨ MCP automatically installs git hooks when you run `git init`!**
+
+---
+
+## 📊 How It Works
+
+### **Pre-Commit Workflow**
+
+```
+Developer commits code
+    ↓
+Git pre-commit hook triggers
+    ↓
+MCP scans staged files for:
+  • API endpoint definitions
+  • React/Vue component definitions
+    ↓
+MCP checks against api_library table
+    ↓
+If duplicates found:
+  ❌ Block commit
+  📋 Show duplicate details
+    ↓
+If no duplicates:
+  ✅ Allow commit
+```
+
+### **Pre-Push Workflow**
+
+```
+Developer pushes code
+    ↓
+Git pre-push hook triggers
+    ↓
+MCP gets changed files only (optimized!)
+    ↓
+MCP scans changed files for:
+  • API endpoints (GET, POST, PUT, DELETE)
+  • React/Vue components
+    ↓
+For each API found:
+  1. Generate test data with LLM
+  2. Run CURL test
+  3. Validate response
+    ↓
+MCP scans components:
+  • Detect shared components
+  • Build component dependency map
+    ↓
+Report results to platform
+```
+
+---
+
+## 📁 CLI Export Structure
+
+```
+your-project-export/
+├── server/                    # Your generated backend code
+├── client/                    # Your generated frontend code
+├── database/                  # Database scripts (if applicable)
+├── mcp-config.json            # 🔒 Encrypted MCP configuration
+└── mcp-server/                # 🤖 MCP Server (compiled executable)
+    ├── mcp-server             # ✅ Compiled binary (NO source code!)
+    ├── Dockerfile             # Docker image configuration
+    ├── docker-compose.yml     # Docker Compose orchestration
+    ├── .env                   # ✅ Auto-generated environment config
+    ├── .env.template          # Environment variables template
+    ├── README.md              # This file
+    ├── QUICK_START.md         # Getting started guide
+    ├── HOOKS_INSTALLATION.md  # Git hooks installation
+    ├── API_TESTING_WORKFLOW.md # API testing details
+    ├── DEBUGGING.md           # Troubleshooting guide
+    └── templates/             # Git hook templates
+        ├── pre-commit         # Duplicate detection hook
+        └── pre-push           # API testing hook
+```
+
+**Notes:**
+- The `mcp-server` executable is a **compiled binary** containing all server logic. No Python source code is included.
+- The `.env` file is **auto-generated** with your project's encryption key. Do NOT modify the encryption key!
+
+---
+
+## 🔍 Monitoring
+
+### **Check Status**
+
+```bash
+# Health check
+curl http://localhost:8766/health
+
+# Git hooks status
+curl http://localhost:8766/hooks/status
+
+# Git monitor status
+curl http://localhost:8766/monitor/status
+```
+
+### **View Logs**
+
+```bash
+# View MCP server logs
+docker logs projexlight-mcp
+
+# Or access logs directly
+cd mcp-server/feedback/logs/
+tail -f latest-server.log
+```
+
+---
+
+## 🚫 What Gets Scanned
+
+### **Pre-Commit (Duplicate Detection)**
+
+**APIs Scanned:**
+- FastAPI routes (`@app.get`, `@app.post`, etc.)
+- Express routes (`app.get()`, `router.post()`, etc.)
+- Flask routes (`@app.route()`)
+- Django views
+
+**Components Scanned:**
+- React components (`export default function`, `export const`)
+- Vue components (`export default { name: }`)
+- Angular components
+
+### **Pre-Push (API Testing)**
+
+**Changed Files Only (Optimized!):**
+```bash
+# MCP only scans files changed since last push
+CHANGED_FILES=$(git diff --name-only ${REMOTE}..HEAD)
+```
+
+**Discovered APIs Tested:**
+- Backend routes in changed files
+- Test data generated by LLM based on:
+  - Route path (e.g., `/api/users/:id`)
+  - HTTP method (GET, POST, etc.)
+  - Expected payload structure
+
+---
+
+## 🎯 Key Features
+
+### **Duplicate Prevention**
+- Prevents duplicate API endpoints from being committed
+- Detects functional duplicates (not just exact matches)
+- LLM-powered similarity analysis
+- Blocks commits with detailed duplicate information
+
+### **Automatic API Testing**
+- Discovers APIs in changed files only
+- Generates realistic test data with LLM
+- Runs actual CURL tests
+- Reports results to platform for defect tracking
+
+### **Component Analysis**
+- Detects React/Vue components
+- Identifies shared components across files
+- Builds component dependency map
+- Reports to platform for architecture insights
+
+### **Git Hook Automation**
+- Auto-installs hooks when you run `git init`
+- Monitors workspace for git initialization
+- No manual hook installation needed
+- Works with any CLI tool
+
+---
+
+## 📚 Additional Documentation
+
+- **[QUICK_START.md](QUICK_START.md)** - Detailed setup guide
+- **[HOOKS_INSTALLATION.md](HOOKS_INSTALLATION.md)** - Git hooks installation
+- **[API_TESTING_WORKFLOW.md](API_TESTING_WORKFLOW.md)** - Complete API testing workflow
+- **[DEBUGGING.md](DEBUGGING.md)** - Troubleshooting and logs
+
+---
+
+## 🔒 Security & Privacy
+
+- **Encrypted Configuration** - `mcp-config.json` is AES-256 encrypted
+- **Secure API Communication** - HTTPS only with session tokens
+- **Local Execution** - All scanning happens locally in Docker
+- **No Code Storage** - Code is analyzed but not stored by platform
+- **IP Protected** - Compiled executable protects proprietary logic
+
+---
+
+## 🛠️ System Requirements
+
+### **Required**
+- **Docker Desktop** (Windows/Mac) or **Docker Engine** (Linux)
+- **Git** for version control
+
+### **Optional**
+- **curl** for health checks and status monitoring
+
+---
+
+## 🆘 Troubleshooting
+
+### **MCP Server Won't Start**
+
+```bash
+# Check Docker is running
+docker ps
+
+# Check MCP server status
+docker ps | grep projexlight-mcp
+
+# View MCP server logs
+docker logs projexlight-mcp
+
+# Restart MCP server
+cd mcp-server
+docker-compose restart
+```
+
+### **Git Hooks Not Working**
+
+```bash
+# Check hooks status
+curl http://localhost:8766/hooks/status
+
+# Check if hooks are installed
+ls -la ../.git/hooks/pre-commit
+ls -la ../.git/hooks/pre-push
+
+# Manually trigger hook installation
+curl -X POST http://localhost:8766/hooks/install
+```
+
+### **No Duplicates Detected**
+
+```bash
+# Verify MCP can access database
+curl http://localhost:8766/health
+
+# Check error logs
+docker logs projexlight-mcp | grep ERROR
+
+# View detailed logs
+cat mcp-server/feedback/logs/latest-server.log
+```
+
+---
+
+## 📊 What Happens Next
+
+### **After Commit**
+- Duplicate scan results saved to platform
+- API library updated with discovered endpoints
+- Component library updated with discovered components
+
+### **After Push**
+- API test results reported to platform
+- Test failures create defects automatically
+- Component scan results update architecture map
+- Team members notified of new defects
+
+---
+
+## 🎉 You're All Set!
+
+The MCP Server is now running and will:
+- ✅ Scan for duplicates before every commit
+- ✅ Test APIs before every push
+- ✅ Report results to ProjexLight platform
+- ✅ Help maintain high code quality
+
+**Happy Coding!** 🚀
+
+---
+
+## 📞 Support
+
+For issues or questions:
+1. Check **[DEBUGGING.md](DEBUGGING.md)** for common solutions
+2. View logs: `docker logs projexlight-mcp`
+3. Contact ProjexLight support through the platform

@@ -1,0 +1,151 @@
+{
+  "sprint": {
+    "id": "c76487ad-2a54-4fa9-a36d-ba65447b16cd",
+    "name": "Sprint1",
+    "description": "",
+    "startDate": "2025-11-03T00:00:00.000Z",
+    "endDate": "2025-11-28T00:00:00.000Z"
+  },
+  "project": {
+    "id": "469248c6-e31b-499b-8699-a088702fba74",
+    "name": "Banking Portal",
+    "description": "To create a banking portal that simplifies account management and transactions while empowering users with personalized financial tools to enhance their financial well-being and literacy."
+  },
+  "exportConfig": {
+    "cliTool": "claude",
+    "exportMode": "new_repository",
+    "exportScope": "full_sprint",
+    "selectedPurposes": [
+      "api_development",
+      "ui_development",
+      "unit_tests",
+      "integration_tests"
+    ]
+  },
+  "statistics": {
+    "totalEpics": 1,
+    "totalFeatures": 1,
+    "totalScenarios": 0,
+    "totalTasks": 5
+  },
+  "entities": {
+    "epics": [
+      {
+        "id": "e985b012-17b3-4c39-9eca-98818ee05544",
+        "title": "Financial Reports and Analytics",
+        "description": "**Epic Title:** Financial Reports and Analytics\n\n**Epic Description:** This epic focuses on the development of comprehensive reporting and analytics features that empower users to conduct in-depth transaction analysis and effective financial planning. The goal is to create a robust dashboard that aggregates financial data from various sources, allowing users to visualize trends, track spending habits, and generate forecasts based on historical data. This will include features such as customizable reports, interactive charts, and predictive analytics to facilitate better financial decision-making.\n\n**User Stories:**\n1. As a user, I want to view a summary of my transactions over the past month so that I can track my spending patterns.\n2. As a financial analyst, I want to generate customized reports that analyze various financial metrics so that I can provide insights to stakeholders.\n3. As a user, I want to receive alerts on unusual spending behavior so that I can take immediate action to manage my finances.\n4. As a business owner, I want to forecast future revenue based on historical transaction data so that I can plan for growth effectively.\n\n**Business Value:** The implementation of this epic is expected to enhance user engagement by providing actionable insights, leading to a projected 20% increase in user retention. Additionally, by enabling data-driven decision-making, businesses can expect to see a potential 15% reduction in unnecessary expenditures, translating to improved profitability. Overall, the strategic value lies in positioning the product as a leader in financial analytics, driving a competitive advantage in the marketplace.\n\n**Acceptance Criteria:**\n1. A functional dashboard that displays key financial metrics in real-time.\n2. The ability to generate at least 10 different types of customizable reports.\n3. An alert system that notifies users of unusual transactions within 24 hours.\n4. Integration with at least three major banking APIs for real-time data access.\n5. User interface must be tested with a satisfaction score of 80% or higher from beta users.\n6. Predictive analytics feature must demonstrate at least 75% accuracy in forecasting financial trends based on historical data."
+      }
+    ],
+    "features": [
+      {
+        "id": "b536583b-1d20-4f6e-95f2-4d1f21e34c05",
+        "title": "Financial Dashboard Overview",
+        "description": "The dashboard must provide a real-time overview of financial health, displaying current balances for income, expenses, and net worth.\n\nThe income vs expenses comparison should visually represent data through graphs or charts for easy understanding.\n\nNet worth calculations must be updated automatically with every transaction to ensure accuracy.\n\nThe dashboard's design must adapt responsively to various device sizes, providing a seamless experience on desktop, tablet, and mobile.\n\nReal-time updates must reflect changes within 5 seconds of transaction entry.",
+        "acceptance_criteria": "Given the user accesses the dashboard, when they view the current balance, then the system shall display the accurate current balance reflecting all transactions in real-time.\n\nGiven the user requests a comparison, when they view the income vs expenses section, then the system shall visually present a clear comparison of total income against total expenses for the selected period.\n\nGiven the user selects a date range, when they request net worth calculation, then the system shall calculate net worth based on the user's assets and liabilities accurately and display it in real-time.\n\nGiven the user is on the dashboard, when there are updates to transactions, then the system shall refresh the displayed data in real-time without requiring a page reload.\n\nGiven the user accesses the dashboard from any device, when they resize the browser window or use a mobile device, then the dashboard shall remain fully functional and visually responsive across all device sizes."
+      }
+    ],
+    "scenarios": [],
+    "tasks": [
+      {
+        "id": "400f015a-545f-4f01-b852-c5e63d21734b",
+        "title": "Implement Database Schema for Financial Dashboard",
+        "description": "Design and implement the database schema to store income, expenses, and net worth data for the financial dashboard.",
+        "acceptance_criteria": [
+          "Database schema is designed and documented.",
+          "Tables for income, expenses, and net worth are created and functional.",
+          "Database is integrated with the application backend."
+        ],
+        "task_type": "database",
+        "task_role": "developer",
+        "epic_id": "e985b012-17b3-4c39-9eca-98818ee05544",
+        "feature_id": "b536583b-1d20-4f6e-95f2-4d1f21e34c05",
+        "scenario_id": null,
+        "assigned_to": "f18d2fa1-f3b0-4f41-8f09-64a0cb246a68",
+        "status": "todo",
+        "cli_generation_status": "not_started",
+        "created_at": "2025-11-02T16:23:50.637Z",
+        "updated_at": "2025-11-03T19:58:41.299Z"
+      },
+      {
+        "id": "605cd356-02a3-414f-99b5-3ea0494605d2",
+        "title": "Create Backend API for Financial Data",
+        "description": "Develop a backend API that fetches and updates financial data (income, expenses, net worth) from the database.",
+        "acceptance_criteria": [
+          "API endpoints for income, expenses, and net worth are created.",
+          "API supports CRUD operations.",
+          "API returns data in JSON format and handles errors gracefully."
+        ],
+        "task_type": "backend",
+        "task_role": "developer",
+        "epic_id": "e985b012-17b3-4c39-9eca-98818ee05544",
+        "feature_id": "b536583b-1d20-4f6e-95f2-4d1f21e34c05",
+        "scenario_id": null,
+        "assigned_to": "f18d2fa1-f3b0-4f41-8f09-64a0cb246a68",
+        "status": "backlog",
+        "cli_generation_status": "not_started",
+        "created_at": "2025-11-02T16:23:50.648Z",
+        "updated_at": "2025-11-03T03:29:03.117Z"
+      },
+      {
+        "id": "8e77256b-80df-4e9c-836c-e27c5ecdd88a",
+        "title": "Implement Real-time Data Updates",
+        "description": "Set up real-time updates for the financial dashboard to reflect changes within 5 seconds of transaction entry.",
+        "acceptance_criteria": [
+          "Real-time updates are implemented using WebSockets or similar technology.",
+          "Dashboard reflects data changes within 5 seconds.",
+          "Testing confirms the accuracy of real-time updates."
+        ],
+        "task_type": "backend",
+        "task_role": "developer",
+        "epic_id": "e985b012-17b3-4c39-9eca-98818ee05544",
+        "feature_id": "b536583b-1d20-4f6e-95f2-4d1f21e34c05",
+        "scenario_id": null,
+        "assigned_to": "f18d2fa1-f3b0-4f41-8f09-64a0cb246a68",
+        "status": "backlog",
+        "cli_generation_status": "not_started",
+        "created_at": "2025-11-02T16:23:50.658Z",
+        "updated_at": "2025-11-03T03:29:21.459Z"
+      },
+      {
+        "id": "ed2f29ed-2e8a-4091-9c90-80a6d9c3ebbd",
+        "title": "Develop Frontend Dashboard UI",
+        "description": "Design and implement the user interface for the financial dashboard, including graphs/charts for visual data representation.",
+        "acceptance_criteria": [
+          "Dashboard UI is responsive and works on desktop, tablet, and mobile.",
+          "Graphs/charts accurately represent income vs expenses data.",
+          "UI adheres to the design guidelines and is user-friendly."
+        ],
+        "task_type": "frontend",
+        "task_role": "developer",
+        "epic_id": "e985b012-17b3-4c39-9eca-98818ee05544",
+        "feature_id": "b536583b-1d20-4f6e-95f2-4d1f21e34c05",
+        "scenario_id": null,
+        "assigned_to": "60f5781e-b8f2-42bc-b7e8-f105c5d01d2a",
+        "status": "in_progress",
+        "cli_generation_status": "not_started",
+        "created_at": "2025-11-02T16:23:50.653Z",
+        "updated_at": "2025-11-03T19:58:42.825Z"
+      },
+      {
+        "id": "5b233618-b8f2-404e-ba90-e3644569c7ef",
+        "title": "Conduct Testing for Financial Dashboard Features",
+        "description": "Perform testing on the financial dashboard to ensure all features (data retrieval, updates, UI responsiveness) are functioning correctly.",
+        "acceptance_criteria": [
+          "All features of the dashboard are tested for functionality and performance.",
+          "Bugs and issues are documented and tracked.",
+          "User acceptance testing is completed with feedback collected."
+        ],
+        "task_type": "testing",
+        "task_role": "developer",
+        "epic_id": "e985b012-17b3-4c39-9eca-98818ee05544",
+        "feature_id": "b536583b-1d20-4f6e-95f2-4d1f21e34c05",
+        "scenario_id": null,
+        "assigned_to": "60f5781e-b8f2-42bc-b7e8-f105c5d01d2a",
+        "status": "backlog",
+        "cli_generation_status": "not_started",
+        "created_at": "2025-11-02T16:23:50.663Z",
+        "updated_at": "2025-11-03T03:29:29.936Z"
+      }
+    ]
+  }
+}

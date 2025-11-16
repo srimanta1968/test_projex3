@@ -1,0 +1,113 @@
+{
+  "sequence_number": 3,
+  "task_id": "8e77256b-80df-4e9c-836c-e27c5ecdd88a",
+  "title": "Implement Real-time Data Updates",
+  "description": "Set up real-time updates for the financial dashboard to reflect changes within 5 seconds of transaction entry.",
+  "task_type": "backend",
+  "task_role": "developer",
+  "status": "pending",
+  "started_at": null,
+  "completed_at": null,
+  "total_sub_tasks": 5,
+  "completed_sub_tasks": 0,
+  "in_progress_sub_tasks": 0,
+  "pending_sub_tasks": 5,
+  "current_sub_task_index": 1,
+  "acceptance_criteria": [
+    "Real-time updates are implemented using WebSockets or similar technology.",
+    "Dashboard reflects data changes within 5 seconds.",
+    "Testing confirms the accuracy of real-time updates."
+  ],
+  "acceptance_criteria_met": [],
+  "sub_tasks": [
+    {
+      "sequence_number": 1,
+      "title": "Create service layer business logic",
+      "description": "🚨 CRITICAL: FIRST read .projexlight/context/requirements.md to understand the specific requirements for \"Implement Real-time Data Updates\". Look for the task's acceptance criteria and implement according to those exact specifications. 🚨 CRITICAL: FIRST read .projexlight/schemas/user-defined-schemas.sql to understand existing database tables and columns. REUSE existing tables - do not create new tables unless absolutely necessary. Implement service classes with business logic and data validation that work with the EXISTING schema. Follow the specific API requirements and acceptance criteria from requirements.md",
+      "status": "pending",
+      "files_to_generate": [
+        "server/src/services/*.ts"
+      ],
+      "estimated_tokens": 2500,
+      "dependencies": [
+        "Task 0: Database and auth system must exist",
+        "MANDATORY: Read requirements.md AND schema file first"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "files_generated": [],
+      "notes": ""
+    },
+    {
+      "sequence_number": 2,
+      "title": "Implement API route handlers",
+      "description": "🚨 CRITICAL: FIRST search existing route files (server/src/routes/*.ts) for similar API endpoints. REUSE existing route patterns and consolidate similar routes. Look for patterns like /api/users/:id, /api/items/:id that can be generalized. Only create new route files if the endpoint is completely different. Create Express route handlers with proper error handling",
+      "status": "pending",
+      "files_to_generate": [
+        "server/src/routes/*.ts"
+      ],
+      "estimated_tokens": 2000,
+      "dependencies": [
+        "Task 0: Server and middleware must exist",
+        "MANDATORY: Search existing routes before creating new ones"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "files_generated": [],
+      "notes": ""
+    },
+    {
+      "sequence_number": 3,
+      "title": "Add input validation and error handling",
+      "description": "Implement request validation, error middleware, and response formatting",
+      "status": "pending",
+      "files_to_generate": [
+        "server/src/middleware/*.ts",
+        "server/src/validators/*.ts"
+      ],
+      "estimated_tokens": 1500,
+      "dependencies": [
+        "Task 0: Auth middleware must exist"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "files_generated": [],
+      "notes": ""
+    },
+    {
+      "sequence_number": 4,
+      "title": "Write unit tests for service layer",
+      "description": "Create unit tests with mocks for service methods",
+      "status": "pending",
+      "files_to_generate": [
+        "server/src/__tests__/services/*.test.ts"
+      ],
+      "estimated_tokens": 2000,
+      "dependencies": [
+        "Task 0: Testing framework must be configured"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "files_generated": [],
+      "notes": ""
+    },
+    {
+      "sequence_number": 5,
+      "title": "Write integration tests for API endpoints",
+      "description": "Create integration tests for route handlers with test database",
+      "status": "pending",
+      "files_to_generate": [
+        "server/src/__tests__/integration/*.test.ts"
+      ],
+      "estimated_tokens": 2000,
+      "dependencies": [
+        "Task 0: Server and database must be running"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "files_generated": [],
+      "notes": ""
+    }
+  ],
+  "files_generated": []
+}

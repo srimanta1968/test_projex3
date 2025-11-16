@@ -1,0 +1,231 @@
+{
+  "sprintId": "c76487ad-2a54-4fa9-a36d-ba65447b16cd",
+  "projectId": "469248c6-e31b-499b-8699-a088702fba74",
+  "sprintName": "Sprint1",
+  "projectName": "Banking Portal",
+  "version": "1.0.0",
+  "createdAt": "2025-11-16T08:09:10.489Z",
+  "lastUpdated": "2025-11-16T08:09:10.489Z",
+  "developers": [
+    {
+      "userId": "unknown",
+      "userName": "Unknown Developer",
+      "email": "",
+      "assignedTasks": [],
+      "tasksCompleted": [],
+      "tasksInProgress": [],
+      "sessionCount": 0,
+      "firstSessionDate": null,
+      "lastSessionDate": null,
+      "totalFilesCreated": 0,
+      "totalFilesModified": 0,
+      "totalLinesOfCode": 0
+    }
+  ],
+  "tasks": {
+    "400f015a-545f-4f01-b852-c5e63d21734b": {
+      "taskId": "400f015a-545f-4f01-b852-c5e63d21734b",
+      "title": "Implement Database Schema for Financial Dashboard",
+      "description": "Design and implement the database schema to store income, expenses, and net worth data for the financial dashboard.",
+      "acceptanceCriteria": [
+        "Database schema is designed and documented.",
+        "Tables for income, expenses, and net worth are created and functional.",
+        "Database is integrated with the application backend."
+      ],
+      "assignedTo": "f18d2fa1-f3b0-4f41-8f09-64a0cb246a68",
+      "assignedToName": "Unknown Developer",
+      "status": "pending",
+      "completedBy": null,
+      "completedByName": null,
+      "completedDate": null,
+      "generatedInSession": null,
+      "filesCreated": [],
+      "filesModified": [],
+      "codeComponents": {
+        "apis": [],
+        "models": [],
+        "services": [],
+        "components": [],
+        "tests": []
+      },
+      "dependsOnTasks": [],
+      "blockedTasks": [],
+      "estimatedHours": 0,
+      "actualHours": 0,
+      "testCoverage": 0,
+      "codeReviewStatus": "pending",
+      "ciBuildStatus": "pending"
+    },
+    "605cd356-02a3-414f-99b5-3ea0494605d2": {
+      "taskId": "605cd356-02a3-414f-99b5-3ea0494605d2",
+      "title": "Create Backend API for Financial Data",
+      "description": "Develop a backend API that fetches and updates financial data (income, expenses, net worth) from the database.",
+      "acceptanceCriteria": [
+        "API endpoints for income, expenses, and net worth are created.",
+        "API supports CRUD operations.",
+        "API returns data in JSON format and handles errors gracefully."
+      ],
+      "assignedTo": "f18d2fa1-f3b0-4f41-8f09-64a0cb246a68",
+      "assignedToName": "Unknown Developer",
+      "status": "pending",
+      "completedBy": null,
+      "completedByName": null,
+      "completedDate": null,
+      "generatedInSession": null,
+      "filesCreated": [],
+      "filesModified": [],
+      "codeComponents": {
+        "apis": [],
+        "models": [],
+        "services": [],
+        "components": [],
+        "tests": []
+      },
+      "dependsOnTasks": [],
+      "blockedTasks": [],
+      "estimatedHours": 0,
+      "actualHours": 0,
+      "testCoverage": 0,
+      "codeReviewStatus": "pending",
+      "ciBuildStatus": "pending"
+    },
+    "8e77256b-80df-4e9c-836c-e27c5ecdd88a": {
+      "taskId": "8e77256b-80df-4e9c-836c-e27c5ecdd88a",
+      "title": "Implement Real-time Data Updates",
+      "description": "Set up real-time updates for the financial dashboard to reflect changes within 5 seconds of transaction entry.",
+      "acceptanceCriteria": [
+        "Real-time updates are implemented using WebSockets or similar technology.",
+        "Dashboard reflects data changes within 5 seconds.",
+        "Testing confirms the accuracy of real-time updates."
+      ],
+      "assignedTo": "f18d2fa1-f3b0-4f41-8f09-64a0cb246a68",
+      "assignedToName": "Unknown Developer",
+      "status": "pending",
+      "completedBy": null,
+      "completedByName": null,
+      "completedDate": null,
+      "generatedInSession": null,
+      "filesCreated": [],
+      "filesModified": [],
+      "codeComponents": {
+        "apis": [],
+        "models": [],
+        "services": [],
+        "components": [],
+        "tests": []
+      },
+      "dependsOnTasks": [],
+      "blockedTasks": [],
+      "estimatedHours": 0,
+      "actualHours": 0,
+      "testCoverage": 0,
+      "codeReviewStatus": "pending",
+      "ciBuildStatus": "pending"
+    },
+    "ed2f29ed-2e8a-4091-9c90-80a6d9c3ebbd": {
+      "taskId": "ed2f29ed-2e8a-4091-9c90-80a6d9c3ebbd",
+      "title": "Develop Frontend Dashboard UI",
+      "description": "Design and implement the user interface for the financial dashboard, including graphs/charts for visual data representation.",
+      "acceptanceCriteria": [
+        "Dashboard UI is responsive and works on desktop, tablet, and mobile.",
+        "Graphs/charts accurately represent income vs expenses data.",
+        "UI adheres to the design guidelines and is user-friendly."
+      ],
+      "assignedTo": "60f5781e-b8f2-42bc-b7e8-f105c5d01d2a",
+      "assignedToName": "Unknown Developer",
+      "status": "pending",
+      "completedBy": null,
+      "completedByName": null,
+      "completedDate": null,
+      "generatedInSession": null,
+      "filesCreated": [],
+      "filesModified": [],
+      "codeComponents": {
+        "apis": [],
+        "models": [],
+        "services": [],
+        "components": [],
+        "tests": []
+      },
+      "dependsOnTasks": [],
+      "blockedTasks": [],
+      "estimatedHours": 0,
+      "actualHours": 0,
+      "testCoverage": 0,
+      "codeReviewStatus": "pending",
+      "ciBuildStatus": "pending"
+    },
+    "5b233618-b8f2-404e-ba90-e3644569c7ef": {
+      "taskId": "5b233618-b8f2-404e-ba90-e3644569c7ef",
+      "title": "Conduct Testing for Financial Dashboard Features",
+      "description": "Perform testing on the financial dashboard to ensure all features (data retrieval, updates, UI responsiveness) are functioning correctly.",
+      "acceptanceCriteria": [
+        "All features of the dashboard are tested for functionality and performance.",
+        "Bugs and issues are documented and tracked.",
+        "User acceptance testing is completed with feedback collected."
+      ],
+      "assignedTo": "60f5781e-b8f2-42bc-b7e8-f105c5d01d2a",
+      "assignedToName": "Unknown Developer",
+      "status": "pending",
+      "completedBy": null,
+      "completedByName": null,
+      "completedDate": null,
+      "generatedInSession": null,
+      "filesCreated": [],
+      "filesModified": [],
+      "codeComponents": {
+        "apis": [],
+        "models": [],
+        "services": [],
+        "components": [],
+        "tests": []
+      },
+      "dependsOnTasks": [],
+      "blockedTasks": [],
+      "estimatedHours": 0,
+      "actualHours": 0,
+      "testCoverage": 0,
+      "codeReviewStatus": "pending",
+      "ciBuildStatus": "pending"
+    }
+  },
+  "codeStructure": {
+    "backend": {
+      "apis": [],
+      "models": [],
+      "services": [],
+      "middleware": [],
+      "utils": [],
+      "database": {
+        "migrations": [],
+        "seeds": [],
+        "schemas": []
+      }
+    },
+    "frontend": {
+      "components": [],
+      "pages": [],
+      "hooks": [],
+      "contexts": [],
+      "services": [],
+      "utils": []
+    },
+    "shared": {
+      "types": [],
+      "interfaces": [],
+      "constants": [],
+      "enums": []
+    },
+    "tests": {
+      "unit": [],
+      "integration": [],
+      "e2e": []
+    }
+  },
+  "importMetadata": {
+    "format": "projexlight-sprint-progress-v1",
+    "canImportToSystem": true,
+    "importInstructions": "Use ProjexLight Sprint Import API to sync task statuses",
+    "apiEndpoint": "/api/tenant/sprints/import-progress"
+  }
+}

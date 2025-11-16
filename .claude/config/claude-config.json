@@ -1,0 +1,27 @@
+{
+  "tool": "claude",
+  "version": "1.0",
+  "exportMode": "new_repository",
+  "selectedPurposes": [
+    "api_development",
+    "ui_development",
+    "unit_tests",
+    "integration_tests"
+  ],
+  "frameworkConfig": {
+    "backend": {
+      "framework": "express",
+      "language": "typescript",
+      "database": "postgresql"
+    },
+    "frontend": {
+      "framework": "react",
+      "language": "typescript",
+      "styling": "tailwind"
+    },
+    "testing": {
+      "unitTest": "jest",
+      "e2eTest": "playwright"
+    }
+  }
+}

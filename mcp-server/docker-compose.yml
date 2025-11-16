@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  # ProjexLight MCP Server - Code Review Agent
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: projexlight-mcp
+    ports:
+      - "8766:8766"  # MCP Server API
+    volumes:
+      - ./workspace:/workspace  # Project source code (mounted from CLI export)
+      - ./feedback:/feedback  # Feedback files (read-write)
+      - ./mcp-config.json:/app/mcp-config.json:ro  # Encrypted configuration
+    environment:
+      # Configuration will be decrypted on startup from mcp-config.json
+      - WORKSPACE_PATH=/workspace
+      - FEEDBACK_PATH=/feedback
+      - MCP_SERVER_PORT=8766
+      - MCP_SERVER_HOST=0.0.0.0
+      - MCP_CONFIG_FILE=/app/mcp-config.json
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8766/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
