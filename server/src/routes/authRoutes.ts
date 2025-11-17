@@ -56,3 +56,20 @@ router.get('/me', authenticate, async (req: Request, res: Response, next: NextFu
 });
 
 export default router;
+
+/**
+ * POST /api/auth/logout
+ * Logout user
+ */
+router.post('/logout', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Clear session/token
+    res.status(200).json({
+      status: 'success',
+      message: 'Logged out successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
