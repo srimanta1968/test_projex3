@@ -1,43 +1,40 @@
-import jwt from 'jsonwebtoken';
-import { config } from '../config/env';
+import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken';
+import { env } from '../config/env';
 import { UnauthorizedError } from './errors';
 
-/**
- * JWT payload structure
- */
-export interface JWTPayload {
+export interface TokenPayload extends JwtPayload {
   userId: string;
   email: string;
-  iat?: number;
-  exp?: number;
 }
 
 /**
  * Generate a JWT token for a user
- * @param userId User ID
- * @param email User email
- * @returns Signed JWT token
+ * @param userId - User ID
+ * @param email - User email
+ * @returns JWT token string
  */
 export function generateToken(userId: string, email: string): string {
-  const payload: JWTPayload = {
+  const payload: TokenPayload = {
     userId,
     email,
   };
 
-  return jwt.sign(payload, config.jwt.secret, {
-    expiresIn: config.jwt.expiresIn,
-  } as jwt.SignOptions);
+  const options: SignOptions = {
+    expiresIn: env.JWT_EXPIRES_IN as unknown as number,
+  };
+
+  return jwt.sign(payload, env.JWT_SECRET, options);
 }
 
 /**
  * Verify and decode a JWT token
- * @param token JWT token string
- * @returns Decoded payload
+ * @param token - JWT token string
+ * @returns Decoded token payload
  * @throws UnauthorizedError if token is invalid
  */
-export function verifyToken(token: string): JWTPayload {
+export function verifyToken(token: string): TokenPayload {
   try {
-    const decoded = jwt.verify(token, config.jwt.secret) as JWTPayload;
+    const decoded = jwt.verify(token, env.JWT_SECRET) as TokenPayload;
     return decoded;
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
@@ -52,10 +49,10 @@ export function verifyToken(token: string): JWTPayload {
 
 /**
  * Extract token from Authorization header
- * @param authHeader Authorization header value
+ * @param authHeader - Authorization header value
  * @returns Token string or null
  */
-export function extractTokenFromHeader(authHeader: string | undefined): string | null {
+export function extractTokenFromHeader(authHeader?: string): string | null {
   if (!authHeader) {
     return null;
   }

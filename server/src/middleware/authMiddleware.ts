@@ -1,79 +1,67 @@
 import { Request, Response, NextFunction } from 'express';
-import { extractTokenFromHeader, verifyToken, JWTPayload } from '../utils/jwt';
+import { verifyToken, extractTokenFromHeader, TokenPayload } from '../utils/jwt';
 import { UnauthorizedError } from '../utils/errors';
 import { authService } from '../services/AuthService';
-import { asyncHandler } from './errorHandler';
 
-/**
- * Extended Request interface with user information
- */
-export interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    email: string;
-  };
+// Extend Express Request type to include user
+declare global {
+  namespace Express {
+    interface Request {
+      user?: TokenPayload;
+      userId?: string;
+    }
+  }
 }
 
 /**
- * Authentication middleware to protect routes
- * Verifies JWT token and attaches user info to request
+ * Middleware to protect routes requiring authentication
  */
-export const authenticate = asyncHandler(
-  async (req: AuthenticatedRequest, _res: Response, next: NextFunction): Promise<void> => {
-    // Extract token from Authorization header
+export async function authMiddleware(
+  req: Request,
+  _res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
     const token = extractTokenFromHeader(req.headers.authorization);
 
     if (!token) {
       throw new UnauthorizedError('No token provided');
     }
 
-    // Verify token
-    const payload: JWTPayload = verifyToken(token);
+    const decoded = verifyToken(token);
 
-    // Verify user still exists and is active
-    const user = await authService.findById(payload.userId);
-    if (!user) {
-      throw new UnauthorizedError('User not found');
-    }
+    // Verify user still exists
+    await authService.getUserById(decoded.userId);
 
-    if (!user.is_active) {
-      throw new UnauthorizedError('Account is deactivated');
-    }
-
-    // Attach user info to request
-    req.user = {
-      id: payload.userId,
-      email: payload.email,
-    };
+    req.user = decoded;
+    req.userId = decoded.userId;
 
     next();
+  } catch (error) {
+    next(error);
   }
-);
+}
 
 /**
- * Optional authentication middleware
- * Attaches user info if token is valid, but doesn't reject if missing
+ * Optional auth middleware - doesn't fail if no token
  */
-export const optionalAuthenticate = asyncHandler(
-  async (req: AuthenticatedRequest, _res: Response, next: NextFunction): Promise<void> => {
+export async function optionalAuthMiddleware(
+  req: Request,
+  _res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
     const token = extractTokenFromHeader(req.headers.authorization);
 
     if (token) {
-      try {
-        const payload: JWTPayload = verifyToken(token);
-        const user = await authService.findById(payload.userId);
-
-        if (user && user.is_active) {
-          req.user = {
-            id: payload.userId,
-            email: payload.email,
-          };
-        }
-      } catch {
-        // Token invalid, but that's okay for optional auth
-      }
+      const decoded = verifyToken(token);
+      req.user = decoded;
+      req.userId = decoded.userId;
     }
 
     next();
+  } catch {
+    // Continue without auth
+    next();
   }
-);
+}

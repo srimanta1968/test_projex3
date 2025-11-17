@@ -3,214 +3,198 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { AxiosError } from 'axios';
 
-interface ApiErrorResponse {
-  message?: string;
-  errors?: Array<{ field?: string; message: string }>;
-}
-
 function Register() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    username: '',
+    first_name: '',
+    last_name: '',
+    password: '',
+    confirmPassword: '',
+    phone: '',
+  });
   const [error, setError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const validateForm = (): boolean => {
-    const errors: Record<string, string> = {};
-
-    if (name.trim().length < 2) {
-      errors.name = 'Name must be at least 2 characters';
-    }
-
-    if (!email.includes('@')) {
-      errors.email = 'Please enter a valid email';
-    }
-
-    if (password.length < 8) {
-      errors.password = 'Password must be at least 8 characters';
-    }
-
-    if (password !== confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match';
-    }
-
-    setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
-    setFieldErrors({});
 
-    if (!validateForm()) {
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
       return;
     }
 
-    setIsSubmitting(true);
+    setLoading(true);
 
     try {
-      await register(email, password, name);
-      navigate('/dashboard', { replace: true });
+      await register({
+        email: formData.email,
+        username: formData.username,
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        password: formData.password,
+        phone: formData.phone || undefined,
+      });
+      navigate('/dashboard');
     } catch (err) {
-      if (err instanceof AxiosError && err.response?.data) {
-        const data = err.response.data as ApiErrorResponse;
-        if (data.errors && Array.isArray(data.errors)) {
-          const errors: Record<string, string> = {};
-          data.errors.forEach((e) => {
-            if (e.field) {
-              errors[e.field] = e.message;
-            }
-          });
-          setFieldErrors(errors);
-        }
-        setError(data.message || 'Registration failed');
-      } else if (err instanceof Error) {
-        setError(err.message);
+      const axiosError = err as AxiosError<{ message: string; errors?: Record<string, string> }>;
+      if (axiosError.response?.data?.errors) {
+        const errorMessages = Object.values(axiosError.response.data.errors).join(', ');
+        setError(errorMessages);
       } else {
-        setError('An unexpected error occurred');
+        setError(axiosError.response?.data?.message || 'Registration failed. Please try again.');
       }
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Banking Portal
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Create your account
-          </p>
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 py-8">
+      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
+          <p className="mt-2 text-gray-600">Join the Banking Portal</p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
-              {error}
-            </div>
-          )}
+        {error && (
+          <div className="p-3 text-sm text-red-700 bg-red-100 rounded-md">
+            {error}
+          </div>
+        )}
 
-          <div className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                Full Name
+              <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">
+                First Name
               </label>
               <input
-                id="name"
-                name="name"
+                id="first_name"
+                name="first_name"
                 type="text"
-                autoComplete="name"
                 required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className={`mt-1 appearance-none relative block w-full px-3 py-2 border ${
-                  fieldErrors.name ? 'border-red-300' : 'border-gray-300'
-                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm`}
-                placeholder="John Doe"
+                value={formData.first_name}
+                onChange={handleChange}
+                className="input-field mt-1"
               />
-              {fieldErrors.name && (
-                <p className="mt-1 text-sm text-red-600">{fieldErrors.name}</p>
-              )}
             </div>
-
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
+              <label htmlFor="last_name" className="block text-sm font-medium text-gray-700">
+                Last Name
               </label>
               <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
+                id="last_name"
+                name="last_name"
+                type="text"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={`mt-1 appearance-none relative block w-full px-3 py-2 border ${
-                  fieldErrors.email ? 'border-red-300' : 'border-gray-300'
-                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm`}
-                placeholder="you@example.com"
+                value={formData.last_name}
+                onChange={handleChange}
+                className="input-field mt-1"
               />
-              {fieldErrors.email && (
-                <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>
-              )}
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={`mt-1 appearance-none relative block w-full px-3 py-2 border ${
-                  fieldErrors.password ? 'border-red-300' : 'border-gray-300'
-                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm`}
-                placeholder="At least 8 characters"
-              />
-              {fieldErrors.password && (
-                <p className="mt-1 text-sm text-red-600">{fieldErrors.password}</p>
-              )}
-            </div>
-
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Confirm Password
-              </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className={`mt-1 appearance-none relative block w-full px-3 py-2 border ${
-                  fieldErrors.confirmPassword ? 'border-red-300' : 'border-gray-300'
-                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm`}
-                placeholder="Confirm your password"
-              />
-              {fieldErrors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">{fieldErrors.confirmPassword}</p>
-              )}
             </div>
           </div>
 
           <div>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? 'Creating account...' : 'Create account'}
-            </button>
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+              Username
+            </label>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              required
+              value={formData.username}
+              onChange={handleChange}
+              className="input-field mt-1"
+              placeholder="johndoe123"
+            />
           </div>
 
-          <div className="text-center">
-            <Link
-              to="/login"
-              className="font-medium text-primary-600 hover:text-primary-500"
-            >
-              Already have an account? Sign in
-            </Link>
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+              className="input-field mt-1"
+              placeholder="you@example.com"
+            />
           </div>
+
+          <div>
+            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+              Phone (optional)
+            </label>
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={handleChange}
+              className="input-field mt-1"
+              placeholder="+1234567890"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              value={formData.password}
+              onChange={handleChange}
+              className="input-field mt-1"
+              placeholder="Min 8 chars, uppercase, number, special char"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              Confirm Password
+            </label>
+            <input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              required
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="input-field mt-1"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Creating Account...' : 'Create Account'}
+          </button>
         </form>
+
+        <p className="text-center text-sm text-gray-600">
+          Already have an account?{' '}
+          <Link to="/login" className="text-primary-600 hover:text-primary-700 font-medium">
+            Sign in
+          </Link>
+        </p>
       </div>
     </div>
   );

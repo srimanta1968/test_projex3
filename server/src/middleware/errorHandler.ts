@@ -1,84 +1,65 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError, ValidationError } from '../utils/errors';
-import { logger } from '../utils/logger';
-import { config } from '../config/env';
+import logger from '../utils/logger';
+import { env } from '../config/env';
 
 interface ErrorResponse {
-  success: false;
+  status: string;
   message: string;
-  errors?: unknown[];
+  errors?: Record<string, string>;
   stack?: string;
 }
 
-/**
- * Global error handling middleware
- */
 export function errorHandler(
-  err: Error,
-  _req: Request,
+  err: Error | AppError,
+  req: Request,
   res: Response,
   _next: NextFunction
 ): void {
-  // Log the error
-  logger.error('Error occurred', {
-    name: err.name,
-    message: err.message,
-    stack: err.stack,
-  });
-
-  // Default error response
-  const response: ErrorResponse = {
-    success: false,
-    message: 'Internal Server Error',
-  };
-
   let statusCode = 500;
+  let message = 'Internal server error';
+  let errors: Record<string, string> | undefined;
 
-  // Handle AppError instances
-  if (err instanceof AppError) {
+  if (err instanceof ValidationError) {
     statusCode = err.statusCode;
-    response.message = err.message;
-
-    // Include validation errors if present
-    if (err instanceof ValidationError && err.errors) {
-      response.errors = err.errors;
-    }
+    message = err.message;
+    errors = err.errors;
+  } else if (err instanceof AppError) {
+    statusCode = err.statusCode;
+    message = err.message;
   } else if (err.name === 'JsonWebTokenError') {
-    // JWT errors
     statusCode = 401;
-    response.message = 'Invalid token';
+    message = 'Invalid token';
   } else if (err.name === 'TokenExpiredError') {
     statusCode = 401;
-    response.message = 'Token expired';
-  } else if (err.name === 'SyntaxError' && 'body' in err) {
-    // JSON parsing errors
-    statusCode = 400;
-    response.message = 'Invalid JSON';
+    message = 'Token expired';
   }
 
-  // Include stack trace in development
-  if (config.nodeEnv === 'development') {
+  logger.error(`${statusCode} - ${message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+
+  if (err.stack && env.NODE_ENV !== 'production') {
+    logger.debug(err.stack);
+  }
+
+  const response: ErrorResponse = {
+    status: 'error',
+    message,
+  };
+
+  if (errors) {
+    response.errors = errors;
+  }
+
+  if (env.NODE_ENV === 'development' && err.stack) {
     response.stack = err.stack;
   }
 
   res.status(statusCode).json(response);
 }
 
-/**
- * 404 Not Found handler
- */
-export function notFoundHandler(req: Request, _res: Response, next: NextFunction): void {
-  const error = new AppError(`Route not found: ${req.method} ${req.originalUrl}`, 404);
-  next(error);
-}
-
-/**
- * Async handler wrapper to catch errors in async route handlers
- */
-export function asyncHandler(
-  fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>
-) {
-  return (req: Request, res: Response, next: NextFunction): void => {
-    Promise.resolve(fn(req, res, next)).catch(next);
-  };
+export function notFoundHandler(req: Request, res: Response): void {
+  res.status(404).json({
+    status: 'error',
+    message: `Route ${req.originalUrl} not found`,
+  });
 }

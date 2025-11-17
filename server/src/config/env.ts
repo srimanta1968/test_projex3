@@ -1,47 +1,56 @@
 import * as dotenv from 'dotenv';
 import path from 'path';
 
-// Load environment variables from .env file
+// Load .env from project root
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
-export const config = {
-  // Server
-  port: parseInt(process.env.PORT || '3000', 10),
-  nodeEnv: process.env.NODE_ENV || 'development',
+interface EnvConfig {
+  PORT: number;
+  NODE_ENV: string;
+  DB_HOST: string;
+  DB_PORT: number;
+  DB_NAME: string;
+  DB_USER: string;
+  DB_PASSWORD: string;
+  JWT_SECRET: string;
+  JWT_EXPIRES_IN: string;
+  CLIENT_URL: string;
+  API_PREFIX: string;
+}
 
-  // Database
-  database: {
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5432', 10),
-    name: process.env.DB_NAME || 'banking_portal_db',
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'postgres',
-    ssl: process.env.DB_SSL === 'true',
-    poolMin: parseInt(process.env.DB_POOL_MIN || '2', 10),
-    poolMax: parseInt(process.env.DB_POOL_MAX || '10', 10),
-  },
-
-  // JWT
-  jwt: {
-    secret: process.env.JWT_SECRET || 'default_jwt_secret_change_this',
-    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
-  },
-
-  // Security
-  bcryptRounds: parseInt(process.env.BCRYPT_ROUNDS || '10', 10),
-
-  // CORS
-  corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:5173',
-
-  // Rate limiting
-  rateLimit: {
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: parseInt(process.env.RATE_LIMIT_MAX || '100', 10),
-  },
-
-  // Logging
-  logLevel: process.env.LOG_LEVEL || 'debug',
-  logFormat: process.env.LOG_FORMAT || 'json',
+export const env: EnvConfig = {
+  PORT: parseInt(process.env.PORT || '3000', 10),
+  NODE_ENV: process.env.NODE_ENV || 'development',
+  DB_HOST: process.env.DB_HOST || 'localhost',
+  DB_PORT: parseInt(process.env.DB_PORT || '5432', 10),
+  DB_NAME: process.env.DB_NAME || 'banking_portal_db',
+  DB_USER: process.env.DB_USER || 'postgres',
+  DB_PASSWORD: process.env.DB_PASSWORD || 'postgres',
+  JWT_SECRET: process.env.JWT_SECRET || 'default_jwt_secret_change_in_production',
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '24h',
+  CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',
+  API_PREFIX: process.env.API_PREFIX || '/api',
 };
 
-export default config;
+/**
+ * Validate required environment variables
+ */
+export function validateEnv(): void {
+  const requiredVars = ['JWT_SECRET', 'DB_PASSWORD'];
+  const missingVars: string[] = [];
+
+  requiredVars.forEach((varName) => {
+    if (!process.env[varName] || process.env[varName]?.includes('your_')) {
+      missingVars.push(varName);
+    }
+  });
+
+  if (missingVars.length > 0 && env.NODE_ENV === 'production') {
+    throw new Error(`Missing or invalid environment variables: ${missingVars.join(', ')}`);
+  }
+
+  if (missingVars.length > 0) {
+    console.warn(`Warning: Using default values for: ${missingVars.join(', ')}`);
+    console.warn('   Please update .env file for production use.');
+  }
+}

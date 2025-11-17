@@ -1,74 +1,56 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import { config } from './config/env';
+import morgan from 'morgan';
+import { env } from './config/env';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
-import { logger } from './utils/logger';
 import authRoutes from './routes/authRoutes';
+import logger from './utils/logger';
 
-/**
- * Create and configure Express application
- */
-export function createApp(): Application {
-  const app = express();
+const app: Application = express();
 
-  // Security middleware
-  app.use(helmet());
+// Security middleware
+app.use(helmet());
 
-  // CORS configuration
-  app.use(
-    cors({
-      origin: config.corsOrigin,
-      credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
-    })
-  );
+// CORS configuration
+app.use(
+  cors({
+    origin: env.CLIENT_URL,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 
-  // Body parsing middleware
-  app.use(express.json({ limit: '10mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-  // Request logging middleware
-  app.use((req: Request, _res: Response, next) => {
-    logger.info(`${req.method} ${req.path}`, {
-      query: req.query,
-      ip: req.ip,
-    });
-    next();
-  });
-
-  // Health check endpoint
-  app.get('/health', (_req: Request, res: Response) => {
-    res.status(200).json({
-      status: 'ok',
-      timestamp: new Date().toISOString(),
-      environment: config.nodeEnv,
-    });
-  });
-
-  // Root endpoint
-  app.get('/', (_req: Request, res: Response) => {
-    res.status(200).json({
-      message: 'Banking Portal API',
-      version: '1.0.0',
-      health: '/health',
-      api: '/api',
-    });
-  });
-
-  // API routes
-  app.use('/api/auth', authRoutes);
-  // app.use('/api/income', incomeRoutes);
-  // app.use('/api/expenses', expenseRoutes);
-
-  // 404 handler - must be after all routes
-  app.use(notFoundHandler);
-
-  // Global error handler - must be last middleware
-  app.use(errorHandler);
-
-  return app;
+// Request logging
+if (env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+} else {
+  app.use(morgan('combined'));
 }
 
-export default createApp;
+// Body parsing
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Health check endpoint
+app.get('/health', (_req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    environment: env.NODE_ENV,
+  });
+});
+
+// API routes
+app.use(`${env.API_PREFIX}/auth`, authRoutes);
+
+// 404 handler
+app.use(notFoundHandler);
+
+// Global error handler
+app.use(errorHandler);
+
+logger.info(`App configured with API prefix: ${env.API_PREFIX}`);
+
+export default app;
