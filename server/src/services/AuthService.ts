@@ -1,221 +1,175 @@
-import { query } from '../config/database';
+import { v4 as uuidv4 } from 'uuid';
+import { pool } from '../config/database';
 import {
   User,
-  CreateUserDTO,
-  LoginDTO,
-  AuthResponse,
-  toUserResponseDTO,
+  CreateUserInput,
+  LoginInput,
+  UserResponse,
+  AuthResponse
 } from '../models/User';
 import { hashPassword, comparePassword, validatePasswordStrength } from '../utils/password';
-import { generateToken, generateRefreshToken } from '../utils/jwt';
+import { generateToken } from '../utils/jwt';
 import {
-  BadRequestError,
+  ValidationError,
+  AuthenticationError,
   ConflictError,
-  UnauthorizedError,
-  NotFoundError,
+  NotFoundError
 } from '../utils/errors';
 import { logger } from '../utils/logger';
 
-/**
- * Authentication service for user registration and login
- */
 export class AuthService {
-  /**
-   * Register a new user
-   * @param data User registration data
-   * @returns Authentication response with user and token
-   */
-  async register(data: CreateUserDTO): Promise<AuthResponse> {
+  private toUserResponse(user: User): UserResponse {
+    return {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      phone: user.phone,
+      date_of_birth: user.date_of_birth,
+      status: user.status,
+      email_verified: user.email_verified,
+      two_factor_enabled: user.two_factor_enabled,
+      preferences: user.preferences,
+      last_login_at: user.last_login_at,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+    };
+  }
+
+  async register(input: CreateUserInput): Promise<AuthResponse> {
+    logger.info('Attempting user registration', { email: input.email });
+
     // Validate password strength
-    const passwordValidation = validatePasswordStrength(data.password);
+    const passwordValidation = validatePasswordStrength(input.password);
     if (!passwordValidation.valid) {
-      throw new BadRequestError(
-        `Password validation failed: ${passwordValidation.errors.join(', ')}`,
-        'WEAK_PASSWORD'
-      );
+      throw new ValidationError(passwordValidation.errors.join(', '));
     }
 
-    // Check if email already exists
-    const existingEmail = await query<User>(
-      'SELECT id FROM "user" WHERE email = $1',
-      [data.email.toLowerCase()]
-    );
+    // Check if user already exists
+    const existingUserQuery = `
+      SELECT id FROM "user" WHERE email = $1 OR username = $2
+    `;
+    const existingUser = await pool.query(existingUserQuery, [input.email, input.username]);
 
-    if (existingEmail.length > 0) {
-      throw new ConflictError('Email already registered', 'EMAIL_EXISTS');
-    }
-
-    // Check if username already exists
-    const existingUsername = await query<User>(
-      'SELECT id FROM "user" WHERE username = $1',
-      [data.username.toLowerCase()]
-    );
-
-    if (existingUsername.length > 0) {
-      throw new ConflictError('Username already taken', 'USERNAME_EXISTS');
+    if (existingUser.rows.length > 0) {
+      throw new ConflictError('User with this email or username already exists');
     }
 
     // Hash password
-    const passwordHash = await hashPassword(data.password);
+    const password_hash = await hashPassword(input.password);
 
-    // Insert user
+    // Create user
+    const userId = uuidv4();
     const insertQuery = `
       INSERT INTO "user" (
-        email,
-        username,
-        first_name,
-        last_name,
-        phone,
-        date_of_birth,
-        password_hash,
-        status,
-        email_verified
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        id, email, username, first_name, last_name, phone, date_of_birth,
+        password_hash, status, email_verified, two_factor_enabled,
+        failed_login_attempts, created_at, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW())
       RETURNING *
     `;
 
-    const values = [
-      data.email.toLowerCase(),
-      data.username.toLowerCase(),
-      data.first_name.trim(),
-      data.last_name.trim(),
-      data.phone || null,
-      data.date_of_birth || null,
-      passwordHash,
+    const result = await pool.query(insertQuery, [
+      userId,
+      input.email.toLowerCase(),
+      input.username,
+      input.first_name,
+      input.last_name,
+      input.phone || null,
+      input.date_of_birth || null,
+      password_hash,
       'pending_verification',
       false,
-    ];
+      false,
+      0,
+    ]);
 
-    const [newUser] = await query<User>(insertQuery, values);
+    const user = result.rows[0] as User;
+    const token = generateToken({ userId: user.id, email: user.email });
 
-    if (!newUser) {
-      throw new Error('Failed to create user');
-    }
-
-    logger.info(`User registered successfully: ${newUser.email}`);
-
-    // Generate tokens
-    const token = generateToken({
-      userId: newUser.id,
-      email: newUser.email,
-      username: newUser.username,
-    });
-
-    const refreshToken = generateRefreshToken({
-      userId: newUser.id,
-      email: newUser.email,
-      username: newUser.username,
-    });
+    logger.info('User registered successfully', { userId: user.id, email: user.email });
 
     return {
-      user: toUserResponseDTO(newUser),
+      user: this.toUserResponse(user),
       token,
-      refreshToken,
     };
   }
 
-  /**
-   * Authenticate user login
-   * @param data Login credentials
-   * @returns Authentication response with user and token
-   */
-  async login(data: LoginDTO): Promise<AuthResponse> {
-    // Find user by email
-    const [user] = await query<User>(
-      'SELECT * FROM "user" WHERE email = $1',
-      [data.email.toLowerCase()]
-    );
+  async login(input: LoginInput, ipAddress?: string): Promise<AuthResponse> {
+    logger.info('Attempting user login', { email: input.email });
 
-    if (!user) {
-      throw new UnauthorizedError('Invalid email or password', 'INVALID_CREDENTIALS');
+    // Find user by email
+    const userQuery = `SELECT * FROM "user" WHERE email = $1`;
+    const result = await pool.query(userQuery, [input.email.toLowerCase()]);
+
+    if (result.rows.length === 0) {
+      throw new AuthenticationError('Invalid email or password');
     }
+
+    const user = result.rows[0] as User;
 
     // Check if account is locked
     if (user.locked_until && new Date(user.locked_until) > new Date()) {
-      throw new UnauthorizedError(
-        'Account is temporarily locked. Please try again later.',
-        'ACCOUNT_LOCKED'
-      );
+      throw new AuthenticationError('Account is temporarily locked. Please try again later.');
     }
 
     // Verify password
-    const isValidPassword = await comparePassword(data.password, user.password_hash);
+    const isValidPassword = await comparePassword(input.password, user.password_hash);
 
     if (!isValidPassword) {
       // Increment failed login attempts
-      await this.incrementFailedAttempts(user.id, user.failed_login_attempts);
-      throw new UnauthorizedError('Invalid email or password', 'INVALID_CREDENTIALS');
+      const newFailedAttempts = user.failed_login_attempts + 1;
+      let lockedUntil = null;
+
+      // Lock account after 5 failed attempts
+      if (newFailedAttempts >= 5) {
+        lockedUntil = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+        logger.warn('Account locked due to too many failed attempts', { userId: user.id });
+      }
+
+      await pool.query(
+        `UPDATE "user" SET failed_login_attempts = $1, locked_until = $2, updated_at = NOW() WHERE id = $3`,
+        [newFailedAttempts, lockedUntil, user.id]
+      );
+
+      throw new AuthenticationError('Invalid email or password');
     }
 
-    // Reset failed attempts and update last login
-    await query(
-      `UPDATE "user"
-       SET failed_login_attempts = 0,
-           last_login_at = NOW(),
-           locked_until = NULL
-       WHERE id = $1`,
-      [user.id]
-    );
+    // Reset failed login attempts and update last login
+    const updateQuery = `
+      UPDATE "user"
+      SET failed_login_attempts = 0,
+          locked_until = NULL,
+          last_login_at = NOW(),
+          last_login_ip = $2,
+          updated_at = NOW()
+      WHERE id = $1
+      RETURNING *
+    `;
+    const updatedResult = await pool.query(updateQuery, [user.id, ipAddress || null]);
+    const updatedUser = updatedResult.rows[0] as User;
 
-    logger.info(`User logged in: ${user.email}`);
+    const token = generateToken({ userId: updatedUser.id, email: updatedUser.email });
 
-    // Generate tokens
-    const token = generateToken({
-      userId: user.id,
-      email: user.email,
-      username: user.username,
-    });
-
-    const refreshToken = generateRefreshToken({
-      userId: user.id,
-      email: user.email,
-      username: user.username,
-    });
+    logger.info('User logged in successfully', { userId: updatedUser.id });
 
     return {
-      user: toUserResponseDTO(user),
+      user: this.toUserResponse(updatedUser),
       token,
-      refreshToken,
     };
   }
 
-  /**
-   * Get user by ID
-   * @param userId User ID
-   * @returns User data
-   */
-  async getUserById(userId: string): Promise<User> {
-    const [user] = await query<User>('SELECT * FROM "user" WHERE id = $1', [userId]);
+  async getUserById(userId: string): Promise<UserResponse> {
+    const query = `SELECT * FROM "user" WHERE id = $1`;
+    const result = await pool.query(query, [userId]);
 
-    if (!user) {
-      throw new NotFoundError('User not found', 'USER_NOT_FOUND');
+    if (result.rows.length === 0) {
+      throw new NotFoundError('User');
     }
 
-    return user;
-  }
-
-  /**
-   * Increment failed login attempts and lock account if necessary
-   */
-  private async incrementFailedAttempts(userId: string, currentAttempts: number): Promise<void> {
-    const newAttempts = currentAttempts + 1;
-    let lockedUntil: Date | null = null;
-
-    // Lock account after 5 failed attempts
-    if (newAttempts >= 5) {
-      lockedUntil = new Date(Date.now() + 15 * 60 * 1000); // Lock for 15 minutes
-      logger.warn(`Account locked due to too many failed attempts: ${userId}`);
-    }
-
-    await query(
-      `UPDATE "user"
-       SET failed_login_attempts = $1,
-           locked_until = $2
-       WHERE id = $3`,
-      [newAttempts, lockedUntil, userId]
-    );
+    return this.toUserResponse(result.rows[0] as User);
   }
 }
 
-// Export singleton instance
 export const authService = new AuthService();
