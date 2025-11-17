@@ -1,34 +1,37 @@
 import { Pool, PoolConfig } from 'pg';
-import { env } from './env';
-import logger from '../utils/logger';
+import { config } from './env';
+import { logger } from '../utils/logger';
 
-const dbConfig: PoolConfig = {
-  host: env.DB_HOST,
-  port: env.DB_PORT,
-  database: env.DB_NAME,
-  user: env.DB_USER,
-  password: env.DB_PASSWORD,
-  max: 20,
+const poolConfig: PoolConfig = {
+  host: config.db.host,
+  port: config.db.port,
+  database: config.db.name,
+  user: config.db.user,
+  password: config.db.password,
+  max: config.db.poolMax,
+  min: config.db.poolMin,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
+  connectionTimeoutMillis: 2000,
 };
 
-export const pool = new Pool(dbConfig);
+export const pool = new Pool(poolConfig);
+
+pool.on('error', (err) => {
+  logger.error('Unexpected database pool error', { error: err.message });
+});
 
 pool.on('connect', () => {
   logger.debug('New database connection established');
 });
 
-pool.on('error', (err) => {
-  logger.error('Unexpected database error:', err);
-});
-
-// Graceful shutdown
 process.on('SIGTERM', () => {
-  logger.info('Closing database pool...');
   pool.end().then(() => {
-    logger.info('Database pool closed');
+    logger.info('Database pool closed on SIGTERM');
   });
 });
 
-export default pool;
+process.on('SIGINT', () => {
+  pool.end().then(() => {
+    logger.info('Database pool closed on SIGINT');
+  });
+});

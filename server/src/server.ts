@@ -1,33 +1,31 @@
 import app from './app';
-import { env, validateEnv } from './config/env';
+import { config } from './config/env';
 import { testDatabaseConnection } from './config/testConnection';
-import logger from './utils/logger';
+import { logger } from './utils/logger';
 
 async function startServer(): Promise<void> {
   try {
-    // Validate environment variables
-    validateEnv();
-    logger.info('Environment variables validated');
-
     // Test database connection
-    logger.info('Testing database connection...');
     const dbConnected = await testDatabaseConnection();
-
     if (!dbConnected) {
-      throw new Error('Database connection failed');
+      logger.error('Failed to connect to database. Exiting...');
+      process.exit(1);
     }
 
     // Start server
-    const server = app.listen(env.PORT, () => {
-      logger.info('Server started successfully!');
-      logger.info(`   Listening on: http://localhost:${env.PORT}`);
-      logger.info(`   Environment: ${env.NODE_ENV}`);
-      logger.info(`   Database: Connected`);
-      logger.info(`   API Prefix: ${env.API_PREFIX}`);
+    const server = app.listen(config.port, () => {
+      logger.info('Server started successfully!', {
+        port: config.port,
+        environment: config.node_env,
+        timestamp: new Date().toISOString(),
+      });
+      console.log(`\n🚀 Server running on http://localhost:${config.port}`);
+      console.log(`📊 Environment: ${config.node_env}`);
+      console.log(`✅ Database: Connected`);
     });
 
     // Graceful shutdown
-    const gracefulShutdown = (signal: string) => {
+    const shutdown = (signal: string) => {
       logger.info(`${signal} received. Shutting down gracefully...`);
       server.close(() => {
         logger.info('Server closed');
@@ -35,11 +33,11 @@ async function startServer(): Promise<void> {
       });
     };
 
-    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => shutdown('SIGINT'));
 
   } catch (error) {
-    logger.error('Failed to start server:', error);
+    logger.error('Failed to start server', { error });
     process.exit(1);
   }
 }

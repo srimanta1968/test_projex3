@@ -6,13 +6,13 @@ export interface User {
   last_name: string;
   phone?: string;
   date_of_birth?: Date;
-  status: string;
+  status: 'pending_verification' | 'active' | 'suspended' | 'deactivated';
   password_hash: string;
   email_verified: boolean;
   email_verified_at?: Date;
   two_factor_enabled: boolean;
   two_factor_secret?: string;
-  preferences?: Record<string, unknown>;
+  preferences?: Record<string, any>;
   last_login_at?: Date;
   last_login_ip?: string;
   failed_login_attempts: number;
@@ -21,49 +21,39 @@ export interface User {
   updated_at: Date;
 }
 
-export interface UserDTO {
+export interface CreateUserInput {
+  email: string;
+  username: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  phone?: string;
+  date_of_birth?: string;
+}
+
+export interface LoginInput {
+  email: string;
+  password: string;
+}
+
+export interface UserResponse {
   id: string;
   email: string;
   username: string;
   first_name: string;
   last_name: string;
   phone?: string;
+  date_of_birth?: Date;
   status: string;
   email_verified: boolean;
   two_factor_enabled: boolean;
+  preferences?: Record<string, any>;
+  last_login_at?: Date;
   created_at: Date;
-}
-
-export interface CreateUserDTO {
-  email: string;
-  username: string;
-  first_name: string;
-  last_name: string;
-  password: string;
-  phone?: string;
-}
-
-export interface LoginDTO {
-  email: string;
-  password: string;
+  updated_at: Date;
 }
 
 export interface AuthResponse {
-  user: UserDTO;
+  user: UserResponse;
   token: string;
-}
-
-export function toUserDTO(user: User): UserDTO {
-  return {
-    id: user.id,
-    email: user.email,
-    username: user.username,
-    first_name: user.first_name,
-    last_name: user.last_name,
-    phone: user.phone,
-    status: user.status,
-    email_verified: user.email_verified,
-    two_factor_enabled: user.two_factor_enabled,
-    created_at: user.created_at,
-  };
 }

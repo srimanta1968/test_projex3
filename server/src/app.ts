@@ -1,11 +1,10 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import morgan from 'morgan';
-import { env } from './config/env';
-import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import { config } from './config/env';
 import authRoutes from './routes/authRoutes';
-import logger from './utils/logger';
+import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import { logger } from './utils/logger';
 
 const app: Application = express();
 
@@ -13,44 +12,40 @@ const app: Application = express();
 app.use(helmet());
 
 // CORS configuration
-app.use(
-  cors({
-    origin: env.CLIENT_URL,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-);
+app.use(cors({
+  origin: config.cors.origin,
+  credentials: true,
+}));
+
+// Body parsing middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
 
 // Request logging
-if (env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-} else {
-  app.use(morgan('combined'));
-}
-
-// Body parsing
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use((req, res, next) => {
+  logger.debug(`${req.method} ${req.path}`, {
+    query: req.query,
+    ip: req.ip,
+  });
+  next();
+});
 
 // Health check endpoint
-app.get('/health', (_req, res) => {
-  res.json({
+app.get('/health', (req, res) => {
+  res.status(200).json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    environment: env.NODE_ENV,
+    uptime: process.uptime(),
   });
 });
 
 // API routes
-app.use(`${env.API_PREFIX}/auth`, authRoutes);
+app.use('/api/auth', authRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
 
-// Global error handler
+// Error handler
 app.use(errorHandler);
-
-logger.info(`App configured with API prefix: ${env.API_PREFIX}`);
 
 export default app;

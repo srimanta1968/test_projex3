@@ -1,4 +1,4 @@
-import api from './api';
+import { api } from './api';
 
 export interface User {
   id: string;
@@ -6,46 +6,50 @@ export interface User {
   username: string;
   first_name: string;
   last_name: string;
+  phone?: string;
+  date_of_birth?: string;
   status: string;
   email_verified: boolean;
+  two_factor_enabled: boolean;
+  preferences?: Record<string, any>;
+  last_login_at?: string;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface RegisterData {
+export interface RegisterInput {
   email: string;
   username: string;
+  password: string;
   first_name: string;
   last_name: string;
-  password: string;
   phone?: string;
+  date_of_birth?: string;
 }
 
-export interface LoginData {
+export interface LoginInput {
   email: string;
   password: string;
 }
 
 export interface AuthResponse {
-  status: string;
-  message: string;
-  data: {
-    user: User;
-    token: string;
-  };
+  user: User;
+  token: string;
 }
 
 export const authService = {
-  async register(data: RegisterData): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('/auth/register', data);
-    return response.data;
+  async register(input: RegisterInput): Promise<AuthResponse> {
+    const response = await api.post<{ status: string; data: AuthResponse }>('/auth/register', input);
+    return response.data.data;
   },
 
-  async login(data: LoginData): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('/auth/login', data);
-    return response.data;
+  async login(input: LoginInput): Promise<AuthResponse> {
+    const response = await api.post<{ status: string; data: AuthResponse }>('/auth/login', input);
+    return response.data.data;
   },
 
-  async getMe(): Promise<{ status: string; data: { user: User } }> {
-    const response = await api.get('/auth/me');
-    return response.data;
+  async getMe(): Promise<User> {
+    const response = await api.get<{ status: string; data: { user: User } }>('/auth/me');
+    return response.data.data.user;
   },
 };

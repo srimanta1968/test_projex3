@@ -1,44 +1,33 @@
 import { pool } from './database';
-import logger from '../utils/logger';
+import { logger } from '../utils/logger';
 
 export async function testDatabaseConnection(): Promise<boolean> {
   try {
     logger.info('Testing PostgreSQL connection...');
     const client = await pool.connect();
-
-    const result = await client.query(
-      'SELECT NOW() as server_time, version() as pg_version'
-    );
-
-    const { server_time, pg_version } = result.rows[0];
-    const pgVersionShort = pg_version.split(' ')[1];
-
-    logger.info('Database connected successfully!');
-    logger.info(`   Server time: ${server_time}`);
-    logger.info(`   PostgreSQL: ${pgVersionShort}`);
-
+    const result = await client.query('SELECT NOW() as server_time, version() as pg_version');
+    logger.info('Database connected successfully!', {
+      serverTime: result.rows[0].server_time,
+      pgVersion: result.rows[0].pg_version.split(' ')[1],
+    });
     client.release();
     return true;
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error('Database connection failed!');
-    logger.error(`   Error: ${errorMessage}`);
-    logger.error('Troubleshooting:');
-    logger.error('   1. Check if PostgreSQL is running: docker ps');
-    logger.error('   2. Verify .env file exists and has correct DB credentials');
-    logger.error('   3. Check DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD');
-    logger.error('   4. Run: docker compose up -d');
+  } catch (error: any) {
+    logger.error('Database connection failed!', {
+      error: error.message,
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+    });
+    console.error('Troubleshooting:');
+    console.error('  1. Check if PostgreSQL is running: docker ps');
+    console.error('  2. Verify .env file exists and has correct DB credentials');
+    console.error('  3. Check DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD');
     return false;
   }
 }
 
-// Allow running this file directly for testing
 if (require.main === module) {
   testDatabaseConnection()
-    .then((connected) => {
-      process.exit(connected ? 0 : 1);
-    })
-    .catch(() => {
-      process.exit(1);
-    });
+    .then((success) => process.exit(success ? 0 : 1))
+    .catch(() => process.exit(1));
 }
