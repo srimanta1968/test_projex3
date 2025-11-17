@@ -127,6 +127,9 @@ mcp-server/workspace/
 mcp-server/feedback/logs/
 .projexlight/feedback/logs/
 
+# MCP Server local cache (developer-specific, do not commit)
+.mcp-cache/
+
 # AI CLI Tool Ignores
 .claude/
 .cursor/

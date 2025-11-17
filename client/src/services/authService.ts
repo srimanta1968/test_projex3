@@ -1,137 +1,95 @@
-import api, { ApiResponse } from './api';
+import api, { ApiResponse, AuthResponse, RegisterData, LoginData, User } from './api';
 
-export interface User {
-  id: string;
-  email: string;
-  username: string;
-  first_name: string;
-  last_name: string;
-  phone: string | null;
-  date_of_birth: string | null;
-  status: string;
-  email_verified: boolean;
-  two_factor_enabled: boolean;
-  preferences: Record<string, unknown> | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface AuthResponse {
-  user: User;
-  token: string;
-  refreshToken?: string;
-}
-
-export interface RegisterData {
-  email: string;
-  username: string;
-  password: string;
-  first_name: string;
-  last_name: string;
-  phone?: string;
-  date_of_birth?: string;
-}
-
-export interface LoginData {
-  email: string;
-  password: string;
-}
-
-/**
- * Register a new user
- */
-export const register = async (data: RegisterData): Promise<AuthResponse> => {
-  const response = await api.post<ApiResponse<AuthResponse>>('/auth/register', data);
-
-  if (!response.data.success || !response.data.data) {
+export const authService = {
+  async register(data: RegisterData): Promise<AuthResponse> {
+    const response = await api.post<ApiResponse<AuthResponse>>('/api/auth/register', data);
+    if (response.data.success && response.data.data) {
+      const { token, user, refreshToken } = response.data.data;
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+      }
+      return response.data.data;
+    }
     throw new Error(response.data.error?.message || 'Registration failed');
-  }
+  },
 
-  const authData = response.data.data;
-
-  // Store token and user data
-  localStorage.setItem('token', authData.token);
-  localStorage.setItem('user', JSON.stringify(authData.user));
-
-  if (authData.refreshToken) {
-    localStorage.setItem('refreshToken', authData.refreshToken);
-  }
-
-  return authData;
-};
-
-/**
- * Login user
- */
-export const login = async (data: LoginData): Promise<AuthResponse> => {
-  const response = await api.post<ApiResponse<AuthResponse>>('/auth/login', data);
-
-  if (!response.data.success || !response.data.data) {
+  async login(data: LoginData): Promise<AuthResponse> {
+    const response = await api.post<ApiResponse<AuthResponse>>('/api/auth/login', data);
+    if (response.data.success && response.data.data) {
+      const { token, user, refreshToken } = response.data.data;
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+      }
+      return response.data.data;
+    }
     throw new Error(response.data.error?.message || 'Login failed');
-  }
+  },
 
-  const authData = response.data.data;
+  async getCurrentUser(): Promise<User> {
+    const response = await api.get<ApiResponse<{ user: User }>>('/api/auth/me');
+    if (response.data.success && response.data.data) {
+      const user = response.data.data.user;
+      localStorage.setItem('user', JSON.stringify(user));
+      return user;
+    }
+    throw new Error('Failed to get user data');
+  },
 
-  // Store token and user data
-  localStorage.setItem('token', authData.token);
-  localStorage.setItem('user', JSON.stringify(authData.user));
+  async updateProfile(data: Partial<User>): Promise<User> {
+    const response = await api.put<ApiResponse<{ user: User }>>('/api/auth/profile', data);
+    if (response.data.success && response.data.data) {
+      const user = response.data.data.user;
+      localStorage.setItem('user', JSON.stringify(user));
+      return user;
+    }
+    throw new Error('Failed to update profile');
+  },
 
-  if (authData.refreshToken) {
-    localStorage.setItem('refreshToken', authData.refreshToken);
-  }
+  async changePassword(currentPassword: string, newPassword: string): Promise<void> {
+    const response = await api.post<ApiResponse<null>>('/api/auth/change-password', {
+      currentPassword,
+      newPassword,
+    });
+    if (!response.data.success) {
+      throw new Error(response.data.error?.message || 'Failed to change password');
+    }
+  },
 
-  return authData;
-};
+  async logout(): Promise<void> {
+    try {
+      await api.post('/api/auth/logout');
+    } catch (error) {
+      // Ignore errors on logout
+    } finally {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('refreshToken');
+    }
+  },
 
-/**
- * Logout user
- */
-export const logout = async (): Promise<void> => {
-  try {
-    await api.post('/auth/logout');
-  } catch (error) {
-    // Continue with logout even if API call fails
-    console.error('Logout API call failed:', error);
-  } finally {
-    // Clear local storage
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('refreshToken');
-  }
-};
-
-/**
- * Get current user from API
- */
-export const getCurrentUser = async (): Promise<User> => {
-  const response = await api.get<ApiResponse<{ user: User }>>('/auth/me');
-
-  if (!response.data.success || !response.data.data) {
-    throw new Error(response.data.error?.message || 'Failed to get user');
-  }
-
-  return response.data.data.user;
-};
-
-/**
- * Get stored user from localStorage
- */
-export const getStoredUser = (): User | null => {
-  const userStr = localStorage.getItem('user');
-  if (!userStr) return null;
-
-  try {
-    return JSON.parse(userStr) as User;
-  } catch {
+  getStoredUser(): User | null {
+    const userJson = localStorage.getItem('user');
+    if (userJson) {
+      try {
+        return JSON.parse(userJson);
+      } catch {
+        return null;
+      }
+    }
     return null;
-  }
+  },
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  },
+
+  isAuthenticated(): boolean {
+    return !!this.getToken();
+  },
 };
 
-/**
- * Check if user is authenticated
- */
-export const isAuthenticated = (): boolean => {
-  const token = localStorage.getItem('token');
-  const user = getStoredUser();
-  return !!(token && user);
-};
+export default authService;

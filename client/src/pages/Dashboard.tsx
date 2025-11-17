@@ -1,150 +1,114 @@
+import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 
-function Dashboard() {
-  const { user, logout, isLoading } = useAuth();
-  const navigate = useNavigate();
+const Dashboard: React.FC = () => {
+  const { user, logout } = useAuth();
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
   };
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Financial Dashboard
-            </h1>
+      <nav className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <h1 className="text-xl font-semibold text-primary-600">Banking Portal</h1>
+            </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                Welcome, {user.first_name} {user.last_name}
+              <span className="text-sm text-gray-700">
+                Welcome, {user?.first_name} {user?.last_name}
               </span>
-              <button
-                onClick={handleLogout}
-                disabled={isLoading}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-              >
-                Sign out
+              <button onClick={handleLogout} className="btn-secondary text-sm">
+                Logout
               </button>
             </div>
           </div>
         </div>
-      </header>
+      </nav>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Card */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Welcome to your Financial Dashboard
-          </h2>
-          <p className="text-gray-600">
-            Your account has been created successfully. This dashboard will display your
-            financial overview including income, expenses, and net worth tracking.
-          </p>
-        </div>
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="px-4 py-6 sm:px-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Summary Cards */}
+            <div className="card">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Total Balance</h3>
+              <p className="text-3xl font-bold text-primary-600">$0.00</p>
+              <p className="text-sm text-gray-500 mt-1">Across all accounts</p>
+            </div>
 
-        {/* Placeholder Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Total Balance */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-              Total Balance
-            </h3>
-            <p className="mt-2 text-3xl font-semibold text-gray-900">$0.00</p>
-            <p className="mt-2 text-sm text-gray-600">
-              No accounts connected yet
-            </p>
+            <div className="card">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Income (This Month)</h3>
+              <p className="text-3xl font-bold text-green-600">$0.00</p>
+              <p className="text-sm text-gray-500 mt-1">+0% from last month</p>
+            </div>
+
+            <div className="card">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Expenses (This Month)</h3>
+              <p className="text-3xl font-bold text-red-600">$0.00</p>
+              <p className="text-sm text-gray-500 mt-1">+0% from last month</p>
+            </div>
           </div>
 
-          {/* Income */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-              Monthly Income
-            </h3>
-            <p className="mt-2 text-3xl font-semibold text-green-600">$0.00</p>
-            <p className="mt-2 text-sm text-gray-600">
-              No income recorded this month
-            </p>
+          {/* Dashboard Content Placeholder */}
+          <div className="mt-8">
+            <div className="card">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Financial Overview</h2>
+              <div className="bg-gray-100 rounded-lg h-64 flex items-center justify-center">
+                <p className="text-gray-500">
+                  Charts and graphs will be displayed here after completing the dashboard
+                  implementation.
+                </p>
+              </div>
+            </div>
           </div>
 
-          {/* Expenses */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-              Monthly Expenses
-            </h3>
-            <p className="mt-2 text-3xl font-semibold text-red-600">$0.00</p>
-            <p className="mt-2 text-sm text-gray-600">
-              No expenses recorded this month
-            </p>
+          {/* Recent Transactions Placeholder */}
+          <div className="mt-8">
+            <div className="card">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Transactions</h2>
+              <div className="bg-gray-100 rounded-lg h-48 flex items-center justify-center">
+                <p className="text-gray-500">
+                  Recent transactions will be displayed here after implementing the transaction
+                  feature.
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* Account Info */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Account Information
-          </h3>
-          <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <dt className="text-sm font-medium text-gray-500">Email</dt>
-              <dd className="mt-1 text-sm text-gray-900">{user.email}</dd>
+          {/* User Info */}
+          <div className="mt-8">
+            <div className="card">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Profile</h2>
+              <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">Email</dt>
+                  <dd className="mt-1 text-sm text-gray-900">{user?.email}</dd>
+                </div>
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">Username</dt>
+                  <dd className="mt-1 text-sm text-gray-900">{user?.username}</dd>
+                </div>
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">Account Status</dt>
+                  <dd className="mt-1 text-sm text-gray-900 capitalize">
+                    {user?.status?.replace('_', ' ')}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">Member Since</dt>
+                  <dd className="mt-1 text-sm text-gray-900">
+                    {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
+                  </dd>
+                </div>
+              </dl>
             </div>
-            <div>
-              <dt className="text-sm font-medium text-gray-500">Username</dt>
-              <dd className="mt-1 text-sm text-gray-900">{user.username}</dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-gray-500">Account Status</dt>
-              <dd className="mt-1">
-                <span
-                  className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                    user.status === 'active'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}
-                >
-                  {user.status.replace('_', ' ')}
-                </span>
-              </dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-gray-500">Email Verified</dt>
-              <dd className="mt-1">
-                <span
-                  className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                    user.email_verified
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
-                  }`}
-                >
-                  {user.email_verified ? 'Verified' : 'Not Verified'}
-                </span>
-              </dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-gray-500">Member Since</dt>
-              <dd className="mt-1 text-sm text-gray-900">
-                {new Date(user.created_at).toLocaleDateString()}
-              </dd>
-            </div>
-          </dl>
+          </div>
         </div>
       </main>
     </div>
   );
-}
+};
 
 export default Dashboard;

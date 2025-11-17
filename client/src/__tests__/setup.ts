@@ -15,22 +15,39 @@ const localStorageMock = (() => {
     clear: jest.fn(() => {
       store = {};
     }),
-    key: jest.fn((index: number) => Object.keys(store)[index] || null),
     get length() {
       return Object.keys(store).length;
     },
+    key: jest.fn((index: number) => Object.keys(store)[index] || null),
   };
 })();
 
-Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+});
 
 // Mock window.location
+const mockLocation = {
+  href: 'http://localhost:5173',
+  pathname: '/',
+  search: '',
+  hash: '',
+  assign: jest.fn(),
+  replace: jest.fn(),
+  reload: jest.fn(),
+};
+
 Object.defineProperty(window, 'location', {
-  value: {
-    href: '',
-    pathname: '/',
-  },
+  value: mockLocation,
   writable: true,
+});
+
+// Mock import.meta.env
+Object.defineProperty(import.meta, 'env', {
+  value: {
+    VITE_API_URL: 'http://localhost:3000',
+    VITE_WS_URL: 'http://localhost:3000',
+  },
 });
 
 // Clean up after each test
@@ -38,3 +55,15 @@ afterEach(() => {
   jest.clearAllMocks();
   localStorageMock.clear();
 });
+
+// Suppress React Router warnings in tests
+const originalConsoleWarn = console.warn;
+console.warn = (...args: unknown[]) => {
+  if (
+    typeof args[0] === 'string' &&
+    args[0].includes('React Router')
+  ) {
+    return;
+  }
+  originalConsoleWarn.apply(console, args);
+};

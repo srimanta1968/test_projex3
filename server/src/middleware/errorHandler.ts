@@ -1,110 +1,75 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError, ValidationError } from '../utils/errors';
-import { logger } from '../utils/logger';
-import { config } from '../config/env';
+import logger from '../utils/logger';
+import { env } from '../config/env';
 
 interface ErrorResponse {
   success: false;
   error: {
-    code: string;
     message: string;
-    errors?: Record<string, string[]>;
+    code?: string;
+    errors?: Array<{ field: string; message: string }>;
     stack?: string;
   };
 }
 
-/**
- * Global error handler middleware
- */
 export const errorHandler = (
   err: Error,
   _req: Request,
   res: Response,
   _next: NextFunction
 ): void => {
-  // Log the error
   logger.error('Error occurred:', {
-    name: err.name,
     message: err.message,
     stack: err.stack,
+    name: err.name,
   });
 
-  // Default error response
+  const response: ErrorResponse = {
+    success: false,
+    error: {
+      message: 'Internal server error',
+    },
+  };
+
   let statusCode = 500;
-  let code = 'INTERNAL_ERROR';
-  let message = 'An unexpected error occurred';
-  let errors: Record<string, string[]> | undefined;
 
-  // Handle known application errors
-  if (err instanceof AppError) {
+  if (err instanceof ValidationError) {
     statusCode = err.statusCode;
-    code = err.code;
-    message = err.message;
-
-    if (err instanceof ValidationError) {
-      errors = err.errors;
-    }
-  }
-
-  // Handle specific error types
-  if (err.name === 'JsonWebTokenError') {
+    response.error.message = err.message;
+    response.error.code = err.code;
+    response.error.errors = err.errors;
+  } else if (err instanceof AppError) {
+    statusCode = err.statusCode;
+    response.error.message = err.message;
+    response.error.code = err.code;
+  } else if (err.name === 'JsonWebTokenError') {
     statusCode = 401;
-    code = 'INVALID_TOKEN';
-    message = 'Invalid authentication token';
+    response.error.message = 'Invalid token';
+    response.error.code = 'INVALID_TOKEN';
   } else if (err.name === 'TokenExpiredError') {
     statusCode = 401;
-    code = 'TOKEN_EXPIRED';
-    message = 'Authentication token has expired';
-  } else if (err.name === 'SyntaxError' && 'body' in err) {
-    statusCode = 400;
-    code = 'INVALID_JSON';
-    message = 'Invalid JSON in request body';
+    response.error.message = 'Token expired';
+    response.error.code = 'TOKEN_EXPIRED';
   }
 
-  // Build error response
-  const errorResponse: ErrorResponse = {
-    success: false,
-    error: {
-      code,
-      message,
-    },
-  };
-
-  // Include validation errors if present
-  if (errors) {
-    errorResponse.error.errors = errors;
+  if (env.isDevelopment) {
+    response.error.stack = err.stack;
   }
 
-  // Include stack trace in development
-  if (config.nodeEnv === 'development') {
-    errorResponse.error.stack = err.stack;
-  }
-
-  res.status(statusCode).json(errorResponse);
+  res.status(statusCode).json(response);
 };
 
-/**
- * 404 Not Found handler
- */
-export const notFoundHandler = (
-  req: Request,
-  res: Response,
-  _next: NextFunction
-): void => {
-  const errorResponse: ErrorResponse = {
+export const notFoundHandler = (req: Request, res: Response): void => {
+  res.status(404).json({
     success: false,
     error: {
-      code: 'NOT_FOUND',
-      message: `Route ${req.method} ${req.originalUrl} not found`,
+      message: `Route ${req.originalUrl} not found`,
+      code: 'ROUTE_NOT_FOUND',
     },
-  };
-
-  res.status(404).json(errorResponse);
+  });
 };
 
-/**
- * Async error wrapper
- */
 export const asyncHandler = (
   fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>
 ) => {

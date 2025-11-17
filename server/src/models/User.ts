@@ -1,6 +1,8 @@
 /**
- * User entity interface matching database schema
+ * User model interfaces based on the banking-portal-schema
+ * Maps to the "user" table in PostgreSQL
  */
+
 export interface User {
   id: string;
   email: string;
@@ -24,18 +26,13 @@ export interface User {
   updated_at: Date;
 }
 
-/**
- * User status types
- */
 export type UserStatus =
   | 'pending_verification'
   | 'active'
   | 'suspended'
-  | 'deactivated';
+  | 'deactivated'
+  | 'locked';
 
-/**
- * User preferences structure
- */
 export interface UserPreferences {
   theme?: 'light' | 'dark' | 'system';
   currency?: string;
@@ -45,12 +42,12 @@ export interface UserPreferences {
     push?: boolean;
     sms?: boolean;
   };
-  [key: string]: unknown;
+  dashboard?: {
+    defaultView?: string;
+    refreshInterval?: number;
+  };
 }
 
-/**
- * DTO for user registration
- */
 export interface CreateUserDTO {
   email: string;
   username: string;
@@ -61,17 +58,21 @@ export interface CreateUserDTO {
   date_of_birth?: string;
 }
 
-/**
- * DTO for user login
- */
+export interface UpdateUserDTO {
+  email?: string;
+  username?: string;
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  date_of_birth?: string;
+  preferences?: UserPreferences;
+}
+
 export interface LoginDTO {
   email: string;
   password: string;
 }
 
-/**
- * User response without sensitive data
- */
 export interface UserResponseDTO {
   id: string;
   email: string;
@@ -84,22 +85,24 @@ export interface UserResponseDTO {
   email_verified: boolean;
   two_factor_enabled: boolean;
   preferences: UserPreferences | null;
+  last_login_at: Date | null;
   created_at: Date;
   updated_at: Date;
 }
 
-/**
- * Authentication response
- */
 export interface AuthResponse {
   user: UserResponseDTO;
   token: string;
   refreshToken?: string;
 }
 
-/**
- * Convert User to UserResponseDTO (remove sensitive fields)
- */
+export interface JWTPayload {
+  userId: string;
+  email: string;
+  username: string;
+}
+
+// Transform database row to UserResponseDTO (excludes sensitive data)
 export const toUserResponseDTO = (user: User): UserResponseDTO => {
   return {
     id: user.id,
@@ -113,18 +116,8 @@ export const toUserResponseDTO = (user: User): UserResponseDTO => {
     email_verified: user.email_verified,
     two_factor_enabled: user.two_factor_enabled,
     preferences: user.preferences,
+    last_login_at: user.last_login_at,
     created_at: user.created_at,
     updated_at: user.updated_at,
   };
 };
-
-/**
- * JWT Payload structure
- */
-export interface JWTPayload {
-  userId: string;
-  email: string;
-  username: string;
-  iat?: number;
-  exp?: number;
-}

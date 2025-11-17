@@ -1,67 +1,64 @@
-import { createApp } from './app';
-import { config } from './config/env';
-import { logger } from './utils/logger';
-import { testDatabaseConnection } from './config/testConnection';
+import http from 'http';
+import app from './app';
+import { env } from './config/env';
+import logger from './utils/logger';
 
-/**
- * Start the server
- */
-async function startServer(): Promise<void> {
+const server = http.createServer(app);
+
+const startServer = async (): Promise<void> => {
   try {
-    // Test database connection
-    logger.info('Testing database connection...');
-    const dbConnected = await testDatabaseConnection();
+    logger.info('Starting Banking Portal Server...');
+    logger.info(`Environment: ${env.NODE_ENV}`);
 
-    if (!dbConnected) {
-      logger.error('Failed to connect to database. Server startup aborted.');
-      process.exit(1);
-    }
+    // Start HTTP server
+    server.listen(env.PORT, () => {
+      logger.info(`Server is running on http://localhost:${env.PORT}`);
+      logger.info('Available endpoints:');
+      logger.info(`  - Health check: http://localhost:${env.PORT}/health`);
+      logger.info(`  - API root: http://localhost:${env.PORT}/`);
+    });
 
-    // Create Express app
-    const app = createApp();
+    // Handle unhandled promise rejections
+    process.on('unhandledRejection', (reason: Error) => {
+      logger.error('Unhandled Rejection:', { error: reason.message, stack: reason.stack });
+      // In production, you might want to exit and let a process manager restart the app
+      if (env.isProduction) {
+        process.exit(1);
+      }
+    });
 
-    // Start listening
-    const server = app.listen(config.port, () => {
-      logger.info(`🚀 Server started successfully!`);
-      logger.info(`   Listening on: http://localhost:${config.port}`);
-      logger.info(`   Environment: ${config.nodeEnv}`);
-      logger.info(`   Database: Connected`);
+    // Handle uncaught exceptions
+    process.on('uncaughtException', (error: Error) => {
+      logger.error('Uncaught Exception:', { error: error.message, stack: error.stack });
+      // Gracefully shutdown
+      server.close(() => {
+        process.exit(1);
+      });
     });
 
     // Graceful shutdown
-    const shutdown = async (signal: string): Promise<void> => {
+    const shutdown = (signal: string): void => {
       logger.info(`${signal} received. Starting graceful shutdown...`);
-
       server.close(() => {
         logger.info('HTTP server closed');
         process.exit(0);
       });
 
-      // Force close after 10 seconds
+      // Force shutdown after 10 seconds
       setTimeout(() => {
-        logger.error('Forced shutdown after timeout');
+        logger.error('Could not close connections in time, forcefully shutting down');
         process.exit(1);
       }, 10000);
     };
 
     process.on('SIGTERM', () => shutdown('SIGTERM'));
     process.on('SIGINT', () => shutdown('SIGINT'));
-
-    // Handle unhandled rejections
-    process.on('unhandledRejection', (reason: Error) => {
-      logger.error('Unhandled Rejection:', { error: reason.message, stack: reason.stack });
-    });
-
-    // Handle uncaught exceptions
-    process.on('uncaughtException', (error: Error) => {
-      logger.error('Uncaught Exception:', { error: error.message, stack: error.stack });
-      process.exit(1);
-    });
   } catch (error) {
-    logger.error('Failed to start server:', error);
+    logger.error('Failed to start server:', { error });
     process.exit(1);
   }
-}
+};
 
-// Start the server
 startServer();
+
+export default server;

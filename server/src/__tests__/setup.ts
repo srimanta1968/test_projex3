@@ -1,32 +1,35 @@
-import { config } from '../config/env';
+import dotenv from 'dotenv';
 
-// Ensure test environment
+// Load environment variables for tests
+dotenv.config({ path: '.env.test' });
+
+// Set test environment
 process.env.NODE_ENV = 'test';
-
-// Mock logger to reduce noise in tests
-jest.mock('../utils/logger', () => ({
-  logger: {
-    info: jest.fn(),
-    error: jest.fn(),
-    warn: jest.fn(),
-    debug: jest.fn(),
-  },
-  morganStream: {
-    write: jest.fn(),
-  },
-}));
+process.env.JWT_SECRET = 'test-jwt-secret';
+process.env.DB_HOST = 'localhost';
+process.env.DB_PORT = '5432';
+process.env.DB_NAME = 'banking_portal_test';
+process.env.DB_USER = 'postgres';
+process.env.DB_PASSWORD = 'postgres';
 
 // Global test timeout
-jest.setTimeout(30000);
+jest.setTimeout(10000);
+
+// Mock console methods to reduce noise in tests
+const originalConsoleError = console.error;
+const originalConsoleWarn = console.warn;
+
+beforeAll(() => {
+  console.error = jest.fn();
+  console.warn = jest.fn();
+});
+
+afterAll(() => {
+  console.error = originalConsoleError;
+  console.warn = originalConsoleWarn;
+});
 
 // Clean up after each test
 afterEach(() => {
   jest.clearAllMocks();
 });
-
-// Clean up after all tests
-afterAll(() => {
-  jest.resetAllMocks();
-});
-
-export { config };

@@ -39,3 +39,6 @@ coverage/
 # ProjexLight specific
 .projexlight/feedback/logs/
 mcp-server/feedback/logs
+
+# MCP Server local cache (developer-specific, do not commit)
+.mcp-cache/

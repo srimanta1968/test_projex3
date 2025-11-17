@@ -1,21 +1,16 @@
-import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-/**
- * Create axios instance with default configuration
- */
 const api: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 10000,
 });
 
-/**
- * Request interceptor - add auth token to requests
- */
+// Request interceptor to add auth token
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('token');
@@ -29,35 +24,67 @@ api.interceptors.request.use(
   }
 );
 
-/**
- * Response interceptor - handle common errors
- */
+// Response interceptor for error handling
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid - clear auth data
+      // Token expired or invalid
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-
-      // Only redirect if not already on login page
-      if (!window.location.pathname.includes('/login')) {
-        window.location.href = '/login';
-      }
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }
 );
 
-export interface ApiResponse<T = unknown> {
+export interface ApiResponse<T> {
   success: boolean;
   message?: string;
   data?: T;
   error?: {
-    code: string;
     message: string;
-    errors?: Record<string, string[]>;
+    code?: string;
+    errors?: Array<{ field: string; message: string }>;
   };
+}
+
+export interface User {
+  id: string;
+  email: string;
+  username: string;
+  first_name: string;
+  last_name: string;
+  phone: string | null;
+  date_of_birth: string | null;
+  status: string;
+  email_verified: boolean;
+  two_factor_enabled: boolean;
+  preferences: Record<string, unknown> | null;
+  last_login_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+  refreshToken?: string;
+}
+
+export interface RegisterData {
+  email: string;
+  username: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  phone?: string;
+  date_of_birth?: string;
+}
+
+export interface LoginData {
+  email: string;
+  password: string;
 }
 
 export default api;

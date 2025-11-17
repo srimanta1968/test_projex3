@@ -1,6 +1,9 @@
-import { useState, FormEvent } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
+import { AxiosError } from 'axios';
+import { ApiResponse } from '../services/api';
 
 interface LocationState {
   from?: {
@@ -8,38 +11,76 @@ interface LocationState {
   };
 }
 
-function Login() {
+const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const { login, error, clearError } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = (location.state as LocationState)?.from?.pathname || '/dashboard';
+  const locationState = location.state as LocationState;
+  const from = locationState?.from?.pathname || '/dashboard';
 
-  const handleSubmit = async (e: FormEvent) => {
+  // Redirect if already authenticated
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, from]);
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (!email) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = 'Please enter a valid email';
+    }
+
+    if (!password) {
+      newErrors.password = 'Password is required';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormError(null);
-    clearError();
 
-    // Basic validation
-    if (!email || !password) {
-      setFormError('Please fill in all fields');
+    if (!validateForm()) {
       return;
     }
 
+    setIsLoading(true);
+    setErrors({});
+
     try {
-      setIsSubmitting(true);
       await login({ email, password });
+      toast.success('Login successful!');
       navigate(from, { replace: true });
-    } catch (err) {
-      // Error is handled by AuthContext
-      console.error('Login error:', err);
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse<null>>;
+      if (axiosError.response?.data?.error) {
+        const errorMessage = axiosError.response.data.error.message;
+        toast.error(errorMessage);
+
+        // Handle specific field errors
+        if (axiosError.response.data.error.errors) {
+          const fieldErrors: Record<string, string> = {};
+          axiosError.response.data.error.errors.forEach((err) => {
+            fieldErrors[err.field] = err.message;
+          });
+          setErrors(fieldErrors);
+        }
+      } else {
+        toast.error('Login failed. Please try again.');
+      }
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
@@ -48,106 +89,83 @@ function Login() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
+            Banking Portal
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <Link
-              to="/register"
-              className="font-medium text-primary-600 hover:text-primary-500"
-            >
-              create a new account
-            </Link>
+            Sign in to your account
           </p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {(formError || error) && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="flex">
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">
-                    {formError || error}
-                  </h3>
-                </div>
+          <div className="card">
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="email" className="label">
+                  Email address
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={`input ${errors.email ? 'input-error' : ''}`}
+                  placeholder="Enter your email"
+                />
+                {errors.email && <p className="error-message">{errors.email}</p>}
+              </div>
+
+              <div>
+                <label htmlFor="password" className="label">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`input ${errors.password ? 'input-error' : ''}`}
+                  placeholder="Enter your password"
+                />
+                {errors.password && <p className="error-message">{errors.password}</p>}
               </div>
             </div>
-          )}
 
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+            <div className="mt-6">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full btn-primary flex justify-center py-2 px-4"
+              >
+                {isLoading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Signing in...
+                  </div>
+                ) : (
+                  'Sign in'
+                )}
+              </button>
             </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? (
-                <span className="flex items-center">
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Signing in...
-                </span>
-              ) : (
-                'Sign in'
-              )}
-            </button>
           </div>
         </form>
+
+        <div className="text-center">
+          <p className="text-sm text-gray-600">
+            Don't have an account?{' '}
+            <Link to="/register" className="font-medium text-primary-600 hover:text-primary-500">
+              Register here
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
-}
+};
 
 export default Login;

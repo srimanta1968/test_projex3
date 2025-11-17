@@ -3,161 +3,145 @@ import {
   User,
   CreateUserDTO,
   LoginDTO,
+  UserResponseDTO,
   AuthResponse,
   toUserResponseDTO,
 } from '../models/User';
 import { hashPassword, comparePassword, validatePasswordStrength } from '../utils/password';
 import { generateToken, generateRefreshToken } from '../utils/jwt';
 import {
-  BadRequestError,
+  AuthenticationError,
   ConflictError,
-  UnauthorizedError,
+  ValidationError,
   NotFoundError,
 } from '../utils/errors';
-import { logger } from '../utils/logger';
+import logger from '../utils/logger';
 
-/**
- * Authentication service for user registration and login
- */
 export class AuthService {
   /**
    * Register a new user
-   * @param data User registration data
-   * @returns Authentication response with user and token
    */
   async register(data: CreateUserDTO): Promise<AuthResponse> {
     // Validate password strength
     const passwordValidation = validatePasswordStrength(data.password);
     if (!passwordValidation.valid) {
-      throw new BadRequestError(
-        `Password validation failed: ${passwordValidation.errors.join(', ')}`,
-        'WEAK_PASSWORD'
+      throw new ValidationError(
+        passwordValidation.errors.map((msg) => ({ field: 'password', message: msg }))
       );
     }
 
     // Check if email already exists
-    const existingEmail = await query<User>(
-      'SELECT id FROM "user" WHERE email = $1',
-      [data.email.toLowerCase()]
-    );
-
-    if (existingEmail.length > 0) {
-      throw new ConflictError('Email already registered', 'EMAIL_EXISTS');
+    const existingEmail = await query('SELECT id FROM "user" WHERE email = $1', [data.email]);
+    if (existingEmail.rows.length > 0) {
+      throw new ConflictError('Email already registered');
     }
 
     // Check if username already exists
-    const existingUsername = await query<User>(
-      'SELECT id FROM "user" WHERE username = $1',
-      [data.username.toLowerCase()]
-    );
-
-    if (existingUsername.length > 0) {
-      throw new ConflictError('Username already taken', 'USERNAME_EXISTS');
+    const existingUsername = await query('SELECT id FROM "user" WHERE username = $1', [
+      data.username,
+    ]);
+    if (existingUsername.rows.length > 0) {
+      throw new ConflictError('Username already taken');
     }
 
     // Hash password
     const passwordHash = await hashPassword(data.password);
 
-    // Insert user
-    const insertQuery = `
-      INSERT INTO "user" (
-        email,
-        username,
-        first_name,
-        last_name,
-        phone,
-        date_of_birth,
-        password_hash,
-        status,
-        email_verified
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-      RETURNING *
-    `;
+    // Insert user into database
+    const result = await query<User>(
+      `INSERT INTO "user" (
+        email, username, first_name, last_name, password_hash, phone, date_of_birth
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING *`,
+      [
+        data.email,
+        data.username,
+        data.first_name,
+        data.last_name,
+        passwordHash,
+        data.phone || null,
+        data.date_of_birth || null,
+      ]
+    );
 
-    const values = [
-      data.email.toLowerCase(),
-      data.username.toLowerCase(),
-      data.first_name.trim(),
-      data.last_name.trim(),
-      data.phone || null,
-      data.date_of_birth || null,
-      passwordHash,
-      'pending_verification',
-      false,
-    ];
-
-    const [newUser] = await query<User>(insertQuery, values);
-
-    if (!newUser) {
-      throw new Error('Failed to create user');
-    }
-
-    logger.info(`User registered successfully: ${newUser.email}`);
+    const user = result.rows[0];
+    logger.info('User registered', { userId: user.id, email: user.email });
 
     // Generate tokens
     const token = generateToken({
-      userId: newUser.id,
-      email: newUser.email,
-      username: newUser.username,
+      userId: user.id,
+      email: user.email,
+      username: user.username,
     });
-
-    const refreshToken = generateRefreshToken({
-      userId: newUser.id,
-      email: newUser.email,
-      username: newUser.username,
-    });
+    const refreshToken = generateRefreshToken(user.id);
 
     return {
-      user: toUserResponseDTO(newUser),
+      user: toUserResponseDTO(user),
       token,
       refreshToken,
     };
   }
 
   /**
-   * Authenticate user login
-   * @param data Login credentials
-   * @returns Authentication response with user and token
+   * Login a user
    */
-  async login(data: LoginDTO): Promise<AuthResponse> {
+  async login(data: LoginDTO, ipAddress?: string): Promise<AuthResponse> {
     // Find user by email
-    const [user] = await query<User>(
-      'SELECT * FROM "user" WHERE email = $1',
-      [data.email.toLowerCase()]
-    );
+    const result = await query<User>('SELECT * FROM "user" WHERE email = $1', [data.email]);
 
-    if (!user) {
-      throw new UnauthorizedError('Invalid email or password', 'INVALID_CREDENTIALS');
+    if (result.rows.length === 0) {
+      throw new AuthenticationError('Invalid email or password');
     }
+
+    const user = result.rows[0];
 
     // Check if account is locked
     if (user.locked_until && new Date(user.locked_until) > new Date()) {
-      throw new UnauthorizedError(
-        'Account is temporarily locked. Please try again later.',
-        'ACCOUNT_LOCKED'
-      );
+      throw new AuthenticationError('Account is temporarily locked. Please try again later.');
     }
 
     // Verify password
-    const isValidPassword = await comparePassword(data.password, user.password_hash);
+    const isPasswordValid = await comparePassword(data.password, user.password_hash);
 
-    if (!isValidPassword) {
+    if (!isPasswordValid) {
       // Increment failed login attempts
-      await this.incrementFailedAttempts(user.id, user.failed_login_attempts);
-      throw new UnauthorizedError('Invalid email or password', 'INVALID_CREDENTIALS');
+      const newFailedAttempts = user.failed_login_attempts + 1;
+      let lockUntil: Date | null = null;
+
+      // Lock account after 5 failed attempts for 15 minutes
+      if (newFailedAttempts >= 5) {
+        lockUntil = new Date(Date.now() + 15 * 60 * 1000);
+        logger.warn('Account locked due to failed attempts', {
+          userId: user.id,
+          attempts: newFailedAttempts,
+        });
+      }
+
+      await query(
+        'UPDATE "user" SET failed_login_attempts = $1, locked_until = $2 WHERE id = $3',
+        [newFailedAttempts, lockUntil, user.id]
+      );
+
+      throw new AuthenticationError('Invalid email or password');
+    }
+
+    // Check if account is active
+    if (user.status === 'suspended' || user.status === 'deactivated') {
+      throw new AuthenticationError('Account is not active');
     }
 
     // Reset failed attempts and update last login
     await query(
-      `UPDATE "user"
-       SET failed_login_attempts = 0,
-           last_login_at = NOW(),
-           locked_until = NULL
-       WHERE id = $1`,
-      [user.id]
+      `UPDATE "user" SET
+        failed_login_attempts = 0,
+        locked_until = NULL,
+        last_login_at = NOW(),
+        last_login_ip = $1
+      WHERE id = $2`,
+      [ipAddress || null, user.id]
     );
 
-    logger.info(`User logged in: ${user.email}`);
+    logger.info('User logged in', { userId: user.id, email: user.email });
 
     // Generate tokens
     const token = generateToken({
@@ -165,12 +149,13 @@ export class AuthService {
       email: user.email,
       username: user.username,
     });
+    const refreshToken = generateRefreshToken(user.id);
 
-    const refreshToken = generateRefreshToken({
-      userId: user.id,
-      email: user.email,
-      username: user.username,
-    });
+    // Update user with new login info
+    user.failed_login_attempts = 0;
+    user.locked_until = null;
+    user.last_login_at = new Date();
+    user.last_login_ip = ipAddress || null;
 
     return {
       user: toUserResponseDTO(user),
@@ -181,41 +166,100 @@ export class AuthService {
 
   /**
    * Get user by ID
-   * @param userId User ID
-   * @returns User data
    */
-  async getUserById(userId: string): Promise<User> {
-    const [user] = await query<User>('SELECT * FROM "user" WHERE id = $1', [userId]);
+  async getUserById(userId: string): Promise<UserResponseDTO> {
+    const result = await query<User>('SELECT * FROM "user" WHERE id = $1', [userId]);
 
-    if (!user) {
-      throw new NotFoundError('User not found', 'USER_NOT_FOUND');
+    if (result.rows.length === 0) {
+      throw new NotFoundError('User');
     }
 
-    return user;
+    return toUserResponseDTO(result.rows[0]);
   }
 
   /**
-   * Increment failed login attempts and lock account if necessary
+   * Update user profile
    */
-  private async incrementFailedAttempts(userId: string, currentAttempts: number): Promise<void> {
-    const newAttempts = currentAttempts + 1;
-    let lockedUntil: Date | null = null;
+  async updateUser(userId: string, data: Partial<User>): Promise<UserResponseDTO> {
+    const updates: string[] = [];
+    const values: unknown[] = [];
+    let paramCounter = 1;
 
-    // Lock account after 5 failed attempts
-    if (newAttempts >= 5) {
-      lockedUntil = new Date(Date.now() + 15 * 60 * 1000); // Lock for 15 minutes
-      logger.warn(`Account locked due to too many failed attempts: ${userId}`);
+    const allowedFields = [
+      'first_name',
+      'last_name',
+      'phone',
+      'date_of_birth',
+      'preferences',
+    ];
+
+    for (const field of allowedFields) {
+      if (data[field as keyof User] !== undefined) {
+        updates.push(`${field} = $${paramCounter}`);
+        values.push(data[field as keyof User]);
+        paramCounter++;
+      }
     }
 
-    await query(
-      `UPDATE "user"
-       SET failed_login_attempts = $1,
-           locked_until = $2
-       WHERE id = $3`,
-      [newAttempts, lockedUntil, userId]
+    if (updates.length === 0) {
+      return this.getUserById(userId);
+    }
+
+    updates.push(`updated_at = NOW()`);
+    values.push(userId);
+
+    const result = await query<User>(
+      `UPDATE "user" SET ${updates.join(', ')} WHERE id = $${paramCounter} RETURNING *`,
+      values
     );
+
+    if (result.rows.length === 0) {
+      throw new NotFoundError('User');
+    }
+
+    logger.info('User updated', { userId });
+    return toUserResponseDTO(result.rows[0]);
+  }
+
+  /**
+   * Change user password
+   */
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<void> {
+    const result = await query<User>('SELECT * FROM "user" WHERE id = $1', [userId]);
+
+    if (result.rows.length === 0) {
+      throw new NotFoundError('User');
+    }
+
+    const user = result.rows[0];
+
+    // Verify current password
+    const isPasswordValid = await comparePassword(currentPassword, user.password_hash);
+    if (!isPasswordValid) {
+      throw new AuthenticationError('Current password is incorrect');
+    }
+
+    // Validate new password
+    const passwordValidation = validatePasswordStrength(newPassword);
+    if (!passwordValidation.valid) {
+      throw new ValidationError(
+        passwordValidation.errors.map((msg) => ({ field: 'newPassword', message: msg }))
+      );
+    }
+
+    // Hash and update password
+    const newPasswordHash = await hashPassword(newPassword);
+    await query('UPDATE "user" SET password_hash = $1, updated_at = NOW() WHERE id = $2', [
+      newPasswordHash,
+      userId,
+    ]);
+
+    logger.info('Password changed', { userId });
   }
 }
 
-// Export singleton instance
 export const authService = new AuthService();

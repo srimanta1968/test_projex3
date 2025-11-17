@@ -17,11 +17,25 @@
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "baseUrl": "./src",
+    "paths": {
+      "@config/*": ["config/*"],
+      "@models/*": ["models/*"],
+      "@services/*": ["services/*"],
+      "@routes/*": ["routes/*"],
+      "@middleware/*": ["middleware/*"],
+      "@utils/*": ["utils/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]

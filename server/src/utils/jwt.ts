@@ -1,61 +1,64 @@
 import jwt from 'jsonwebtoken';
-import { config } from '../config/env';
+import { env } from '../config/env';
 import { JWTPayload } from '../models/User';
-import { UnauthorizedError } from './errors';
+import { AuthenticationError } from './errors';
+import logger from './logger';
 
 /**
- * Generate JWT access token
- * @param payload Token payload
- * @returns Signed JWT token
+ * Generate a JWT token for a user
+ * @param payload User data to encode in token
+ * @returns JWT token string
  */
-export const generateToken = (payload: Omit<JWTPayload, 'iat' | 'exp'>): string => {
-  return jwt.sign(payload, config.jwt.secret, {
-    expiresIn: config.jwt.expiresIn,
+export const generateToken = (payload: JWTPayload): string => {
+  return jwt.sign(payload, env.JWT_SECRET, {
+    expiresIn: env.JWT_EXPIRES_IN,
+    issuer: 'banking-portal',
+    audience: 'banking-portal-users',
   });
 };
 
 /**
- * Generate JWT refresh token
- * @param payload Token payload
- * @returns Signed refresh token
+ * Generate a refresh token
+ * @param userId User ID
+ * @returns Refresh token string
  */
-export const generateRefreshToken = (payload: Omit<JWTPayload, 'iat' | 'exp'>): string => {
-  return jwt.sign(payload, config.jwt.secret, {
-    expiresIn: config.jwt.refreshExpiresIn,
+export const generateRefreshToken = (userId: string): string => {
+  return jwt.sign({ userId, type: 'refresh' }, env.JWT_SECRET, {
+    expiresIn: '7d',
+    issuer: 'banking-portal',
   });
 };
 
 /**
- * Verify and decode JWT token
- * @param token JWT token to verify
+ * Verify and decode a JWT token
+ * @param token JWT token string
  * @returns Decoded payload
- * @throws UnauthorizedError if token is invalid or expired
+ * @throws AuthenticationError if token is invalid
  */
 export const verifyToken = (token: string): JWTPayload => {
   try {
-    const decoded = jwt.verify(token, config.jwt.secret) as JWTPayload;
-    return decoded;
+    const decoded = jwt.verify(token, env.JWT_SECRET, {
+      issuer: 'banking-portal',
+      audience: 'banking-portal-users',
+    });
+
+    if (typeof decoded === 'string') {
+      throw new AuthenticationError('Invalid token format');
+    }
+
+    return decoded as JWTPayload;
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
-      throw new UnauthorizedError('Token has expired', 'TOKEN_EXPIRED');
+      logger.warn('Token expired', { expiredAt: error.expiredAt });
+      throw new AuthenticationError('Token has expired');
     }
-    if (error instanceof jwt.JsonWebTokenError) {
-      throw new UnauthorizedError('Invalid token', 'INVALID_TOKEN');
-    }
-    throw new UnauthorizedError('Token verification failed', 'TOKEN_VERIFICATION_FAILED');
-  }
-};
 
-/**
- * Decode token without verification (for debugging)
- * @param token JWT token
- * @returns Decoded payload or null
- */
-export const decodeToken = (token: string): JWTPayload | null => {
-  try {
-    return jwt.decode(token) as JWTPayload;
-  } catch {
-    return null;
+    if (error instanceof jwt.JsonWebTokenError) {
+      logger.warn('Invalid token', { error: error.message });
+      throw new AuthenticationError('Invalid token');
+    }
+
+    throw error;
   }
 };
 
@@ -64,13 +67,12 @@ export const decodeToken = (token: string): JWTPayload | null => {
  * @param authHeader Authorization header value
  * @returns Token string or null
  */
-export const extractTokenFromHeader = (authHeader?: string): string | null => {
+export const extractTokenFromHeader = (authHeader: string | undefined): string | null => {
   if (!authHeader) {
     return null;
   }
 
   const parts = authHeader.split(' ');
-
   if (parts.length !== 2 || parts[0] !== 'Bearer') {
     return null;
   }
@@ -79,27 +81,15 @@ export const extractTokenFromHeader = (authHeader?: string): string | null => {
 };
 
 /**
- * Check if token is about to expire (within threshold)
- * @param token JWT token
- * @param thresholdSeconds Seconds before expiry to consider as "about to expire"
- * @returns true if token expires within threshold
+ * Decode token without verification (for debugging)
+ * @param token JWT token string
+ * @returns Decoded payload or null
  */
-export const isTokenExpiringSoon = (
-  token: string,
-  thresholdSeconds: number = 300
-): boolean => {
+export const decodeToken = (token: string): JWTPayload | null => {
   try {
-    const decoded = jwt.decode(token) as JWTPayload;
-
-    if (!decoded || !decoded.exp) {
-      return true;
-    }
-
-    const now = Math.floor(Date.now() / 1000);
-    const expiresIn = decoded.exp - now;
-
-    return expiresIn <= thresholdSeconds;
+    const decoded = jwt.decode(token);
+    return decoded as JWTPayload | null;
   } catch {
-    return true;
+    return null;
   }
 };

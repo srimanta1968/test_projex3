@@ -1,111 +1,60 @@
-/**
- * Base application error class
- */
 export class AppError extends Error {
   public readonly statusCode: number;
   public readonly isOperational: boolean;
-  public readonly code: string;
+  public readonly code?: string;
 
-  constructor(
-    message: string,
-    statusCode: number = 500,
-    code: string = 'INTERNAL_ERROR',
-    isOperational: boolean = true
-  ) {
+  constructor(message: string, statusCode: number = 500, code?: string) {
     super(message);
     this.statusCode = statusCode;
+    this.isOperational = true;
     this.code = code;
-    this.isOperational = isOperational;
 
-    Object.setPrototypeOf(this, new.target.prototype);
-    Error.captureStackTrace(this);
+    Object.setPrototypeOf(this, AppError.prototype);
+    Error.captureStackTrace(this, this.constructor);
   }
 }
 
-/**
- * 400 Bad Request
- */
-export class BadRequestError extends AppError {
-  constructor(message: string = 'Bad Request', code: string = 'BAD_REQUEST') {
-    super(message, 400, code);
-  }
-}
-
-/**
- * 401 Unauthorized
- */
-export class UnauthorizedError extends AppError {
-  constructor(message: string = 'Unauthorized', code: string = 'UNAUTHORIZED') {
-    super(message, 401, code);
-  }
-}
-
-/**
- * 403 Forbidden
- */
-export class ForbiddenError extends AppError {
-  constructor(message: string = 'Forbidden', code: string = 'FORBIDDEN') {
-    super(message, 403, code);
-  }
-}
-
-/**
- * 404 Not Found
- */
-export class NotFoundError extends AppError {
-  constructor(message: string = 'Resource not found', code: string = 'NOT_FOUND') {
-    super(message, 404, code);
-  }
-}
-
-/**
- * 409 Conflict
- */
-export class ConflictError extends AppError {
-  constructor(message: string = 'Resource conflict', code: string = 'CONFLICT') {
-    super(message, 409, code);
-  }
-}
-
-/**
- * 422 Unprocessable Entity
- */
 export class ValidationError extends AppError {
-  public readonly errors: Record<string, string[]>;
+  public readonly errors: Array<{ field: string; message: string }>;
 
-  constructor(
-    message: string = 'Validation failed',
-    errors: Record<string, string[]> = {},
-    code: string = 'VALIDATION_ERROR'
-  ) {
-    super(message, 422, code);
+  constructor(errors: Array<{ field: string; message: string }>) {
+    super('Validation failed', 400, 'VALIDATION_ERROR');
     this.errors = errors;
+    Object.setPrototypeOf(this, ValidationError.prototype);
   }
 }
 
-/**
- * 429 Too Many Requests
- */
-export class TooManyRequestsError extends AppError {
-  constructor(message: string = 'Too many requests', code: string = 'RATE_LIMIT_EXCEEDED') {
-    super(message, 429, code);
+export class AuthenticationError extends AppError {
+  constructor(message: string = 'Authentication failed') {
+    super(message, 401, 'AUTHENTICATION_ERROR');
+    Object.setPrototypeOf(this, AuthenticationError.prototype);
   }
 }
 
-/**
- * 500 Internal Server Error
- */
-export class InternalError extends AppError {
-  constructor(message: string = 'Internal server error', code: string = 'INTERNAL_ERROR') {
-    super(message, 500, code, false);
+export class AuthorizationError extends AppError {
+  constructor(message: string = 'Access denied') {
+    super(message, 403, 'AUTHORIZATION_ERROR');
+    Object.setPrototypeOf(this, AuthorizationError.prototype);
   }
 }
 
-/**
- * Database Error
- */
+export class NotFoundError extends AppError {
+  constructor(resource: string = 'Resource') {
+    super(`${resource} not found`, 404, 'NOT_FOUND');
+    Object.setPrototypeOf(this, NotFoundError.prototype);
+  }
+}
+
+export class ConflictError extends AppError {
+  constructor(message: string = 'Resource already exists') {
+    super(message, 409, 'CONFLICT');
+    Object.setPrototypeOf(this, ConflictError.prototype);
+  }
+}
+
 export class DatabaseError extends AppError {
-  constructor(message: string = 'Database operation failed', code: string = 'DATABASE_ERROR') {
-    super(message, 500, code);
+  constructor(message: string = 'Database operation failed') {
+    super(message, 500, 'DATABASE_ERROR');
+    Object.setPrototypeOf(this, DatabaseError.prototype);
   }
 }

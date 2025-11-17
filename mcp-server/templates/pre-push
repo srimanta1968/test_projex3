@@ -1,8 +1,14 @@
 #!/bin/bash
 
-# ProjexLight MCP Pre-Push Hook
+# ProjexLight MCP Pre-Push Hook (Cross-Platform)
+# ============================================
 # Triggers API testing and component duplication detection before git push
 # This hook is installed automatically by the MCP server on startup
+# Supports Windows (Git Bash/PowerShell), macOS, and Linux
+#
+# Exit codes:
+#   0 = Push allowed
+#   1 = Push blocked (server not running, build failed, etc.)
 
 set -e
 
@@ -17,10 +23,39 @@ NC='\033[0m' # No Color
 MCP_SERVER_URL="${MCP_SERVER_URL:-http://localhost:8766}"
 PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || echo ".")"
 
+# ============================================================
+# Detect Operating System
+# ============================================================
+detect_os() {
+    case "$(uname -s)" in
+        Linux*)
+            if grep -q Microsoft /proc/version 2>/dev/null; then
+                echo "wsl"
+            else
+                echo "linux"
+            fi
+            ;;
+        Darwin*)
+            echo "macos"
+            ;;
+        CYGWIN*|MINGW*|MSYS*)
+            echo "windows"
+            ;;
+        *)
+            echo "unknown"
+            ;;
+    esac
+}
+
+OS_TYPE=$(detect_os)
+
 echo -e "${BLUE}🚀 ProjexLight Pre-Push Hook${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "   OS Detected: ${GREEN}${OS_TYPE}${NC}"
 
-# Check if MCP server is running
+# ============================================================
+# STEP 1: Check if MCP server is running
+# ============================================================
 if ! curl -s "${MCP_SERVER_URL}/health" > /dev/null 2>&1; then
     echo -e "${YELLOW}⚠️  MCP server not running at ${MCP_SERVER_URL}${NC}"
     echo -e "${YELLOW}   Skipping API tests and component scanning${NC}"
@@ -30,7 +65,197 @@ fi
 
 echo -e "${GREEN}✓ MCP server is running${NC}"
 
-# Get changed files in this push (optimize scanning)
+# ============================================================
+# STEP 2: Load server configuration (if available)
+# ============================================================
+CONFIG_FILE="${PROJECT_ROOT}/.projexlight/scripts/server-config.json"
+
+# Select appropriate startup script based on OS
+if [ "$OS_TYPE" = "windows" ]; then
+    # Windows: prefer PowerShell script
+    STARTUP_SCRIPT="${PROJECT_ROOT}/.projexlight/scripts/start-server.ps1"
+    STARTUP_COMMAND="powershell.exe -ExecutionPolicy Bypass -File"
+    if [ ! -f "$STARTUP_SCRIPT" ]; then
+        STARTUP_SCRIPT="${PROJECT_ROOT}/.projexlight/scripts/start-server.bat"
+        STARTUP_COMMAND=""
+    fi
+else
+    # Unix/Linux/macOS: use bash script
+    STARTUP_SCRIPT="${PROJECT_ROOT}/.projexlight/scripts/start-server.sh"
+    STARTUP_COMMAND="bash"
+fi
+
+if [ -f "$CONFIG_FILE" ]; then
+    echo -e "\n${BLUE}📋 Loading project configuration...${NC}"
+    PROJECT_TYPE=$(jq -r '.project_type // "unknown"' "$CONFIG_FILE" 2>/dev/null || echo "unknown")
+    FRAMEWORK=$(jq -r '.framework // "unknown"' "$CONFIG_FILE" 2>/dev/null || echo "unknown")
+    SERVER_PORT=$(jq -r '.server_port // 3000' "$CONFIG_FILE" 2>/dev/null || echo "3000")
+    HEALTH_ENDPOINT=$(jq -r '.health_endpoint // "/health"' "$CONFIG_FILE" 2>/dev/null || echo "/health")
+
+    echo -e "   Project type: ${GREEN}${PROJECT_TYPE}${NC}"
+    echo -e "   Framework: ${GREEN}${FRAMEWORK}${NC}"
+    echo -e "   Server port: ${GREEN}${SERVER_PORT}${NC}"
+else
+    # Fallback to environment variables
+    SERVER_PORT="${BACKEND_PORT:-3000}"
+    HEALTH_ENDPOINT="/health"
+    PROJECT_TYPE="unknown"
+    FRAMEWORK="unknown"
+    echo -e "\n${YELLOW}⚠️  No project configuration found${NC}"
+    echo -e "${YELLOW}   Using default port: ${SERVER_PORT}${NC}"
+fi
+
+# Full health endpoint URL
+HEALTH_URL="http://localhost:${SERVER_PORT}${HEALTH_ENDPOINT}"
+
+# ============================================================
+# STEP 3: Check if local dev server is running
+# ============================================================
+echo -e "\n${BLUE}🌐 Checking local development server...${NC}"
+
+SERVER_RUNNING=false
+
+# Try health endpoint first
+if curl -s --max-time 5 "${HEALTH_URL}" > /dev/null 2>&1; then
+    SERVER_RUNNING=true
+    echo -e "${GREEN}✓ Server is running at ${HEALTH_URL}${NC}"
+# Try just the port
+elif curl -s --max-time 5 "http://localhost:${SERVER_PORT}" > /dev/null 2>&1; then
+    SERVER_RUNNING=true
+    echo -e "${GREEN}✓ Server is running on port ${SERVER_PORT}${NC}"
+fi
+
+# ============================================================
+# STEP 4: If server not running, BLOCK PUSH
+# ============================================================
+if [ "$SERVER_RUNNING" = false ]; then
+    echo -e "\n${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${RED}❌ PUSH BLOCKED: Local development server is not running${NC}"
+    echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+    echo -e "${YELLOW}API tests cannot be executed without a running server.${NC}"
+    echo -e "${YELLOW}Please start your development server before pushing.${NC}"
+    echo ""
+
+    # Check if startup script exists
+    if [ -f "$STARTUP_SCRIPT" ]; then
+        echo -e "${BLUE}📝 To start the server, run:${NC}"
+        if [ "$OS_TYPE" = "windows" ]; then
+            echo -e "   ${STARTUP_COMMAND} \"${STARTUP_SCRIPT}\""
+        else
+            echo -e "   ${STARTUP_SCRIPT}"
+        fi
+        echo ""
+        echo -e "${BLUE}This script will:${NC}"
+        echo -e "   1. Load environment variables from .env"
+        echo -e "   2. Install dependencies (if needed)"
+        echo -e "   3. Build/compile the project"
+        echo -e "   4. Start the development server"
+        echo -e "   5. Verify it's running with health check"
+        echo ""
+
+        # Offer to run the script
+        if [ "${PROJEXLIGHT_AUTO_START_SERVER:-false}" = "true" ]; then
+            echo -e "${BLUE}🚀 Auto-starting server...${NC}"
+
+            # Execute startup script based on OS
+            if [ "$OS_TYPE" = "windows" ]; then
+                if [ -n "$STARTUP_COMMAND" ]; then
+                    $STARTUP_COMMAND "$STARTUP_SCRIPT"
+                    STARTUP_RESULT=$?
+                else
+                    "$STARTUP_SCRIPT"
+                    STARTUP_RESULT=$?
+                fi
+            else
+                "$STARTUP_SCRIPT"
+                STARTUP_RESULT=$?
+            fi
+
+            if [ $STARTUP_RESULT -eq 0 ]; then
+                SERVER_RUNNING=true
+                echo -e "${GREEN}✓ Server started successfully${NC}"
+            else
+                EXIT_CODE=$STARTUP_RESULT
+                echo -e "${RED}❌ Server startup failed (exit code: $EXIT_CODE)${NC}"
+
+                case $EXIT_CODE in
+                    1)
+                        echo -e "${RED}   Problem: Dependency installation failed${NC}"
+                        echo -e "${YELLOW}   Fix: Check npm/pip/composer dependencies${NC}"
+                        ;;
+                    2)
+                        echo -e "${RED}   Problem: Build/compilation failed${NC}"
+                        echo -e "${YELLOW}   Fix: Resolve syntax/type errors before pushing${NC}"
+                        ;;
+                    3)
+                        echo -e "${RED}   Problem: Server failed to start${NC}"
+                        echo -e "${YELLOW}   Fix: Check configuration and environment variables${NC}"
+                        ;;
+                    4)
+                        echo -e "${RED}   Problem: Health check failed${NC}"
+                        echo -e "${YELLOW}   Fix: Server started but not responding correctly${NC}"
+                        ;;
+                esac
+
+                echo ""
+                echo -e "${YELLOW}Check logs: ${PROJECT_ROOT}/.projexlight/logs/server-startup.log${NC}"
+                exit 1
+            fi
+        else
+            echo -e "${YELLOW}To enable auto-start: export PROJEXLIGHT_AUTO_START_SERVER=true${NC}"
+            echo ""
+        fi
+    else
+        # No startup script, provide manual instructions
+        echo -e "${BLUE}📝 Please start your server manually:${NC}"
+
+        case "$PROJECT_TYPE" in
+            node|monorepo)
+                echo -e "   ${YELLOW}npm run dev${NC}  or  ${YELLOW}npm start${NC}"
+                ;;
+            python)
+                case "$FRAMEWORK" in
+                    FastAPI)
+                        echo -e "   ${YELLOW}uvicorn main:app --reload${NC}"
+                        ;;
+                    Flask)
+                        echo -e "   ${YELLOW}flask run${NC}"
+                        ;;
+                    Django)
+                        echo -e "   ${YELLOW}python manage.py runserver${NC}"
+                        ;;
+                    *)
+                        echo -e "   ${YELLOW}python main.py${NC}  or  ${YELLOW}python app.py${NC}"
+                        ;;
+                esac
+                ;;
+            java)
+                echo -e "   ${YELLOW}mvn spring-boot:run${NC}  or  ${YELLOW}gradle bootRun${NC}"
+                ;;
+            go)
+                echo -e "   ${YELLOW}go run main.go${NC}"
+                ;;
+            *)
+                echo -e "   ${YELLOW}Start your development server on port ${SERVER_PORT}${NC}"
+                ;;
+        esac
+
+        echo ""
+    fi
+
+    # Final check if server was auto-started
+    if [ "$SERVER_RUNNING" = false ]; then
+        echo -e "${RED}Push blocked until server is running.${NC}"
+        echo ""
+        echo -e "${YELLOW}To bypass (NOT RECOMMENDED): git push --no-verify${NC}"
+        exit 1
+    fi
+fi
+
+# ============================================================
+# STEP 5: Get changed files
+# ============================================================
 echo -e "\n${BLUE}📋 Identifying changed files...${NC}"
 REMOTE_BRANCH=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || echo "origin/main")
 CHANGED_FILES=$(git diff --name-only ${REMOTE_BRANCH}..HEAD 2>/dev/null || echo "")
@@ -48,7 +273,9 @@ echo -e "${GREEN}✓ Found ${FILE_COUNT} changed files${NC}"
 # Convert to JSON array
 CHANGED_FILES_JSON=$(echo "$CHANGED_FILES" | jq -R -s -c 'split("\n") | map(select(length > 0))')
 
-# Trigger API testing (OPTIMIZED - only scans changed files)
+# ============================================================
+# STEP 6: Run API tests
+# ============================================================
 echo -e "\n${BLUE}🧪 Running API tests on changed files...${NC}"
 
 API_TEST_RESULT=$(curl -s -X POST "${MCP_SERVER_URL}/api/test" \
@@ -56,15 +283,19 @@ API_TEST_RESULT=$(curl -s -X POST "${MCP_SERVER_URL}/api/test" \
     -d "{
         \"project_root\": \"${PROJECT_ROOT}\",
         \"triggered_by\": \"git_push\",
-        \"changed_files\": ${CHANGED_FILES_JSON}
+        \"changed_files\": ${CHANGED_FILES_JSON},
+        \"local_server_running\": true,
+        \"local_server_port\": ${SERVER_PORT},
+        \"project_type\": \"${PROJECT_TYPE}\"
     }" 2>&1)
 
-if [ $? -eq 0 ]; then
+if [ $? -eq 0 ] && [ -n "$API_TEST_RESULT" ]; then
     # Parse test results
     TOTAL_APIS=$(echo "$API_TEST_RESULT" | jq -r '.summary.totalAPIs // 0' 2>/dev/null || echo "0")
     PASSED=$(echo "$API_TEST_RESULT" | jq -r '.summary.passedAPIs // 0' 2>/dev/null || echo "0")
     FAILED=$(echo "$API_TEST_RESULT" | jq -r '.summary.failedAPIs // 0' 2>/dev/null || echo "0")
     DUPLICATES=$(echo "$API_TEST_RESULT" | jq -r '.summary.duplicateAPIs // 0' 2>/dev/null || echo "0")
+    SKIPPED=$(echo "$API_TEST_RESULT" | jq -r '.summary.skippedAPIs // 0' 2>/dev/null || echo "0")
 
     echo -e "${GREEN}✓ API Testing completed${NC}"
     echo -e "  Total APIs: ${TOTAL_APIS}"
@@ -72,26 +303,40 @@ if [ $? -eq 0 ]; then
 
     if [ "$FAILED" -gt 0 ]; then
         echo -e "  Failed: ${RED}${FAILED}${NC}"
+
+        # Show failed test details
+        FAILED_ENDPOINTS=$(echo "$API_TEST_RESULT" | jq -r '.failedTests[]? | "   - \(.method) \(.endpoint): \(.errorMessage)"' 2>/dev/null || echo "")
+        if [ -n "$FAILED_ENDPOINTS" ]; then
+            echo -e "${RED}  Failed tests:${NC}"
+            echo "$FAILED_ENDPOINTS"
+        fi
+    fi
+
+    if [ "$SKIPPED" -gt 0 ]; then
+        echo -e "  Skipped: ${YELLOW}${SKIPPED}${NC}"
     fi
 
     if [ "$DUPLICATES" -gt 0 ]; then
         echo -e "  ${YELLOW}⚠️  Duplicate APIs detected: ${DUPLICATES}${NC}"
     fi
 
-    # Optionally fail push if tests failed (disabled by default)
-    if [ "$FAILED" -gt 0 ] && [ "${PROJEXLIGHT_FAIL_ON_TEST_FAILURE:-false}" = "true" ]; then
+    # Optionally fail push if tests failed
+    if [ "$FAILED" -gt 0 ] && [ "${PROJEXLIGHT_FAIL_ON_TEST_FAILURE:-true}" = "true" ]; then
         echo -e "\n${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-        echo -e "${RED}❌ Push rejected: API tests failed${NC}"
+        echo -e "${RED}❌ Push blocked: ${FAILED} API test(s) failed${NC}"
         echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-        echo -e "\n${YELLOW}Fix the failing tests or disable with:${NC}"
-        echo -e "  export PROJEXLIGHT_FAIL_ON_TEST_FAILURE=false"
+        echo ""
+        echo -e "${YELLOW}Fix the failing tests before pushing.${NC}"
+        echo -e "${YELLOW}To bypass: export PROJEXLIGHT_FAIL_ON_TEST_FAILURE=false${NC}"
         exit 1
     fi
 else
-    echo -e "${YELLOW}⚠️  API testing failed or skipped${NC}"
+    echo -e "${YELLOW}⚠️  API testing returned no results${NC}"
 fi
 
-# Trigger component duplication scan (OPTIMIZED - only scans changed files)
+# ============================================================
+# STEP 7: Component duplication scan
+# ============================================================
 echo -e "\n${BLUE}🔍 Scanning for duplicate components in changed files...${NC}"
 
 COMPONENT_SCAN_RESULT=$(curl -s -X POST "${MCP_SERVER_URL}/api/components/scan" \
@@ -102,7 +347,7 @@ COMPONENT_SCAN_RESULT=$(curl -s -X POST "${MCP_SERVER_URL}/api/components/scan" 
         \"changed_files\": ${CHANGED_FILES_JSON}
     }" 2>&1)
 
-if [ $? -eq 0 ]; then
+if [ $? -eq 0 ] && [ -n "$COMPONENT_SCAN_RESULT" ]; then
     DUPLICATES_FOUND=$(echo "$COMPONENT_SCAN_RESULT" | jq -r '.summary.duplicateComponentsFound // 0' 2>/dev/null || echo "0")
 
     echo -e "${GREEN}✓ Component scan completed${NC}"
@@ -114,13 +359,16 @@ if [ $? -eq 0 ]; then
         echo -e "  No duplicate components detected"
     fi
 else
-    echo -e "${YELLOW}⚠️  Component scan failed or skipped${NC}"
+    echo -e "${YELLOW}⚠️  Component scan returned no results${NC}"
 fi
 
+# ============================================================
+# STEP 8: Summary
+# ============================================================
 echo -e "\n${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}✅ Pre-push checks completed${NC}"
+echo -e "${GREEN}✅ Pre-push checks completed successfully${NC}"
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${BLUE}📊 View detailed results in Leadership Dashboard${NC}"
-echo -e ""
+echo ""
 
 exit 0
