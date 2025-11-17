@@ -1,51 +1,75 @@
-import express, { Application } from 'express';
+import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import morgan from 'morgan';
 import { config } from './config/env';
-import authRoutes from './routes/authRoutes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
-import { logger } from './utils/logger';
+import { morganStream } from './utils/logger';
+import authRoutes from './routes/authRoutes';
 
-const app: Application = express();
+/**
+ * Create and configure Express application
+ */
+export const createApp = (): Application => {
+  const app = express();
 
-// Security middleware
-app.use(helmet());
+  // Security middleware
+  app.use(helmet());
 
-// CORS configuration
-app.use(cors({
-  origin: config.cors.origin,
-  credentials: true,
-}));
+  // CORS configuration
+  app.use(
+    cors({
+      origin: config.corsOrigin,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      credentials: true,
+    })
+  );
 
-// Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+  // Body parsing middleware
+  app.use(express.json({ limit: '10mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Request logging
-app.use((req, res, next) => {
-  logger.debug(`${req.method} ${req.path}`, {
-    query: req.query,
-    ip: req.ip,
+  // Request logging
+  if (config.nodeEnv !== 'test') {
+    app.use(
+      morgan('combined', {
+        stream: morganStream,
+        skip: (_req, res) => res.statusCode < 400,
+      })
+    );
+  }
+
+  // Health check endpoint
+  app.get('/health', (_req: Request, res: Response) => {
+    res.status(200).json({
+      success: true,
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      environment: config.nodeEnv,
+    });
   });
-  next();
-});
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
+  // Root endpoint
+  app.get('/', (_req: Request, res: Response) => {
+    res.status(200).json({
+      success: true,
+      message: 'Banking Portal API',
+      version: '1.0.0',
+      documentation: '/api/docs',
+    });
   });
-});
 
-// API routes
-app.use('/api/auth', authRoutes);
+  // API routes
+  app.use('/api/auth', authRoutes);
+  // app.use('/api/accounts', accountRoutes);
+  // app.use('/api/transactions', transactionRoutes);
 
-// 404 handler
-app.use(notFoundHandler);
+  // 404 handler
+  app.use(notFoundHandler);
 
-// Error handler
-app.use(errorHandler);
+  // Global error handler
+  app.use(errorHandler);
 
-export default app;
+  return app;
+};

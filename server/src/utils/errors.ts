@@ -1,42 +1,111 @@
+/**
+ * Base application error class
+ */
 export class AppError extends Error {
   public readonly statusCode: number;
   public readonly isOperational: boolean;
+  public readonly code: string;
 
-  constructor(message: string, statusCode: number = 500, isOperational: boolean = true) {
+  constructor(
+    message: string,
+    statusCode: number = 500,
+    code: string = 'INTERNAL_ERROR',
+    isOperational: boolean = true
+  ) {
     super(message);
     this.statusCode = statusCode;
+    this.code = code;
     this.isOperational = isOperational;
-    Object.setPrototypeOf(this, AppError.prototype);
-    Error.captureStackTrace(this, this.constructor);
+
+    Object.setPrototypeOf(this, new.target.prototype);
+    Error.captureStackTrace(this);
   }
 }
 
-export class ValidationError extends AppError {
-  constructor(message: string) {
-    super(message, 400);
+/**
+ * 400 Bad Request
+ */
+export class BadRequestError extends AppError {
+  constructor(message: string = 'Bad Request', code: string = 'BAD_REQUEST') {
+    super(message, 400, code);
   }
 }
 
-export class AuthenticationError extends AppError {
-  constructor(message: string = 'Authentication failed') {
-    super(message, 401);
+/**
+ * 401 Unauthorized
+ */
+export class UnauthorizedError extends AppError {
+  constructor(message: string = 'Unauthorized', code: string = 'UNAUTHORIZED') {
+    super(message, 401, code);
   }
 }
 
-export class AuthorizationError extends AppError {
-  constructor(message: string = 'Not authorized') {
-    super(message, 403);
+/**
+ * 403 Forbidden
+ */
+export class ForbiddenError extends AppError {
+  constructor(message: string = 'Forbidden', code: string = 'FORBIDDEN') {
+    super(message, 403, code);
   }
 }
 
+/**
+ * 404 Not Found
+ */
 export class NotFoundError extends AppError {
-  constructor(resource: string = 'Resource') {
-    super(`${resource} not found`, 404);
+  constructor(message: string = 'Resource not found', code: string = 'NOT_FOUND') {
+    super(message, 404, code);
   }
 }
 
+/**
+ * 409 Conflict
+ */
 export class ConflictError extends AppError {
-  constructor(message: string) {
-    super(message, 409);
+  constructor(message: string = 'Resource conflict', code: string = 'CONFLICT') {
+    super(message, 409, code);
+  }
+}
+
+/**
+ * 422 Unprocessable Entity
+ */
+export class ValidationError extends AppError {
+  public readonly errors: Record<string, string[]>;
+
+  constructor(
+    message: string = 'Validation failed',
+    errors: Record<string, string[]> = {},
+    code: string = 'VALIDATION_ERROR'
+  ) {
+    super(message, 422, code);
+    this.errors = errors;
+  }
+}
+
+/**
+ * 429 Too Many Requests
+ */
+export class TooManyRequestsError extends AppError {
+  constructor(message: string = 'Too many requests', code: string = 'RATE_LIMIT_EXCEEDED') {
+    super(message, 429, code);
+  }
+}
+
+/**
+ * 500 Internal Server Error
+ */
+export class InternalError extends AppError {
+  constructor(message: string = 'Internal server error', code: string = 'INTERNAL_ERROR') {
+    super(message, 500, code, false);
+  }
+}
+
+/**
+ * Database Error
+ */
+export class DatabaseError extends AppError {
+  constructor(message: string = 'Database operation failed', code: string = 'DATABASE_ERROR') {
+    super(message, 500, code);
   }
 }
