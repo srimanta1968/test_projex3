@@ -73,3 +73,21 @@ router.post('/logout', authenticate, async (req: Request, res: Response, next: N
   }
 });
 
+
+/**
+ * PUT /api/auth/change-password
+ * Change user password
+ */
+router.put('/change-password', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.userId;
+    await authService.changePassword(userId, req.body.currentPassword, req.body.newPassword);
+    res.status(200).json({
+      status: 'success',
+      message: 'Password changed successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
