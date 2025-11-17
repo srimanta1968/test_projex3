@@ -1,79 +1,66 @@
 import { Request, Response, NextFunction } from 'express';
-import { AppError, ValidationError } from '../utils/errors';
+import { AppError } from '../utils/errors';
 import logger from '../utils/logger';
-import { env } from '../config/env';
+import { ZodError } from 'zod';
 
-interface ErrorResponse {
-  success: false;
-  error: {
-    message: string;
-    code?: string;
-    errors?: Array<{ field: string; message: string }>;
-    stack?: string;
-  };
+/**
+ * Global error handler middleware
+ */
+export function errorHandler(
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  // Log error
+  logger.error('Error occurred', {
+    error: err.message,
+    stack: err.stack,
+    path: req.path,
+    method: req.method,
+  });
+
+  // Handle Zod validation errors
+  if (err instanceof ZodError) {
+    res.status(422).json({
+      status: 'error',
+      message: 'Validation failed',
+      errors: err.errors.map(e => ({
+        field: e.path.join('.'),
+        message: e.message,
+      })),
+    });
+    return;
+  }
+
+  // Handle application errors
+  if (err instanceof AppError) {
+    res.status(err.statusCode).json({
+      status: 'error',
+      message: err.message,
+    });
+    return;
+  }
+
+  // Handle unknown errors
+  res.status(500).json({
+    status: 'error',
+    message: process.env.NODE_ENV === 'production'
+      ? 'Internal server error'
+      : err.message,
+  });
 }
 
-export const errorHandler = (
-  err: Error,
-  _req: Request,
+/**
+ * Handle 404 errors
+ */
+export function notFoundHandler(
+  req: Request,
   res: Response,
-  _next: NextFunction
-): void => {
-  logger.error('Error occurred:', {
-    message: err.message,
-    stack: err.stack,
-    name: err.name,
-  });
-
-  const response: ErrorResponse = {
-    success: false,
-    error: {
-      message: 'Internal server error',
-    },
-  };
-
-  let statusCode = 500;
-
-  if (err instanceof ValidationError) {
-    statusCode = err.statusCode;
-    response.error.message = err.message;
-    response.error.code = err.code;
-    response.error.errors = err.errors;
-  } else if (err instanceof AppError) {
-    statusCode = err.statusCode;
-    response.error.message = err.message;
-    response.error.code = err.code;
-  } else if (err.name === 'JsonWebTokenError') {
-    statusCode = 401;
-    response.error.message = 'Invalid token';
-    response.error.code = 'INVALID_TOKEN';
-  } else if (err.name === 'TokenExpiredError') {
-    statusCode = 401;
-    response.error.message = 'Token expired';
-    response.error.code = 'TOKEN_EXPIRED';
-  }
-
-  if (env.isDevelopment) {
-    response.error.stack = err.stack;
-  }
-
-  res.status(statusCode).json(response);
-};
-
-export const notFoundHandler = (req: Request, res: Response): void => {
+  next: NextFunction
+): void {
   res.status(404).json({
-    success: false,
-    error: {
-      message: `Route ${req.originalUrl} not found`,
-      code: 'ROUTE_NOT_FOUND',
-    },
+    status: 'error',
+    message: `Route ${req.method} ${req.path} not found`,
   });
-};
-
-export const asyncHandler = (
-  fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>
-) => {
-  return (req: Request, res: Response, next: NextFunction): void => {
-    Promise.resolve(fn(req, res, next)).catch(next);
-  };
-};
+}

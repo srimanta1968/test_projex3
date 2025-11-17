@@ -5,40 +5,36 @@ node_modules/
 # Build outputs
 dist/
 build/
-*.js.map
+*/dist/
+*/build/
 
-# Environment files
+# Environment variables
 .env
 .env.local
 .env.*.local
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
 
 # Logs
 logs/
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Test coverage
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
 coverage/
-*.lcov
+.nyc_output/
 
-# Temporary files
-*.tmp
-*.temp
+# Misc
+*.tsbuildinfo
 .cache/
-
-# ProjexLight specific
-.projexlight/feedback/logs/
-mcp-server/feedback/logs
-
-# MCP Server local cache (developer-specific, do not commit)
-.mcp-cache/

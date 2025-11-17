@@ -1,64 +1,58 @@
 import http from 'http';
-import app from './app';
-import { env } from './config/env';
+import { createApp } from './app';
+import { env, validateEnv } from './config/env';
+import { testConnection, closePool } from './config/database';
+import { WebSocketManager } from './websocket/websocketServer';
 import logger from './utils/logger';
 
-const server = http.createServer(app);
-
-const startServer = async (): Promise<void> => {
+/**
+ * Start the server
+ */
+async function start(): Promise<void> {
   try {
-    logger.info('Starting Banking Portal Server...');
-    logger.info(`Environment: ${env.NODE_ENV}`);
+    // Validate environment
+    validateEnv();
 
-    // Start HTTP server
-    server.listen(env.PORT, () => {
-      logger.info(`Server is running on http://localhost:${env.PORT}`);
-      logger.info('Available endpoints:');
-      logger.info(`  - Health check: http://localhost:${env.PORT}/health`);
-      logger.info(`  - API root: http://localhost:${env.PORT}/`);
-    });
+    // Test database connection
+    const dbConnected = await testConnection();
+    if (!dbConnected) {
+      throw new Error('Database connection failed');
+    }
 
-    // Handle unhandled promise rejections
-    process.on('unhandledRejection', (reason: Error) => {
-      logger.error('Unhandled Rejection:', { error: reason.message, stack: reason.stack });
-      // In production, you might want to exit and let a process manager restart the app
-      if (env.isProduction) {
-        process.exit(1);
-      }
-    });
+    // Create Express app
+    const app = createApp();
 
-    // Handle uncaught exceptions
-    process.on('uncaughtException', (error: Error) => {
-      logger.error('Uncaught Exception:', { error: error.message, stack: error.stack });
-      // Gracefully shutdown
-      server.close(() => {
-        process.exit(1);
+    // Create HTTP server
+    const server = http.createServer(app);
+
+    // Initialize WebSocket
+    const wsManager = new WebSocketManager(server);
+
+    // Make WebSocket manager available globally
+    (global as any).wsManager = wsManager;
+
+    // Start server
+    server.listen(env.port, () => {
+      logger.info(`Server started`, {
+        port: env.port,
+        environment: env.nodeEnv,
       });
+      logger.info(`HTTP server: http://localhost:${env.port}`);
+      logger.info(`WebSocket server: ws://localhost:${env.port}/ws`);
     });
 
     // Graceful shutdown
-    const shutdown = (signal: string): void => {
-      logger.info(`${signal} received. Starting graceful shutdown...`);
-      server.close(() => {
-        logger.info('HTTP server closed');
+    process.on('SIGTERM', async () => {
+      logger.info('SIGTERM received, shutting down gracefully');
+      server.close(async () => {
+        await closePool();
         process.exit(0);
       });
-
-      // Force shutdown after 10 seconds
-      setTimeout(() => {
-        logger.error('Could not close connections in time, forcefully shutting down');
-        process.exit(1);
-      }, 10000);
-    };
-
-    process.on('SIGTERM', () => shutdown('SIGTERM'));
-    process.on('SIGINT', () => shutdown('SIGINT'));
+    });
   } catch (error) {
-    logger.error('Failed to start server:', { error });
+    logger.error('Server startup error', { error });
     process.exit(1);
   }
-};
+}
 
-startServer();
-
-export default server;
+start();

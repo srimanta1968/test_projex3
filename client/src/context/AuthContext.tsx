@@ -1,86 +1,65 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, RegisterData, LoginData } from '../services/api';
-import authService from '../services/authService';
+import { User } from '../types';
+import { authService } from '../services/authService';
 
 interface AuthContextType {
   user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: (data: LoginData) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
-  logout: () => Promise<void>;
-  updateUser: (user: User) => void;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  register: (data: any) => Promise<void>;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored user on mount
-    const storedUser = authService.getStoredUser();
-    if (storedUser && authService.isAuthenticated()) {
-      setUser(storedUser);
-      // Optionally refresh user data from server
-      authService
-        .getCurrentUser()
-        .then(setUser)
-        .catch(() => {
-          // Token might be expired
+    // Check if user is authenticated on mount
+    const initAuth = async () => {
+      if (authService.isAuthenticated()) {
+        try {
+          const currentUser = await authService.getCurrentUser();
+          setUser(currentUser);
+        } catch (error) {
+          console.error('Failed to get current user', error);
           authService.logout();
-          setUser(null);
-        })
-        .finally(() => setIsLoading(false));
-    } else {
-      setIsLoading(false);
-    }
+        }
+      }
+      setLoading(false);
+    };
+
+    initAuth();
   }, []);
 
-  const login = async (data: LoginData): Promise<void> => {
-    const response = await authService.login(data);
+  const login = async (email: string, password: string) => {
+    const response = await authService.login({ email, password });
     setUser(response.user);
   };
 
-  const register = async (data: RegisterData): Promise<void> => {
+  const register = async (data: any) => {
     const response = await authService.register(data);
     setUser(response.user);
   };
 
-  const logout = async (): Promise<void> => {
-    await authService.logout();
+  const logout = () => {
+    authService.logout();
     setUser(null);
   };
 
-  const updateUser = (updatedUser: User): void => {
-    setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
-  };
+  return (
+    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
 
-  const value: AuthContextType = {
-    user,
-    isAuthenticated: !!user,
-    isLoading,
-    login,
-    register,
-    logout,
-    updateUser,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
-
-export const useAuth = (): AuthContextType => {
+export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
-
-export default AuthContext;
+}

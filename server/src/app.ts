@@ -1,79 +1,60 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Express } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import compression from 'compression';
-import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
 import { env } from './config/env';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
-import logger from './utils/logger';
 import authRoutes from './routes/authRoutes';
+import dashboardRoutes from './routes/dashboardRoutes';
+import logger from './utils/logger';
 
-const app: Application = express();
+/**
+ * Create and configure Express application
+ */
+export function createApp(): Express {
+  const app = express();
 
-// Security middleware
-app.use(helmet());
-
-// CORS configuration
-app.use(
-  cors({
-    origin: env.CORS_ORIGIN,
+  // Security middleware
+  app.use(helmet());
+  app.use(cors({
+    origin: env.cors.origin,
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-);
+  }));
 
-// Compression middleware
-app.use(compression());
+  // Rate limiting
+  const limiter = rateLimit({
+    windowMs: env.rateLimit.windowMs,
+    max: env.rateLimit.maxRequests,
+    message: 'Too many requests from this IP, please try again later',
+  });
+  app.use('/api/', limiter);
 
-// Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+  // Body parsing
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
 
-// Request logging
-if (env.isDevelopment) {
-  app.use(morgan('dev'));
-} else {
-  app.use(
-    morgan('combined', {
-      stream: {
-        write: (message: string) => logger.info(message.trim()),
-      },
-    })
-  );
+  // Request logging
+  app.use((req, res, next) => {
+    logger.debug('Incoming request', {
+      method: req.method,
+      path: req.path,
+      query: req.query,
+    });
+    next();
+  });
+
+  // Health check
+  app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
+
+  // API routes
+  app.use('/api/auth', authRoutes);
+  app.use('/api/dashboard', dashboardRoutes);
+
+  // Error handlers (must be last)
+  app.use(notFoundHandler);
+  app.use(errorHandler);
+
+  return app;
 }
-
-// Health check endpoint
-app.get('/health', (_req: Request, res: Response) => {
-  res.status(200).json({
-    success: true,
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: env.NODE_ENV,
-  });
-});
-
-// Root endpoint
-app.get('/', (_req: Request, res: Response) => {
-  res.status(200).json({
-    success: true,
-    message: 'Banking Portal API',
-    version: '1.0.0',
-    documentation: '/api/docs',
-  });
-});
-
-// API routes
-app.use('/api/auth', authRoutes);
-// app.use('/api/accounts', accountRoutes);
-// app.use('/api/transactions', transactionRoutes);
-// app.use('/api/dashboard', dashboardRoutes);
-
-// 404 handler
-app.use(notFoundHandler);
-
-// Error handler (must be last)
-app.use(errorHandler);
-
-export default app;
