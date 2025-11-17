@@ -3,11 +3,11 @@
   "sprint_name": "Sprint1",
   "project_id": "469248c6-e31b-499b-8699-a088702fba74",
   "project_name": "Banking Portal",
-  "overall_completion_percentage": 17,
+  "overall_completion_percentage": 0,
   "tasks_by_status": {
     "pending": 5,
     "in_progress": 0,
-    "completed": 1
+    "completed": 0
   },
   "epics_completion": [
     {
@@ -27,5 +27,5 @@
       "tasks_completed": 0
     }
   ],
-  "last_updated": "2025-11-17T04:41:59.320Z"
+  "last_updated": "2025-11-17T06:38:16.113Z"
 }
