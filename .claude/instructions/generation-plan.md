@@ -63,20 +63,86 @@ Your actionable-instructions.md must include:
 
 ### 📚 MANDATORY FIRST ACTION: Read ALL Context Files
 
-**BEFORE doing ANYTHING else, use Claude's file reading to read ALL files in the `.claude/` folder:**
+**BEFORE doing ANYTHING else, use Claude's file reading to read ALL files in the `.claude/` and `.projexlight/` folders:**
 
 Required files to read:
-1. **`.claude/context/requirements.md`** - Complete feature requirements
-2. **`.claude/context/sprint-context.json`** - Machine-readable context (entities, relationships)
-3. **`.claude/schemas/user-defined-schemas.sql`** - Database schema definitions (if exists)
+1. **`.projexlight/context/requirements.md`** - Complete feature requirements
+2. **`.projexlight/context/sprint-context.json`** - Machine-readable context (entities, relationships)
+3. **🚨 CRITICAL: `.projexlight/schemas/user-defined-schemas.sql`** - **EXISTING DATABASE SCHEMAS - YOU MUST USE THESE!**
 4. **`.claude/config/claude-config.json`** - Configuration settings
-5. **ANY other files** in `.claude/` folder - Read them all
+5. **ANY other files** in `.claude/` or `.projexlight/` folders - Read them all
 
 **Why this matters:**
 - requirements.md tells you WHAT to build
 - sprint-context.json provides structured data about entities
-- user-defined-schemas.sql shows database tables if any
+- **⚠️ user-defined-schemas.sql contains EXISTING TABLE DEFINITIONS - DO NOT RECREATE THESE TABLES!**
 - Other files may contain critical context
+
+**Action:** Use Claude's Read tool to read all these files NOW before proceeding to analysis.
+
+---
+
+### 🚨 CRITICAL: DATABASE SCHEMA RULES (MANDATORY)
+
+**⚠️ THIS IS THE MOST IMPORTANT RULE FOR DATABASE OPERATIONS:**
+
+1. **ALWAYS CHECK FIRST:** `.projexlight/schemas/user-defined-schemas.sql`
+   - This file contains the user's predefined database tables
+   - These tables are the **SOURCE OF TRUTH**
+
+2. **DO NOT CREATE NEW MIGRATION FILES FOR EXISTING TABLES:**
+   - ❌ **WRONG:** Creating `server/src/migrations/001_create_users_table.sql`
+   - ❌ **WRONG:** Creating any migration that duplicates existing schema
+   - ✅ **CORRECT:** Copy `.projexlight/schemas/user-defined-schemas.sql` to `init-scripts/01-schema.sql`
+
+3. **SCHEMA PLACEMENT RULE:**
+   ```bash
+   # Source (user-defined, DO NOT MODIFY)
+   .projexlight/schemas/user-defined-schemas.sql
+
+   # Destination (for Docker initialization)
+   init-scripts/01-schema.sql
+
+   # Action: COPY the schema, don't recreate it!
+   ```
+
+4. **WHEN TO CREATE MIGRATIONS:**
+   - ✅ **ONLY** when adding NEW columns to existing tables
+   - ✅ **ONLY** when creating NEW tables that DON'T exist in the schema
+   - ✅ **ONLY** when modifying constraints or indexes
+   - ❌ **NEVER** recreate tables that already exist in user-defined-schemas.sql
+
+5. **MIGRATION FILE NAMING:**
+   - Schema initialization: `init-scripts/01-schema.sql` (copy from .projexlight/schemas/)
+   - Schema updates: `server/migrations/002_add_new_column.sql` (only for changes)
+   - **NEVER** create `001_create_X_table.sql` if table exists in schemas!
+
+**Example - CORRECT Workflow:**
+```markdown
+1. Read `.projexlight/schemas/user-defined-schemas.sql`
+   → Found: "user" table with 20+ columns already defined
+
+2. Create `init-scripts/01-schema.sql`
+   → Copy EXACT content from user-defined-schemas.sql
+
+3. Update `docker-compose.yml`
+   → Mount init-scripts/ to /docker-entrypoint-initdb.d/
+
+4. Result: Tables are created from user's schema, NOT from new migrations
+```
+
+**Example - WRONG Workflow (DO NOT DO THIS):**
+```markdown
+❌ Create server/migrations/001_create_users_table.sql with new table definition
+❌ Define "users" table (even though "user" table exists in schemas)
+❌ Miss important fields that user already defined
+```
+
+**WHY THIS MATTERS:**
+- User has spent time designing their schema with specific fields
+- Creating new migrations ignores their design work
+- Causes schema drift and inconsistencies
+- Breaks the principle of "reuse first, create only if missing"
 
 **Action:** Use Claude's Read tool to read all these files NOW before proceeding to analysis.
 
@@ -112,10 +178,17 @@ This project uses **SEPARATE** `server/` and `client/` folders:
    - **FRONTEND:** Create `client/src/` directory (if UI selected)
    - Create `client/src/components/`, `client/src/pages/`, `client/src/hooks/`, `client/src/context/`, `client/src/services/`
    - **TESTS:** Create `tests/` directory (if tests selected)
+   - **INIT SCRIPTS:** Create `init-scripts/` directory for database initialization
 2. **Configuration Files** - Create package.json, tsconfig.json, .env.example, etc.
-3. **Database Setup** - Create connection config file, pool setup, migration system
+3. **🚨 Database Setup - CHECK EXISTING SCHEMAS FIRST!**
+   - **STEP 1:** Read `.projexlight/schemas/user-defined-schemas.sql`
+   - **STEP 2:** If schemas exist → Copy to `init-scripts/01-schema.sql` (DO NOT recreate!)
+   - **STEP 3:** If NO schemas exist → Create `init-scripts/01-schema.sql` from scratch
+   - **STEP 4:** Create connection config file (`server/src/config/database.ts`)
+   - **STEP 5:** Create Docker PostgreSQL setup in `docker-compose.yml`
+   - **NEVER create migrations like `001_create_users_table.sql` if table exists in schemas!**
 4. **Server Entry Point** - Create app.ts/server.ts with middleware setup
-5. **Base Models** - Create common types, base interfaces, DTOs
+5. **Base Models** - Create TypeScript interfaces MATCHING the user-defined-schemas.sql tables
 6. **Error Handling** - Create error classes, error middleware
 7. **Validation** - Create validation utilities (Zod, Joi, class-validator)
 8. **Logging** - Create logger setup (Winston, Pino, etc.)
@@ -159,17 +232,21 @@ You MUST **REUSE existing code** before creating anything new:
 
 **🚨 MANDATORY REUSE CHECKS (In This Order):**
 
-1. **Database Tables - Check FIRST:**
-   - Examine existing database schema files (`migrations/`, `schema.sql`, etc.)
+1. **Database Tables - CHECK SCHEMAS FIRST! (CRITICAL):**
+   - **FIRST:** Read `.projexlight/schemas/user-defined-schemas.sql` - this is the SOURCE OF TRUTH!
+   - **SECOND:** Check `init-scripts/` for existing schema files
+   - **THIRD:** Check `migrations/` only for incremental changes
    - Look for existing tables that match your needs
    - **REUSE existing tables** by adding columns instead of creating new tables
-   - Only create new tables if absolutely necessary
-   - **Example:** If you need "user_profiles" and "users" table exists → ADD columns to "users" instead
+   - Only create new tables if absolutely necessary AND not in schemas
+   - **Example:** If you need "user_profiles" and "user" table exists in schemas → ADD columns to "user" instead
+   - **⚠️ NEVER create `001_create_X_table.sql` if table exists in `.projexlight/schemas/`!**
 
 2. **Models/Types - Check SECOND:**
    - Scan `server/src/models/` for existing interfaces and types
    - **IMPORT and REUSE** existing types instead of duplicating
    - Extend existing interfaces if you need additional fields
+   - **Match TypeScript interfaces to tables in `.projexlight/schemas/`**
    - **Example:** `interface UserProfile extends User { ... }`
 
 3. **Services - Check THIRD:**
@@ -601,14 +678,28 @@ new_string:
 
 ### 1. Backend API Development
 
+**🚨 BEFORE creating any database code:**
+1. **READ FIRST:** `.projexlight/schemas/user-defined-schemas.sql`
+2. **COPY TO:** `init-scripts/01-schema.sql` (if not already done)
+3. **DO NOT CREATE:** Migration files for tables that exist in schemas!
+
 Create the following:
 
-1. Database models using postgresql
+1. **Database models** - TypeScript interfaces that MATCH `.projexlight/schemas/user-defined-schemas.sql`
+   - **Example:** If schema has `CREATE TABLE "user"` → Create `interface User { ... }` with SAME fields
+   - **DO NOT rename tables** (e.g., don't create "users" if schema has "user")
 2. Service layer with business logic
 3. RESTful API endpoints
 4. Request validation and error handling
 
 Use express with typescript.
+
+**Schema Compliance Checklist:**
+- [ ] Read `.projexlight/schemas/user-defined-schemas.sql`
+- [ ] Copy schema to `init-scripts/01-schema.sql`
+- [ ] TypeScript interfaces match SQL table columns exactly
+- [ ] Service methods use table names from schema (e.g., `"user"` not `"users"`)
+- [ ] NO migration files created for existing tables
 
 ### 2. Frontend UI Development
 

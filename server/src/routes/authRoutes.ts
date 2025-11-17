@@ -1,76 +1,114 @@
-import { Router, Request, Response, NextFunction } from 'express';
-import { z } from 'zod';
+import { Router, Response } from 'express';
+import { body } from 'express-validator';
 import { authService } from '../services/AuthService';
-import { validateBody } from '../middleware/validation';
-import { authMiddleware, AuthenticatedRequest } from '../middleware/authMiddleware';
-import { toUserDTO } from '../models/User';
+import { validate } from '../middleware/validation';
+import { authenticate, AuthenticatedRequest } from '../middleware/authMiddleware';
+import { asyncHandler } from '../middleware/errorHandler';
 
 const router = Router();
 
-// Validation schemas
-const registerSchema = z.object({
-  email: z.string().email('Invalid email format'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  name: z.string().min(1, 'Name is required'),
-});
-
-const loginSchema = z.object({
-  email: z.string().email('Invalid email format'),
-  password: z.string().min(1, 'Password is required'),
-});
-
 /**
- * POST /api/auth/register
- * Register a new user
+ * @route   POST /api/auth/register
+ * @desc    Register a new user
+ * @access  Public
  */
 router.post(
   '/register',
-  validateBody(registerSchema),
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const result = await authService.register(req.body);
-      res.status(201).json(result);
-    } catch (error) {
-      next(error);
-    }
-  }
+  validate([
+    body('email')
+      .isEmail()
+      .withMessage('Please provide a valid email')
+      .normalizeEmail(),
+    body('password')
+      .isLength({ min: 8 })
+      .withMessage('Password must be at least 8 characters long'),
+    body('name')
+      .trim()
+      .isLength({ min: 2, max: 100 })
+      .withMessage('Name must be between 2 and 100 characters'),
+  ]),
+  asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const { email, password, name } = req.body;
+    const result = await authService.register({ email, password, name });
+
+    res.status(201).json({
+      success: true,
+      message: 'User registered successfully',
+      data: result,
+    });
+  })
 );
 
 /**
- * POST /api/auth/login
- * Authenticate user
+ * @route   POST /api/auth/login
+ * @desc    Authenticate user and get token
+ * @access  Public
  */
 router.post(
   '/login',
-  validateBody(loginSchema),
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const result = await authService.login(req.body);
-      res.status(200).json(result);
-    } catch (error) {
-      next(error);
-    }
-  }
+  validate([
+    body('email')
+      .isEmail()
+      .withMessage('Please provide a valid email')
+      .normalizeEmail(),
+    body('password').notEmpty().withMessage('Password is required'),
+  ]),
+  asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const { email, password } = req.body;
+    const result = await authService.login({ email, password });
+
+    res.status(200).json({
+      success: true,
+      message: 'Login successful',
+      data: result,
+    });
+  })
 );
 
 /**
- * GET /api/auth/me
- * Get current authenticated user
+ * @route   GET /api/auth/me
+ * @desc    Get current user profile
+ * @access  Private
  */
 router.get(
   '/me',
-  authMiddleware,
-  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      if (!req.user) {
-        throw new Error('User not found in request');
-      }
-      const user = await authService.getUserById(req.user.id);
-      res.status(200).json({ user: toUserDTO(user) });
-    } catch (error) {
-      next(error);
-    }
-  }
+  authenticate,
+  asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const userId = req.user!.id;
+    const user = await authService.getProfile(userId);
+
+    res.status(200).json({
+      success: true,
+      data: { user },
+    });
+  })
+);
+
+/**
+ * @route   PUT /api/auth/password
+ * @desc    Update user password
+ * @access  Private
+ */
+router.put(
+  '/password',
+  authenticate,
+  validate([
+    body('currentPassword').notEmpty().withMessage('Current password is required'),
+    body('newPassword')
+      .isLength({ min: 8 })
+      .withMessage('New password must be at least 8 characters long'),
+  ]),
+  asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const userId = req.user!.id;
+    const { currentPassword, newPassword } = req.body;
+
+    await authService.updatePassword(userId, currentPassword, newPassword);
+
+    res.status(200).json({
+      success: true,
+      message: 'Password updated successfully',
+    });
+  })
 );
 
 export default router;

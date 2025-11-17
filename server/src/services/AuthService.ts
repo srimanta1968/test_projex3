@@ -1,10 +1,13 @@
-import { pool } from '../config/database';
+import { query } from '../config/database';
 import { User, CreateUserInput, LoginInput, AuthResponse, toUserDTO } from '../models/User';
-import { hashPassword, comparePassword } from '../utils/password';
+import { hashPassword, comparePassword, validatePasswordStrength } from '../utils/password';
 import { generateToken } from '../utils/jwt';
-import { ValidationError, AuthenticationError, ConflictError, NotFoundError } from '../utils/errors';
+import { BadRequestError, ConflictError, UnauthorizedError, NotFoundError } from '../utils/errors';
 import { logger } from '../utils/logger';
 
+/**
+ * Authentication service for user management
+ */
 export class AuthService {
   /**
    * Register a new user
@@ -14,36 +17,34 @@ export class AuthService {
   async register(input: CreateUserInput): Promise<AuthResponse> {
     const { email, password, name } = input;
 
-    // Validate input
-    if (!email || !password || !name) {
-      throw new ValidationError('Email, password, and name are required');
-    }
-
-    if (password.length < 8) {
-      throw new ValidationError('Password must be at least 8 characters');
+    // Validate password strength
+    const passwordValidation = validatePasswordStrength(password);
+    if (!passwordValidation.isValid) {
+      throw new BadRequestError(passwordValidation.message);
     }
 
     // Check if email already exists
-    const existingUser = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
-    if (existingUser.rows.length > 0) {
+    const existingUser = await this.findByEmail(email);
+    if (existingUser) {
       throw new ConflictError('Email already registered');
     }
 
     // Hash password
     const passwordHash = await hashPassword(password);
 
-    // Insert user
-    const result = await pool.query<User>(
-      `INSERT INTO users (email, password_hash, name, created_at, updated_at)
-       VALUES ($1, $2, $3, NOW(), NOW())
-       RETURNING id, email, password_hash, name, created_at, updated_at`,
-      [email, passwordHash, name]
+    // Insert user into database
+    const result = await query<User>(
+      `INSERT INTO users (email, password_hash, name)
+       VALUES ($1, $2, $3)
+       RETURNING *`,
+      [email.toLowerCase().trim(), passwordHash, name.trim()]
     );
 
     const user = result.rows[0];
-    const token = generateToken(user.id, user.email);
-
     logger.info('User registered successfully', { userId: user.id, email: user.email });
+
+    // Generate token
+    const token = generateToken(user.id, user.email);
 
     return {
       user: toUserDTO(user),
@@ -59,54 +60,115 @@ export class AuthService {
   async login(input: LoginInput): Promise<AuthResponse> {
     const { email, password } = input;
 
-    if (!email || !password) {
-      throw new ValidationError('Email and password are required');
-    }
-
     // Find user by email
-    const result = await pool.query<User>(
-      'SELECT id, email, password_hash, name, created_at, updated_at FROM users WHERE email = $1',
-      [email]
-    );
-
-    if (result.rows.length === 0) {
-      throw new AuthenticationError('Invalid email or password');
+    const user = await this.findByEmail(email);
+    if (!user) {
+      throw new UnauthorizedError('Invalid email or password');
     }
 
-    const user = result.rows[0];
+    // Check if user is active
+    if (!user.is_active) {
+      throw new UnauthorizedError('Account is deactivated');
+    }
 
     // Verify password
-    const isValidPassword = await comparePassword(password, user.password_hash);
-    if (!isValidPassword) {
-      throw new AuthenticationError('Invalid email or password');
+    const isPasswordValid = await comparePassword(password, user.password_hash);
+    if (!isPasswordValid) {
+      throw new UnauthorizedError('Invalid email or password');
     }
 
-    const token = generateToken(user.id, user.email);
+    // Update last login timestamp
+    await query(
+      `UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = $1`,
+      [user.id]
+    );
 
     logger.info('User logged in successfully', { userId: user.id, email: user.email });
 
+    // Generate token
+    const token = generateToken(user.id, user.email);
+
+    // Fetch updated user
+    const updatedUser = await this.findById(user.id);
+    if (!updatedUser) {
+      throw new NotFoundError('User not found');
+    }
+
     return {
-      user: toUserDTO(user),
+      user: toUserDTO(updatedUser),
       token,
     };
   }
 
   /**
-   * Get user by ID
-   * @param userId User ID
+   * Find user by ID
+   * @param id User ID
+   * @returns User or null
+   */
+  async findById(id: string): Promise<User | null> {
+    const result = await query<User>(`SELECT * FROM users WHERE id = $1`, [id]);
+    return result.rows[0] || null;
+  }
+
+  /**
+   * Find user by email
+   * @param email User email
+   * @returns User or null
+   */
+  async findByEmail(email: string): Promise<User | null> {
+    const result = await query<User>(
+      `SELECT * FROM users WHERE email = $1`,
+      [email.toLowerCase().trim()]
+    );
+    return result.rows[0] || null;
+  }
+
+  /**
+   * Get user profile by ID
+   * @param id User ID
    * @returns User DTO
    */
-  async getUserById(userId: string): Promise<User> {
-    const result = await pool.query<User>(
-      'SELECT id, email, password_hash, name, created_at, updated_at FROM users WHERE id = $1',
-      [userId]
-    );
+  async getProfile(id: string): Promise<AuthResponse['user']> {
+    const user = await this.findById(id);
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+    return toUserDTO(user);
+  }
 
-    if (result.rows.length === 0) {
-      throw new NotFoundError('User');
+  /**
+   * Update user password
+   * @param userId User ID
+   * @param currentPassword Current password
+   * @param newPassword New password
+   */
+  async updatePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<void> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new NotFoundError('User not found');
     }
 
-    return result.rows[0];
+    // Verify current password
+    const isPasswordValid = await comparePassword(currentPassword, user.password_hash);
+    if (!isPasswordValid) {
+      throw new UnauthorizedError('Current password is incorrect');
+    }
+
+    // Validate new password
+    const passwordValidation = validatePasswordStrength(newPassword);
+    if (!passwordValidation.isValid) {
+      throw new BadRequestError(passwordValidation.message);
+    }
+
+    // Hash and update password
+    const passwordHash = await hashPassword(newPassword);
+    await query(`UPDATE users SET password_hash = $1 WHERE id = $2`, [passwordHash, userId]);
+
+    logger.info('User password updated', { userId });
   }
 }
 

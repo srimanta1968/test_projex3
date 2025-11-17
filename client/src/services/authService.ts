@@ -1,43 +1,89 @@
-import api from './api';
+import api, { ApiResponse } from './api';
 
-export interface UserDTO {
+/**
+ * User interface from API
+ */
+export interface User {
   id: string;
   email: string;
   name: string;
-  created_at: string;
+  createdAt: string;
+  updatedAt: string;
+  lastLogin: string | null;
+  isActive: boolean;
+  emailVerified: boolean;
 }
 
-export interface AuthResponse {
-  user: UserDTO;
+/**
+ * Authentication response
+ */
+export interface AuthData {
+  user: User;
   token: string;
 }
 
-export interface RegisterInput {
+/**
+ * Register request data
+ */
+export interface RegisterData {
   email: string;
   password: string;
   name: string;
 }
 
-export interface LoginInput {
+/**
+ * Login request data
+ */
+export interface LoginData {
   email: string;
   password: string;
 }
 
-export const authService = {
-  async register(data: RegisterInput): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('/auth/register', data);
-    return response.data;
-  },
+/**
+ * Register a new user
+ */
+export async function register(data: RegisterData): Promise<AuthData> {
+  const response = await api.post<ApiResponse<AuthData>>('/auth/register', data);
+  if (!response.data.success || !response.data.data) {
+    throw new Error(response.data.message || 'Registration failed');
+  }
+  return response.data.data;
+}
 
-  async login(data: LoginInput): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('/auth/login', data);
-    return response.data;
-  },
+/**
+ * Login user
+ */
+export async function login(data: LoginData): Promise<AuthData> {
+  const response = await api.post<ApiResponse<AuthData>>('/auth/login', data);
+  if (!response.data.success || !response.data.data) {
+    throw new Error(response.data.message || 'Login failed');
+  }
+  return response.data.data;
+}
 
-  async getCurrentUser(): Promise<{ user: UserDTO }> {
-    const response = await api.get<{ user: UserDTO }>('/auth/me');
-    return response.data;
-  },
-};
+/**
+ * Get current user profile
+ */
+export async function getCurrentUser(): Promise<User> {
+  const response = await api.get<ApiResponse<{ user: User }>>('/auth/me');
+  if (!response.data.success || !response.data.data) {
+    throw new Error(response.data.message || 'Failed to get user profile');
+  }
+  return response.data.data.user;
+}
 
-export default authService;
+/**
+ * Update user password
+ */
+export async function updatePassword(
+  currentPassword: string,
+  newPassword: string
+): Promise<void> {
+  const response = await api.put<ApiResponse<null>>('/auth/password', {
+    currentPassword,
+    newPassword,
+  });
+  if (!response.data.success) {
+    throw new Error(response.data.message || 'Failed to update password');
+  }
+}

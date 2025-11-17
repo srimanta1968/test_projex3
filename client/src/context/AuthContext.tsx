@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import authService, { UserDTO } from '../services/authService';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { User, AuthData, login as loginApi, register as registerApi } from '../services/authService';
 
 interface AuthContextType {
-  user: UserDTO | null;
+  user: User | null;
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
@@ -17,53 +17,58 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
-  const [user, setUser] = useState<UserDTO | null>(null);
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Load auth state from localStorage on mount
   useEffect(() => {
-    const initAuth = async () => {
-      if (token) {
-        try {
-          const { user } = await authService.getCurrentUser();
-          setUser(user);
-        } catch (error) {
-          localStorage.removeItem('token');
-          setToken(null);
-        }
-      }
-      setIsLoading(false);
-    };
+    const storedToken = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
 
-    initAuth();
-  }, [token]);
+    if (storedToken && storedUser) {
+      try {
+        setToken(storedToken);
+        setUser(JSON.parse(storedUser));
+      } catch {
+        // Invalid stored data, clear it
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
+    }
+    setIsLoading(false);
+  }, []);
+
+  const handleAuthSuccess = (data: AuthData) => {
+    setUser(data.user);
+    setToken(data.token);
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+  };
 
   const login = async (email: string, password: string): Promise<void> => {
-    const response = await authService.login({ email, password });
-    localStorage.setItem('token', response.token);
-    setToken(response.token);
-    setUser(response.user);
+    const data = await loginApi({ email, password });
+    handleAuthSuccess(data);
   };
 
   const register = async (email: string, password: string, name: string): Promise<void> => {
-    const response = await authService.register({ email, password, name });
-    localStorage.setItem('token', response.token);
-    setToken(response.token);
-    setUser(response.user);
+    const data = await registerApi({ email, password, name });
+    handleAuthSuccess(data);
   };
 
-  const logout = (): void => {
-    localStorage.removeItem('token');
-    setToken(null);
+  const logout = () => {
     setUser(null);
+    setToken(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   };
 
   const value: AuthContextType = {
     user,
     token,
     isLoading,
-    isAuthenticated: !!user,
+    isAuthenticated: !!token && !!user,
     login,
     register,
     logout,
@@ -79,3 +84,5 @@ export function useAuth(): AuthContextType {
   }
   return context;
 }
+
+export default AuthContext;

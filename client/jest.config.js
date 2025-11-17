@@ -1,17 +1,23 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
-module.exports = {
+export default {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   roots: ['<rootDir>/src'],
-  testMatch: ['**/__tests__/**/*.tsx', '**/?(*.)+(spec|test).tsx'],
+  setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts'],
   transform: {
-    '^.+\\.tsx?$': 'ts-jest',
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: 'tsconfig.json',
+        useESM: true,
+      },
+    ],
   },
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
-  setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts'],
+  testMatch: ['**/__tests__/**/*.test.tsx', '**/__tests__/**/*.test.ts'],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
@@ -19,5 +25,5 @@ module.exports = {
     '!src/vite-env.d.ts',
   ],
   coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'lcov', 'clover'],
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
 };
