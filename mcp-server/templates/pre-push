@@ -257,8 +257,33 @@ fi
 # STEP 5: Get changed files
 # ============================================================
 echo -e "\n${BLUE}📋 Identifying changed files...${NC}"
-REMOTE_BRANCH=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || echo "origin/main")
-CHANGED_FILES=$(git diff --name-only ${REMOTE_BRANCH}..HEAD 2>/dev/null || echo "")
+
+# Read pre-push hook input (local_ref local_sha remote_ref remote_sha)
+while read local_ref local_sha remote_ref remote_sha; do
+    # Check if this is a new branch (remote_sha is all zeros)
+    if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
+        echo -e "   ${BLUE}New branch detected - analyzing all commits${NC}"
+        # New branch: get all files in commits being pushed
+        # Compare against empty tree to get all files
+        CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r $local_sha 2>/dev/null || git diff --name-only 4b825dc642cb6eb9a060e54bf8d69288fbee4904..$local_sha 2>/dev/null || git ls-files)
+    else
+        # Existing branch: get files changed since remote
+        CHANGED_FILES=$(git diff --name-only $remote_sha..$local_sha 2>/dev/null || echo "")
+    fi
+done
+
+# Fallback: if no input from pre-push hook (shouldn't happen, but just in case)
+if [ -z "$CHANGED_FILES" ]; then
+    REMOTE_BRANCH=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null)
+    if [ -n "$REMOTE_BRANCH" ]; then
+        # Has upstream tracking branch
+        CHANGED_FILES=$(git diff --name-only ${REMOTE_BRANCH}..HEAD 2>/dev/null || echo "")
+    else
+        # No upstream - might be first push
+        echo -e "   ${YELLOW}No upstream branch found - analyzing all tracked files${NC}"
+        CHANGED_FILES=$(git diff --name-only --cached 2>/dev/null || git ls-files)
+    fi
+fi
 
 if [ -z "$CHANGED_FILES" ]; then
     echo -e "${YELLOW}⚠️  No changed files detected${NC}"

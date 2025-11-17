@@ -1,6 +1,6 @@
 import { AuthService } from '../../src/services/AuthService';
 import { hashPassword, comparePassword } from '../../src/utils/password';
-
+// Added test
 jest.mock('../../src/config/database');
 jest.mock('../../src/utils/password');
 
