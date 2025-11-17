@@ -91,3 +91,4 @@ router.put('/change-password', authenticate, async (req: Request, res: Response,
   }
 });
 
+// Test API detection after fixes
