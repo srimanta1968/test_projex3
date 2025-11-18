@@ -139,3 +139,4 @@ router.post('/verify-email', async (req: Request, res: Response, next: NextFunct
 // Testing Docker networking fix with host.docker.internal
 // Testing host.docker.internal mapping
 // Final test of host.docker.internal
+// FINAL TEST with TEST_SERVER_HOST env var
