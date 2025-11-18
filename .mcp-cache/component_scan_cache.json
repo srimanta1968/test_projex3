@@ -59,6 +59,21 @@
       "scanId": "f6f15466-47fe-4da6-9485-905a1f340688",
       "timestamp": "2025-11-18T05:38:38.623004",
       "duplicatesFound": 0
+    },
+    {
+      "scanId": "8a311dee-d544-417a-b9e3-e026d9c28fd8",
+      "timestamp": "2025-11-18T05:42:17.085452",
+      "duplicatesFound": 0
+    },
+    {
+      "scanId": "26eb4601-f626-4242-bac8-fd646a23da9f",
+      "timestamp": "2025-11-18T05:47:55.757807",
+      "duplicatesFound": 0
+    },
+    {
+      "scanId": "8acc35e7-1a19-4f71-bd13-45241e9e79b0",
+      "timestamp": "2025-11-18T07:08:14.940596",
+      "duplicatesFound": 0
     }
   ]
 }
