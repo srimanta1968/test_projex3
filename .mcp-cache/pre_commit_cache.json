@@ -1,41 +1,41 @@
 {
-  "last_scan": "2025-11-18T08:17:51.731018Z",
+  "last_scan": "2025-11-18T08:19:11.065288Z",
   "scanned_files": {
     "server/src/routes/authRoutes.ts": {
-      "hash": "6ccf74026a09833dbe200d7198d184d8ff232e9cd289dc14e79799cfbbcc1efd",
+      "hash": "8c5be851a0132c131be36b0537a6a721c51a24991c69efc4b4e26843061a6454",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2025-11-18T08:17:46.485461Z"
+      "timestamp": "2025-11-18T08:19:05.800788Z"
     }
   },
   "registered_apis": {
     "POST:/register": {
       "filePath": "server/src/routes/authRoutes.ts",
-      "timestamp": "2025-11-18T08:17:51.731026Z"
+      "timestamp": "2025-11-18T08:19:11.065296Z"
     },
     "POST:/login": {
       "filePath": "server/src/routes/authRoutes.ts",
-      "timestamp": "2025-11-18T08:17:51.731029Z"
+      "timestamp": "2025-11-18T08:19:11.065300Z"
     },
     "GET:/me": {
       "filePath": "server/src/routes/authRoutes.ts",
-      "timestamp": "2025-11-18T08:17:51.731031Z"
+      "timestamp": "2025-11-18T08:19:11.065302Z"
     },
     "POST:/logout": {
       "filePath": "server/src/routes/authRoutes.ts",
-      "timestamp": "2025-11-18T08:17:51.731032Z"
+      "timestamp": "2025-11-18T08:19:11.065338Z"
     },
     "PUT:/change-password": {
       "filePath": "server/src/routes/authRoutes.ts",
-      "timestamp": "2025-11-18T08:17:51.731034Z"
+      "timestamp": "2025-11-18T08:19:11.065341Z"
     },
     "GET:/api/test/detection": {
       "filePath": "server/src/routes/authRoutes.ts",
-      "timestamp": "2025-11-18T08:17:51.731035Z"
+      "timestamp": "2025-11-18T08:19:11.065344Z"
     },
     "POST:/verify-email": {
       "filePath": "server/src/routes/authRoutes.ts",
-      "timestamp": "2025-11-18T08:17:51.731036Z"
+      "timestamp": "2025-11-18T08:19:11.065345Z"
     }
   }
 }
