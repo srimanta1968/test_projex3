@@ -136,3 +136,4 @@ router.post('/verify-email', async (req: Request, res: Response, next: NextFunct
 // Testing dynamic test data generation
 // Final test of dynamic testing
 // Testing intelligent duplicate detection - Mon, Nov 17, 2025  9:24:16 PM
+// Testing Docker networking fix with host.docker.internal
