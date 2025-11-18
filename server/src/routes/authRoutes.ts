@@ -94,3 +94,19 @@ router.put('/change-password', authenticate, async (req: Request, res: Response,
 // Test API detection after fixes
 // Final test after fixes
 // Testing pre-push hook API detection - Nov 17, 2025
+
+/**
+ * GET /api/test/detection
+ * Test endpoint for MCP API detection
+ */
+router.get('/api/test/detection', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.status(200).json({
+      status: 'success',
+      message: 'MCP API detection test endpoint',
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    next(error);
+  }
+});
