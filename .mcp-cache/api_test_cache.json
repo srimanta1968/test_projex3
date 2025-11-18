@@ -1,33 +1,33 @@
 {
-  "last_test_run": "2025-11-18T07:13:28.393326",
+  "last_test_run": "2025-11-18T07:39:41.240778",
   "tested_apis": {
     "POST:/register": {
-      "lastTested": "2025-11-18T07:13:28.393340",
-      "fileHash": "716d98cb3bf521cb80ee9d8147dfee3749368abdb3a47581badcaeb441532337"
+      "lastTested": "2025-11-18T07:39:41.240787",
+      "fileHash": "5ed62e7102983a7217ae5636d68d9a6c755fb88f1b8bbaf74b756a9a9c9f1ac2"
     },
     "POST:/login": {
-      "lastTested": "2025-11-18T07:13:28.393348",
-      "fileHash": "716d98cb3bf521cb80ee9d8147dfee3749368abdb3a47581badcaeb441532337"
+      "lastTested": "2025-11-18T07:39:41.240792",
+      "fileHash": "5ed62e7102983a7217ae5636d68d9a6c755fb88f1b8bbaf74b756a9a9c9f1ac2"
     },
     "GET:/me": {
-      "lastTested": "2025-11-18T07:13:28.393351",
-      "fileHash": "716d98cb3bf521cb80ee9d8147dfee3749368abdb3a47581badcaeb441532337"
+      "lastTested": "2025-11-18T07:39:41.240794",
+      "fileHash": "5ed62e7102983a7217ae5636d68d9a6c755fb88f1b8bbaf74b756a9a9c9f1ac2"
     },
     "POST:/logout": {
-      "lastTested": "2025-11-18T07:13:28.393354",
-      "fileHash": "716d98cb3bf521cb80ee9d8147dfee3749368abdb3a47581badcaeb441532337"
+      "lastTested": "2025-11-18T07:39:41.240795",
+      "fileHash": "5ed62e7102983a7217ae5636d68d9a6c755fb88f1b8bbaf74b756a9a9c9f1ac2"
     },
     "PUT:/change-password": {
-      "lastTested": "2025-11-18T07:13:28.393357",
-      "fileHash": "716d98cb3bf521cb80ee9d8147dfee3749368abdb3a47581badcaeb441532337"
+      "lastTested": "2025-11-18T07:39:41.240797",
+      "fileHash": "5ed62e7102983a7217ae5636d68d9a6c755fb88f1b8bbaf74b756a9a9c9f1ac2"
     },
     "GET:/api/test/detection": {
-      "lastTested": "2025-11-18T07:13:28.393359",
-      "fileHash": "716d98cb3bf521cb80ee9d8147dfee3749368abdb3a47581badcaeb441532337"
+      "lastTested": "2025-11-18T07:39:41.240799",
+      "fileHash": "5ed62e7102983a7217ae5636d68d9a6c755fb88f1b8bbaf74b756a9a9c9f1ac2"
     },
     "POST:/verify-email": {
-      "lastTested": "2025-11-18T07:13:28.393361",
-      "fileHash": "716d98cb3bf521cb80ee9d8147dfee3749368abdb3a47581badcaeb441532337"
+      "lastTested": "2025-11-18T07:39:41.240801",
+      "fileHash": "5ed62e7102983a7217ae5636d68d9a6c755fb88f1b8bbaf74b756a9a9c9f1ac2"
     },
     "GET:/overview": {
       "lastTested": "2025-11-18T01:26:45.047714",

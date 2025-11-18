@@ -133,5 +133,3 @@ router.post('/verify-email', async (req: Request, res: Response, next: NextFunct
 // Test API detection - Mon, Nov 17, 2025  5:12:41 PM
 // Testing improved duplicate detection - $(date)
 // Test change
-// Testing schema upload to platform - Nov 17, 2025
-// Final test with platform fix - schemas should now save
