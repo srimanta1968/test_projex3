@@ -141,3 +141,4 @@ router.post('/verify-email', async (req: Request, res: Response, next: NextFunct
 // Final test of host.docker.internal
 // FINAL TEST with TEST_SERVER_HOST env var
 // Testing MCP server API detection - Nov 17, 2025
+// Second test - API discovery verification
