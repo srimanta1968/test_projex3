@@ -94,6 +94,7 @@ router.put('/change-password', authenticate, async (req: Request, res: Response,
 // Test API detection after fixes
 // Final test after fixes
 // Testing pre-push hook API detection - Nov 17, 2025
+// Updated MCP server binary - should detect ALL endpoints now!
 
 /**
  * GET /api/test/detection
