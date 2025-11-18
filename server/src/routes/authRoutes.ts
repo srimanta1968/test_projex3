@@ -114,3 +114,18 @@ router.get('/api/test/detection', async (req: Request, res: Response, next: Next
 // API detection test - Mon, Nov 17, 2025  4:28:46 PM
 // Final test
 // test
+
+/**
+ * POST /verify-email
+ * NEW endpoint to demonstrate API testing with PASSED count
+ */
+router.post('/verify-email', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.status(200).json({
+      status: 'success',
+      message: 'Email verified successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+});
