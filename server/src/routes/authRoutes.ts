@@ -133,12 +133,3 @@ router.post('/verify-email', async (req: Request, res: Response, next: NextFunct
 // Test API detection - Mon, Nov 17, 2025  5:12:41 PM
 // Testing improved duplicate detection - $(date)
 // Test change
-// Testing dynamic test data generation
-// Final test of dynamic testing
-// Testing intelligent duplicate detection - Mon, Nov 17, 2025  9:24:16 PM
-// Testing Docker networking fix with host.docker.internal
-// Testing host.docker.internal mapping
-// Final test of host.docker.internal
-// FINAL TEST with TEST_SERVER_HOST env var
-// Testing MCP server API detection - Nov 17, 2025
-// Second test - API discovery verification
