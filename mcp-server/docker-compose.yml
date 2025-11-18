@@ -10,7 +10,7 @@ services:
     ports:
       - "8766:8766"  # MCP Server API
     volumes:
-      - ./:/workspace  # Project root (parent of mcp-server/) mounted to /workspace
+      - ../:/workspace  # Project root (parent of mcp-server/) mounted to /workspace
       - ./feedback:/feedback  # Feedback files (read-write)
       - ./mcp-config.json:/app/mcp-config.json:ro  # Encrypted configuration
     environment:

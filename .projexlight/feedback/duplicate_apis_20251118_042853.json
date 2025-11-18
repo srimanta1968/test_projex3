@@ -1,0 +1,64 @@
+{
+  "type": "duplicate_apis",
+  "timestamp": "2025-11-18T04:28:53.954903",
+  "totalDuplicates": 7,
+  "instructions": [
+    {
+      "newEndpoint": "POST /register",
+      "existingEndpoint": "POST /register",
+      "issue": "Duplicate API detected",
+      "recommendation": "\u2705 REUSE existing API at `server/src/routes/authRoutes.ts:None`",
+      "suggestedAction": "reuse",
+      "priority": "medium"
+    },
+    {
+      "newEndpoint": "POST /login",
+      "existingEndpoint": "POST /login",
+      "issue": "Duplicate API detected",
+      "recommendation": "\u2705 REUSE existing API at `server/src/routes/authRoutes.ts:None`",
+      "suggestedAction": "reuse",
+      "priority": "medium"
+    },
+    {
+      "newEndpoint": "GET /me",
+      "existingEndpoint": "GET /me",
+      "issue": "Duplicate API detected",
+      "recommendation": "\u2705 REUSE existing API at `server/src/routes/authRoutes.ts:None`",
+      "suggestedAction": "reuse",
+      "priority": "medium"
+    },
+    {
+      "newEndpoint": "POST /logout",
+      "existingEndpoint": "POST /logout",
+      "issue": "Duplicate API detected",
+      "recommendation": "\u2705 REUSE existing API at `server/src/routes/authRoutes.ts:None`",
+      "suggestedAction": "reuse",
+      "priority": "medium"
+    },
+    {
+      "newEndpoint": "PUT /change-password",
+      "existingEndpoint": "PUT /change-password",
+      "issue": "Duplicate API detected",
+      "recommendation": "\u2705 REUSE existing API at `server/src/routes/authRoutes.ts:None`",
+      "suggestedAction": "reuse",
+      "priority": "medium"
+    },
+    {
+      "newEndpoint": "GET /api/test/detection",
+      "existingEndpoint": "GET /api/test/detection",
+      "issue": "Duplicate API detected",
+      "recommendation": "\u2705 REUSE existing API at `server/src/routes/authRoutes.ts:None`",
+      "suggestedAction": "reuse",
+      "priority": "medium"
+    },
+    {
+      "newEndpoint": "POST /verify-email",
+      "existingEndpoint": "POST /verify-email",
+      "issue": "Duplicate API detected",
+      "recommendation": "\u2705 REUSE existing API at `server/src/routes/authRoutes.ts:None`",
+      "suggestedAction": "reuse",
+      "priority": "medium"
+    }
+  ],
+  "llm_prompt": "# Duplicate API Detection\n\n7 duplicate API(s) detected. Please review and consolidate:\n\n## Duplicates:\n\n### Issue 1:\n- **newEndpoint**: POST /register\n- **existingEndpoint**: POST /register\n- **issue**: Duplicate API detected\n- **recommendation**: \u2705 REUSE existing API at `server/src/routes/authRoutes.ts:None`\n- **suggestedAction**: reuse\n\n### Issue 2:\n- **newEndpoint**: POST /login\n- **existingEndpoint**: POST /login\n- **issue**: Duplicate API detected\n- **recommendation**: \u2705 REUSE existing API at `server/src/routes/authRoutes.ts:None`\n- **suggestedAction**: reuse\n\n### Issue 3:\n- **newEndpoint**: GET /me\n- **existingEndpoint**: GET /me\n- **issue**: Duplicate API detected\n- **recommendation**: \u2705 REUSE existing API at `server/src/routes/authRoutes.ts:None`\n- **suggestedAction**: reuse\n\n### Issue 4:\n- **newEndpoint**: POST /logout\n- **existingEndpoint**: POST /logout\n- **issue**: Duplicate API detected\n- **recommendation**: \u2705 REUSE existing API at `server/src/routes/authRoutes.ts:None`\n- **suggestedAction**: reuse\n\n### Issue 5:\n- **newEndpoint**: PUT /change-password\n- **existingEndpoint**: PUT /change-password\n- **issue**: Duplicate API detected\n- **recommendation**: \u2705 REUSE existing API at `server/src/routes/authRoutes.ts:None`\n- **suggestedAction**: reuse\n\n### Issue 6:\n- **newEndpoint**: GET /api/test/detection\n- **existingEndpoint**: GET /api/test/detection\n- **issue**: Duplicate API detected\n- **recommendation**: \u2705 REUSE existing API at `server/src/routes/authRoutes.ts:None`\n- **suggestedAction**: reuse\n\n### Issue 7:\n- **newEndpoint**: POST /verify-email\n- **existingEndpoint**: POST /verify-email\n- **issue**: Duplicate API detected\n- **recommendation**: \u2705 REUSE existing API at `server/src/routes/authRoutes.ts:None`\n- **suggestedAction**: reuse\n\n## Instructions:\n1. Review each duplicate endpoint\n2. Determine if duplication is intentional\n3. If unintentional, remove or consolidate endpoints\n4. Update documentation if consolidating\n5. Ensure no breaking changes for existing clients\n\n## Priority:\nMEDIUM - Clean up to improve maintainability"
+}
