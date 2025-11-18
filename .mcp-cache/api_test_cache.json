@@ -1,0 +1,41 @@
+{
+  "last_test_run": "2025-11-18T02:01:39.242760",
+  "tested_apis": {
+    "POST:/register": {
+      "lastTested": "2025-11-18T02:01:39.242773",
+      "fileHash": "9235d29682735a4e3f2fb6754051d8db710c9af379d543d1122adc03b1a516ab"
+    },
+    "POST:/login": {
+      "lastTested": "2025-11-18T02:01:39.242777",
+      "fileHash": "9235d29682735a4e3f2fb6754051d8db710c9af379d543d1122adc03b1a516ab"
+    },
+    "GET:/me": {
+      "lastTested": "2025-11-18T02:01:39.242778",
+      "fileHash": "9235d29682735a4e3f2fb6754051d8db710c9af379d543d1122adc03b1a516ab"
+    },
+    "POST:/logout": {
+      "lastTested": "2025-11-18T02:01:39.242780",
+      "fileHash": "9235d29682735a4e3f2fb6754051d8db710c9af379d543d1122adc03b1a516ab"
+    },
+    "PUT:/change-password": {
+      "lastTested": "2025-11-18T02:01:39.242781",
+      "fileHash": "9235d29682735a4e3f2fb6754051d8db710c9af379d543d1122adc03b1a516ab"
+    },
+    "GET:/api/test/detection": {
+      "lastTested": "2025-11-18T02:01:39.242782",
+      "fileHash": "9235d29682735a4e3f2fb6754051d8db710c9af379d543d1122adc03b1a516ab"
+    },
+    "POST:/verify-email": {
+      "lastTested": "2025-11-18T02:01:39.242784",
+      "fileHash": "9235d29682735a4e3f2fb6754051d8db710c9af379d543d1122adc03b1a516ab"
+    },
+    "GET:/overview": {
+      "lastTested": "2025-11-18T01:26:45.047714",
+      "fileHash": "bf865da4d984b179cae53231d7a1968ef6b6910e3c6ced4d7d51c298a199189f"
+    },
+    "GET:/summary": {
+      "lastTested": "2025-11-18T01:26:45.047716",
+      "fileHash": "bf865da4d984b179cae53231d7a1968ef6b6910e3c6ced4d7d51c298a199189f"
+    }
+  }
+}

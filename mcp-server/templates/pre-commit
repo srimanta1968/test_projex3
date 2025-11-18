@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 
 # Configuration
 MCP_SERVER_URL="${MCP_SERVER_URL:-http://localhost:8766}"
-PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || echo ".")"
+PROJECT_ROOT="/workspace"  # MCP Docker container mounts project root at /workspace
 
 echo -e "${BLUE}🔍 ProjexLight Pre-Commit Duplicate Scan${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
