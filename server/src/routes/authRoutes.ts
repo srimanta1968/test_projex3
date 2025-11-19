@@ -147,3 +147,11 @@ router.post('/verify-email', async (req: Request, res: Response, next: NextFunct
 // Testing route prefix detection
 // Testing route prefix detection
 // Test route detection
+
+/**
+ * GET /test-route-detection  
+ * Test route to verify MCP server detects it
+ */
+router.get('/test-route-detection', async (req: Request, res: Response) => {
+  res.json({ message: 'Route detection test', timestamp: new Date() });
+});
