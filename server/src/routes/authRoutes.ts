@@ -155,3 +155,4 @@ router.post('/verify-email', async (req: Request, res: Response, next: NextFunct
 router.get('/test-route-detection', async (req: Request, res: Response) => {
   res.json({ message: 'Route detection test', timestamp: new Date() });
 });
+// Testing fixed project_root path
