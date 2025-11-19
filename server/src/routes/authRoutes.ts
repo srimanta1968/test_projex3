@@ -140,3 +140,4 @@ router.post('/verify-email', async (req: Request, res: Response, next: NextFunct
 // Verify complete fix
 // Final test of complete fix
 // Final test with production executable
+// Testing route prefix detection
