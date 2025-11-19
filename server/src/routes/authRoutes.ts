@@ -138,3 +138,4 @@ router.post('/verify-email', async (req: Request, res: Response, next: NextFunct
 
 // Test: Verify .env detection and route prefix detection
 // Verify complete fix
+// Final test of complete fix
