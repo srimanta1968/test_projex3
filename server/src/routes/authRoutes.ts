@@ -135,3 +135,5 @@ router.post('/verify-email', async (req: Request, res: Response, next: NextFunct
 // Test change 1
 
 // Testing route prefix detection
+
+// Test: Verify .env detection and route prefix detection
