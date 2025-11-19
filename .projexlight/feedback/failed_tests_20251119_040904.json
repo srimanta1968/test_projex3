@@ -1,0 +1,57 @@
+{
+  "type": "failed_tests",
+  "timestamp": "2025-11-19T04:09:04.199279",
+  "totalFailures": 7,
+  "instructions": [
+    {
+      "endpoint": "POST /register",
+      "issue": "Test failed with status 200",
+      "errorMessage": "Status 200 - <!DOCTYPE html>\r\n<html lang=\"en\">\r\n    <head>\r\n        <title>Flowise - Build AI Agents, Visually</title>\r\n        <link rel=\"icon\" href=\"favicon.ico\" />\r\n        <!-- Meta Tags-->\r\n        <meta char",
+      "suggestedFix": "Review endpoint implementation and error handling",
+      "priority": "high"
+    },
+    {
+      "endpoint": "POST /login",
+      "issue": "Test failed with status 200",
+      "errorMessage": "Status 200 - <!DOCTYPE html>\r\n<html lang=\"en\">\r\n    <head>\r\n        <title>Flowise - Build AI Agents, Visually</title>\r\n        <link rel=\"icon\" href=\"favicon.ico\" />\r\n        <!-- Meta Tags-->\r\n        <meta char",
+      "suggestedFix": "Review endpoint implementation and error handling",
+      "priority": "high"
+    },
+    {
+      "endpoint": "GET /me",
+      "issue": "Test failed with status 200",
+      "errorMessage": "Status 200 - <!DOCTYPE html>\r\n<html lang=\"en\">\r\n    <head>\r\n        <title>Flowise - Build AI Agents, Visually</title>\r\n        <link rel=\"icon\" href=\"favicon.ico\" />\r\n        <!-- Meta Tags-->\r\n        <meta char",
+      "suggestedFix": "Review endpoint implementation and error handling",
+      "priority": "high"
+    },
+    {
+      "endpoint": "POST /logout",
+      "issue": "Test failed with status 200",
+      "errorMessage": "Status 200 - <!DOCTYPE html>\r\n<html lang=\"en\">\r\n    <head>\r\n        <title>Flowise - Build AI Agents, Visually</title>\r\n        <link rel=\"icon\" href=\"favicon.ico\" />\r\n        <!-- Meta Tags-->\r\n        <meta char",
+      "suggestedFix": "Review endpoint implementation and error handling",
+      "priority": "high"
+    },
+    {
+      "endpoint": "PUT /change-password",
+      "issue": "Test failed with status 200",
+      "errorMessage": "Status 200 - <!DOCTYPE html>\r\n<html lang=\"en\">\r\n    <head>\r\n        <title>Flowise - Build AI Agents, Visually</title>\r\n        <link rel=\"icon\" href=\"favicon.ico\" />\r\n        <!-- Meta Tags-->\r\n        <meta char",
+      "suggestedFix": "Review endpoint implementation and error handling",
+      "priority": "high"
+    },
+    {
+      "endpoint": "GET /api/test/detection",
+      "issue": "Test failed with status 200",
+      "errorMessage": "Status 200 - <!DOCTYPE html>\r\n<html lang=\"en\">\r\n    <head>\r\n        <title>Flowise - Build AI Agents, Visually</title>\r\n        <link rel=\"icon\" href=\"favicon.ico\" />\r\n        <!-- Meta Tags-->\r\n        <meta char",
+      "suggestedFix": "Review endpoint implementation and error handling",
+      "priority": "high"
+    },
+    {
+      "endpoint": "POST /verify-email",
+      "issue": "Test failed with status 200",
+      "errorMessage": "Status 200 - <!DOCTYPE html>\r\n<html lang=\"en\">\r\n    <head>\r\n        <title>Flowise - Build AI Agents, Visually</title>\r\n        <link rel=\"icon\" href=\"favicon.ico\" />\r\n        <!-- Meta Tags-->\r\n        <meta char",
+      "suggestedFix": "Review endpoint implementation and error handling",
+      "priority": "high"
+    }
+  ],
+  "llm_prompt": "# Failed API Tests - Fix Required\n\n7 API test(s) failed. Please review and fix the following issues:\n\n## Failed Tests:\n\n### Issue 1:\n- **endpoint**: POST /register\n- **issue**: Test failed with status 200\n- **errorMessage**: Status 200 - <!DOCTYPE html>\r\n<html lang=\"en\">\r\n    <head>\r\n        <title>Flowise - Build AI Agents, Visually</title>\r\n        <link rel=\"icon\" href=\"favicon.ico\" />\r\n        <!-- Meta Tags-->\r\n        <meta char\n- **suggestedFix**: Review endpoint implementation and error handling\n\n### Issue 2:\n- **endpoint**: POST /login\n- **issue**: Test failed with status 200\n- **errorMessage**: Status 200 - <!DOCTYPE html>\r\n<html lang=\"en\">\r\n    <head>\r\n        <title>Flowise - Build AI Agents, Visually</title>\r\n        <link rel=\"icon\" href=\"favicon.ico\" />\r\n        <!-- Meta Tags-->\r\n        <meta char\n- **suggestedFix**: Review endpoint implementation and error handling\n\n### Issue 3:\n- **endpoint**: GET /me\n- **issue**: Test failed with status 200\n- **errorMessage**: Status 200 - <!DOCTYPE html>\r\n<html lang=\"en\">\r\n    <head>\r\n        <title>Flowise - Build AI Agents, Visually</title>\r\n        <link rel=\"icon\" href=\"favicon.ico\" />\r\n        <!-- Meta Tags-->\r\n        <meta char\n- **suggestedFix**: Review endpoint implementation and error handling\n\n### Issue 4:\n- **endpoint**: POST /logout\n- **issue**: Test failed with status 200\n- **errorMessage**: Status 200 - <!DOCTYPE html>\r\n<html lang=\"en\">\r\n    <head>\r\n        <title>Flowise - Build AI Agents, Visually</title>\r\n        <link rel=\"icon\" href=\"favicon.ico\" />\r\n        <!-- Meta Tags-->\r\n        <meta char\n- **suggestedFix**: Review endpoint implementation and error handling\n\n### Issue 5:\n- **endpoint**: PUT /change-password\n- **issue**: Test failed with status 200\n- **errorMessage**: Status 200 - <!DOCTYPE html>\r\n<html lang=\"en\">\r\n    <head>\r\n        <title>Flowise - Build AI Agents, Visually</title>\r\n        <link rel=\"icon\" href=\"favicon.ico\" />\r\n        <!-- Meta Tags-->\r\n        <meta char\n- **suggestedFix**: Review endpoint implementation and error handling\n\n### Issue 6:\n- **endpoint**: GET /api/test/detection\n- **issue**: Test failed with status 200\n- **errorMessage**: Status 200 - <!DOCTYPE html>\r\n<html lang=\"en\">\r\n    <head>\r\n        <title>Flowise - Build AI Agents, Visually</title>\r\n        <link rel=\"icon\" href=\"favicon.ico\" />\r\n        <!-- Meta Tags-->\r\n        <meta char\n- **suggestedFix**: Review endpoint implementation and error handling\n\n### Issue 7:\n- **endpoint**: POST /verify-email\n- **issue**: Test failed with status 200\n- **errorMessage**: Status 200 - <!DOCTYPE html>\r\n<html lang=\"en\">\r\n    <head>\r\n        <title>Flowise - Build AI Agents, Visually</title>\r\n        <link rel=\"icon\" href=\"favicon.ico\" />\r\n        <!-- Meta Tags-->\r\n        <meta char\n- **suggestedFix**: Review endpoint implementation and error handling\n\n## Instructions:\n1. Review each failed endpoint\n2. Check the error messages and status codes\n3. Implement the suggested fixes\n4. Re-run tests to verify fixes\n5. Ensure all tests pass before committing\n\n## Priority:\nHIGH - These failures may block deployment"
+}
