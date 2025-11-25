@@ -1,51 +1,107 @@
+/**
+ * User type - matches server UserResponseDTO
+ */
 export interface User {
   id: string;
+  name: string | null;
   email: string;
-  username: string;
-  first_name: string;
-  last_name: string;
-  phone?: string;
-  date_of_birth?: Date;
-  status: string;
-  email_verified: boolean;
-  two_factor_enabled: boolean;
-  last_login_at?: Date;
-  created_at: Date;
+  preferences: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
+/**
+ * Auth response from server
+ */
 export interface AuthResponse {
   user: User;
-  accessToken: string;
-  refreshToken: string;
+  token: string;
 }
 
-export interface DashboardOverview {
-  currentBalance: number;
-  totalIncome: number;
-  totalExpenses: number;
-  netWorth: number;
-  incomeVsExpenses: {
-    income: number;
-    expenses: number;
-    period: string;
-  };
-  recentTransactions: Transaction[];
-  trends: {
-    incomeChange: number;
-    expensesChange: number;
-    netWorthChange: number;
+/**
+ * API response wrapper
+ */
+export interface ApiResponse<T> {
+  success: boolean;
+  message?: string;
+  data?: T;
+  error?: {
+    message: string;
+    code?: string;
+    errors?: Record<string, string[]>;
   };
 }
 
-export interface Transaction {
+/**
+ * Login credentials
+ */
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+/**
+ * Registration data
+ */
+export interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+}
+
+/**
+ * Dashboard statistics
+ */
+export interface DashboardStats {
+  totalRideOffers: number;
+  totalRideRequests: number;
+  activeMatches: number;
+  pendingRequests: number;
+  totalTransactions: number;
+  totalSpent: number;
+}
+
+/**
+ * Ride offer
+ */
+export interface RideOffer {
   id: string;
   user_id: string;
-  account_id: string;
-  category_id?: string;
-  transaction_date: string;
-  amount: number;
-  type: string;
-  description?: string;
-  merchant?: string;
-  status: string;
+  pickup_location: string | null;
+  dropoff_location: string | null;
+  available_seats: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Ride request
+ */
+export interface RideRequest {
+  id: string;
+  user_id: string;
+  offer_id: string | null;
+  status: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Activity item
+ */
+export interface ActivityItem {
+  id: string;
+  type: 'ride_offer' | 'ride_request' | 'match' | 'transaction';
+  description: string;
+  timestamp: string;
+}
+
+/**
+ * Dashboard data
+ */
+export interface DashboardData {
+  stats: DashboardStats;
+  recentActivity: ActivityItem[];
+  myOffers: RideOffer[];
+  myRequests: RideRequest[];
 }

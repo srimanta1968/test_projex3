@@ -1,78 +1,81 @@
 /**
- * Dashboard metric interface
+ * Dashboard statistics interface
  */
-export interface DashboardMetric {
+export interface DashboardStats {
+  totalRideOffers: number;
+  totalRideRequests: number;
+  activeMatches: number;
+  pendingRequests: number;
+  totalTransactions: number;
+  totalSpent: number;
+}
+
+/**
+ * Ride offer entity - matches database schema
+ */
+export interface RideOffer {
   id: string;
   user_id: string;
-  metric_type: string;
-  period: string;
-  value: number;
-  previous_value?: number;
-  change_percentage?: number;
-  trend?: string;
-  metadata?: any;
-  calculated_at?: Date;
+  pickup_location: string | null;
+  dropoff_location: string | null;
+  available_seats: string | null;
   created_at: Date;
   updated_at: Date;
 }
 
 /**
- * Transaction interface
+ * Ride request entity - matches database schema
+ */
+export interface RideRequest {
+  id: string;
+  user_id: string;
+  offer_id: string | null;
+  status: string | null;
+  created_at: Date;
+  updated_at: Date;
+}
+
+/**
+ * Matched ride entity - matches database schema
+ */
+export interface MatchedRide {
+  id: string;
+  ride_offer_id: string | null;
+  user_id: string | null;
+  status: string | null;
+  created_at: Date;
+  updated_at: Date;
+}
+
+/**
+ * Transaction entity - matches database schema
  */
 export interface Transaction {
   id: string;
-  user_id: string;
-  account_id: string;
-  category_id?: string;
-  transaction_date: Date;
-  amount: number;
-  type: string;
-  description?: string;
-  merchant?: string;
-  reference_number?: string;
-  status: string;
-  is_recurring: boolean;
-  tags?: any;
-  notes?: string;
-  external_id?: string;
-  is_flagged: boolean;
+  user_id: string | null;
+  amount: number | null;
+  transaction_date: Date | null;
+  status: string | null;
   created_at: Date;
   updated_at: Date;
 }
 
 /**
- * Dashboard overview data
+ * Recent activity item for dashboard
  */
-export interface DashboardOverview {
-  currentBalance: number;
-  totalIncome: number;
-  totalExpenses: number;
-  netWorth: number;
-  incomeVsExpenses: {
-    income: number;
-    expenses: number;
-    period: string;
-  };
-  recentTransactions: Transaction[];
-  trends: {
-    incomeChange: number;
-    expensesChange: number;
-    netWorthChange: number;
-  };
+export interface ActivityItem {
+  id: string;
+  type: 'ride_offer' | 'ride_request' | 'match' | 'transaction';
+  description: string;
+  timestamp: Date;
 }
 
 /**
- * Financial summary for a period
+ * Dashboard data response
  */
-export interface FinancialSummary {
-  period: string;
-  totalIncome: number;
-  totalExpenses: number;
-  netChange: number;
-  transactionCount: number;
-  categoryBreakdown: {
-    category: string;
-    amount: number;
-    percentage: number;
-  }[];
+export interface DashboardDataDTO {
+  stats: DashboardStats;
+  recentActivity: ActivityItem[];
+  myOffers: RideOffer[];
+  myRequests: RideRequest[];
 }

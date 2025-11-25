@@ -1,60 +1,93 @@
-import express, { Express } from 'express';
+import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
 import { env } from './config/env';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import { logger } from './utils/logger';
+
+// Import routes
 import authRoutes from './routes/authRoutes';
 import dashboardRoutes from './routes/dashboardRoutes';
-import logger from './utils/logger';
+import preferenceRoutes from './routes/preferenceRoutes';
+import rideOfferRoutes from './routes/rideOfferRoutes';
+import rideRequestRoutes from './routes/rideRequestRoutes';
+import rideMatchingRoutes from './routes/rideMatchingRoutes';
+import paymentRoutes from './routes/paymentRoutes';
+import emailRoutes from './routes/emailRoutes';
+import disputeRoutes from './routes/disputeRoutes';
 
 /**
  * Create and configure Express application
  */
-export function createApp(): Express {
+export function createApp(): Application {
   const app = express();
 
+  // Trust proxy for rate limiting behind reverse proxy
+  app.set('trust proxy', 1);
+
   // Security middleware
-  app.use(helmet());
-  app.use(cors({
-    origin: env.cors.origin,
-    credentials: true,
+  app.use(helmet({
+    contentSecurityPolicy: env.NODE_ENV === 'production',
   }));
 
-  // Rate limiting
-  const limiter = rateLimit({
-    windowMs: env.rateLimit.windowMs,
-    max: env.rateLimit.maxRequests,
-    message: 'Too many requests from this IP, please try again later',
-  });
-  app.use('/api/', limiter);
+  // CORS configuration
+  app.use(cors({
+    origin: env.CORS_ORIGIN,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  }));
 
-  // Body parsing
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
+  // Body parsing middleware
+  app.use(express.json({ limit: '10mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-  // Request logging
-  app.use((req, res, next) => {
-    logger.debug('Incoming request', {
-      method: req.method,
-      path: req.path,
-      query: req.query,
+  // Request logging middleware
+  app.use((req: Request, res: Response, next) => {
+    const start = Date.now();
+
+    res.on('finish', () => {
+      const duration = Date.now() - start;
+      logger.info('Request completed', {
+        method: req.method,
+        path: req.path,
+        statusCode: res.statusCode,
+        duration: `${duration}ms`,
+        ip: req.ip,
+      });
     });
+
     next();
   });
 
-  // Health check
-  app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+  // Health check endpoint
+  app.get('/health', (_req: Request, res: Response) => {
+    res.status(200).json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: env.NODE_ENV,
+    });
   });
 
   // API routes
   app.use('/api/auth', authRoutes);
   app.use('/api/dashboard', dashboardRoutes);
+  app.use('/api/preferences', preferenceRoutes);
+  app.use('/api/rides/offers', rideOfferRoutes);
+  app.use('/api/rides/requests', rideRequestRoutes);
+  app.use('/api/rides/matches', rideMatchingRoutes);
+  app.use('/api/payments', paymentRoutes);
+  app.use('/api/email', emailRoutes);
+  app.use('/api/disputes', disputeRoutes);
 
-  // Error handlers (must be last)
+  // 404 handler for undefined routes
   app.use(notFoundHandler);
+
+  // Global error handler (must be last)
   app.use(errorHandler);
 
   return app;
 }
+
+export default createApp;

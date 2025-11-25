@@ -4,247 +4,111 @@
 -- Total Schemas: 1
 
 -- ========================================
--- Schema: banking-portal-schema
--- Description: Imported from banking-portal-schema.json
+-- Schema: Quick Taxi Schema
+-- Description: Auto-generated database schema for Quick Taxi. A comprehensive ride-sharing platform with user management, ride management, and payment integration functionalities....
 -- Version: 1
 -- ========================================
 
-CREATE TABLE IF NOT EXISTS "user" (
+CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email VARCHAR(255) NOT NULL,
-  username VARCHAR(255) NOT NULL,
-  first_name VARCHAR(255) NOT NULL,
-  last_name VARCHAR(255) NOT NULL,
-  phone VARCHAR(255),
-  date_of_birth DATE,
-  status VARCHAR(50) DEFAULT 'pending_verification',
-  password_hash VARCHAR(255) NOT NULL,
-  email_verified BOOLEAN DEFAULT false,
-  email_verified_at TIMESTAMP WITH TIME ZONE,
-  two_factor_enabled BOOLEAN DEFAULT false,
-  two_factor_secret VARCHAR(255),
-  preferences JSONB,
-  last_login_at TIMESTAMP WITH TIME ZONE,
-  last_login_ip VARCHAR(255),
-  failed_login_attempts INTEGER DEFAULT 0,
-  locked_until TIMESTAMP WITH TIME ZONE,
+  name VARCHAR(255),
+  email VARCHAR(255),
+  password VARCHAR(255),
+  preferences VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE "user" IS 'Schema: banking-portal-schema - Entity: User';
+COMMENT ON TABLE users IS 'Schema: Quick Taxi Schema - Entity: Users';
 
-CREATE TABLE IF NOT EXISTS user_session (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL,
-  token VARCHAR(255) NOT NULL,
-  refresh_token VARCHAR(255),
-  device_name VARCHAR(255),
-  device_type VARCHAR(50),
-  ip_address VARCHAR(255),
-  location JSONB,
-  is_active BOOLEAN DEFAULT true,
-  expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  last_activity_at TIMESTAMP WITH TIME ZONE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE user_session IS 'Schema: banking-portal-schema - Entity: UserSession';
-
-CREATE TABLE IF NOT EXISTS password_reset (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL,
-  email VARCHAR(255) NOT NULL,
-  token VARCHAR(255) NOT NULL,
-  expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  used_at TIMESTAMP WITH TIME ZONE,
-  ip_address VARCHAR(255),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE password_reset IS 'Schema: banking-portal-schema - Entity: PasswordReset';
-
-CREATE TABLE IF NOT EXISTS email_verification (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL,
-  email VARCHAR(255) NOT NULL,
-  token VARCHAR(255) NOT NULL,
-  expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  verified_at TIMESTAMP WITH TIME ZONE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE email_verification IS 'Schema: banking-portal-schema - Entity: EmailVerification';
-
-CREATE TABLE IF NOT EXISTS audit_log (
+CREATE TABLE IF NOT EXISTS sessions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID,
-  action VARCHAR(50) NOT NULL,
-  entity_type VARCHAR(255),
-  entity_id UUID,
-  details JSONB,
-  ip_address VARCHAR(255),
-  user_agent VARCHAR(255),
-  status VARCHAR(50) DEFAULT 'success',
+  token VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE audit_log IS 'Schema: banking-portal-schema - Entity: AuditLog';
+COMMENT ON TABLE sessions IS 'Schema: Quick Taxi Schema - Entity: Sessions';
 
-CREATE TABLE IF NOT EXISTS bank_account (
+CREATE TABLE IF NOT EXISTS user_preferences (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL,
-  account_number VARCHAR(255) NOT NULL,
-  account_name VARCHAR(255) NOT NULL,
-  account_type VARCHAR(50) DEFAULT 'checking',
-  balance DECIMAL(10,2) DEFAULT 0,
-  currency VARCHAR(255) DEFAULT 'USD',
-  bank_name VARCHAR(255),
-  institution_id VARCHAR(255),
-  is_primary BOOLEAN DEFAULT false,
-  is_active BOOLEAN DEFAULT true,
-  last_synced_at TIMESTAMP WITH TIME ZONE,
+  user_id UUID,
+  preference_type VARCHAR(255),
+  preference_value VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE bank_account IS 'Schema: banking-portal-schema - Entity: BankAccount';
+COMMENT ON TABLE user_preferences IS 'Schema: Quick Taxi Schema - Entity: User_preferences';
 
-CREATE TABLE IF NOT EXISTS transaction_category (
+CREATE TABLE IF NOT EXISTS ride_offers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name VARCHAR(255) NOT NULL,
-  slug VARCHAR(255) NOT NULL,
-  description TEXT,
-  type VARCHAR(50) NOT NULL,
-  parent_id UUID,
-  icon VARCHAR(255),
-  color VARCHAR(255),
-  is_system BOOLEAN DEFAULT false,
-  sort_order INTEGER DEFAULT 0,
+  user_id UUID,
+  pickup_location VARCHAR(255),
+  dropoff_location VARCHAR(255),
+  available_seats VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE transaction_category IS 'Schema: banking-portal-schema - Entity: TransactionCategory';
+COMMENT ON TABLE ride_offers IS 'Schema: Quick Taxi Schema - Entity: Ride_offers';
 
-CREATE TABLE IF NOT EXISTS transaction (
+CREATE TABLE IF NOT EXISTS ride_requests (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL,
-  account_id UUID NOT NULL,
-  category_id UUID,
-  transaction_date TIMESTAMP WITH TIME ZONE NOT NULL,
-  amount DECIMAL(10,2) NOT NULL,
-  type VARCHAR(50) NOT NULL,
-  description VARCHAR(255),
-  merchant VARCHAR(255),
-  reference_number VARCHAR(255),
-  status VARCHAR(50) DEFAULT 'completed',
-  is_recurring BOOLEAN DEFAULT false,
-  tags JSONB,
-  notes TEXT,
-  external_id VARCHAR(255),
-  is_flagged BOOLEAN DEFAULT false,
+  user_id UUID,
+  offer_id UUID,
+  status VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE transaction IS 'Schema: banking-portal-schema - Entity: Transaction';
+COMMENT ON TABLE ride_requests IS 'Schema: Quick Taxi Schema - Entity: Ride_requests';
 
-CREATE TABLE IF NOT EXISTS budget (
+CREATE TABLE IF NOT EXISTS matched_rides (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL,
-  category_id UUID,
-  name VARCHAR(255) NOT NULL,
-  amount DECIMAL(10,2) NOT NULL,
-  period VARCHAR(50) DEFAULT 'monthly',
-  start_date DATE NOT NULL,
-  end_date DATE,
-  alert_threshold INTEGER DEFAULT 80,
-  is_active BOOLEAN DEFAULT true,
+  ride_offer_id UUID,
+  user_id UUID,
+  status VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE budget IS 'Schema: banking-portal-schema - Entity: Budget';
+COMMENT ON TABLE matched_rides IS 'Schema: Quick Taxi Schema - Entity: Matched_rides';
 
-CREATE TABLE IF NOT EXISTS financial_report (
+CREATE TABLE IF NOT EXISTS payment_methods (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL,
-  report_name VARCHAR(255) NOT NULL,
-  report_type VARCHAR(50) NOT NULL,
-  period_start DATE NOT NULL,
-  period_end DATE NOT NULL,
-  filters JSONB,
-  data JSONB,
-  charts JSONB,
-  insights JSONB,
-  status VARCHAR(50) DEFAULT 'generating',
-  is_scheduled BOOLEAN DEFAULT false,
-  schedule_frequency VARCHAR(50),
+  user_id UUID,
+  card_number INTEGER,
+  expiry_date TIMESTAMP WITH TIME ZONE,
+  cardholder_name VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE financial_report IS 'Schema: banking-portal-schema - Entity: FinancialReport';
+COMMENT ON TABLE payment_methods IS 'Schema: Quick Taxi Schema - Entity: Payment_methods';
 
-CREATE TABLE IF NOT EXISTS alert (
+CREATE TABLE IF NOT EXISTS transactions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL,
+  user_id UUID,
+  amount DECIMAL(10,2),
+  transaction_date TIMESTAMP WITH TIME ZONE,
+  status VARCHAR(255),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE transactions IS 'Schema: Quick Taxi Schema - Entity: Transactions';
+
+CREATE TABLE IF NOT EXISTS refunds (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   transaction_id UUID,
-  budget_id UUID,
-  alert_type VARCHAR(50) NOT NULL,
-  severity VARCHAR(50) DEFAULT 'info',
-  title VARCHAR(255) NOT NULL,
-  message TEXT NOT NULL,
-  data JSONB,
-  is_read BOOLEAN DEFAULT false,
-  is_dismissed BOOLEAN DEFAULT false,
-  action_taken VARCHAR(255),
-  read_at TIMESTAMP WITH TIME ZONE,
+  user_id UUID,
+  amount DECIMAL(10,2),
+  status VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE alert IS 'Schema: banking-portal-schema - Entity: Alert';
-
-CREATE TABLE IF NOT EXISTS forecast (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL,
-  forecast_type VARCHAR(50) NOT NULL,
-  category_id UUID,
-  period VARCHAR(50) NOT NULL,
-  forecast_date DATE NOT NULL,
-  predicted_amount DECIMAL(10,2) NOT NULL,
-  confidence_level DECIMAL(10,2),
-  historical_data_points INTEGER,
-  model_type VARCHAR(255),
-  factors JSONB,
-  actual_amount DECIMAL(10,2),
-  accuracy_percentage DECIMAL(10,2),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE forecast IS 'Schema: banking-portal-schema - Entity: Forecast';
-
-CREATE TABLE IF NOT EXISTS dashboard_metric (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL,
-  metric_type VARCHAR(50) NOT NULL,
-  period VARCHAR(50) DEFAULT 'month',
-  value DECIMAL(10,2) NOT NULL,
-  previous_value DECIMAL(10,2),
-  change_percentage DECIMAL(10,2),
-  trend VARCHAR(50),
-  metadata JSONB,
-  calculated_at TIMESTAMP WITH TIME ZONE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE dashboard_metric IS 'Schema: banking-portal-schema - Entity: DashboardMetric';
+COMMENT ON TABLE refunds IS 'Schema: Quick Taxi Schema - Entity: Refunds';
 

@@ -1,31 +1,79 @@
 {
-  "sprint_id": "c76487ad-2a54-4fa9-a36d-ba65447b16cd",
-  "sprint_name": "Sprint1",
-  "project_id": "469248c6-e31b-499b-8699-a088702fba74",
-  "project_name": "Banking Portal",
+  "sprint_id": "9dc7e4d9-9393-4682-bab4-1048d60f10c9",
+  "sprint_name": "Quick Prototype Sprint",
+  "project_id": "bddb848e-48ff-4226-b114-004bcf92f78e",
+  "project_name": "Quick Taxi",
   "overall_completion_percentage": 0,
   "tasks_by_status": {
-    "pending": 5,
+    "pending": 27,
     "in_progress": 0,
     "completed": 0
   },
-  "epics_completion": [
-    {
-      "epic_id": "e985b012-17b3-4c39-9eca-98818ee05544",
-      "epic_title": "Financial Reports and Analytics",
-      "completion_percentage": 0,
-      "tasks_total": 5,
-      "tasks_completed": 0
-    }
-  ],
+  "epics_completion": [],
   "features_completion": [
     {
-      "feature_id": "b536583b-1d20-4f6e-95f2-4d1f21e34c05",
-      "feature_title": "Financial Dashboard Overview",
+      "feature_id": "db59e993-e6e5-4faa-8593-ceb1e5dfe797",
+      "feature_title": "User Registration",
       "completion_percentage": 0,
-      "tasks_total": 5,
+      "tasks_total": 3,
+      "tasks_completed": 0
+    },
+    {
+      "feature_id": "9eed0acd-39da-4bae-86ba-c499cb8da3a3",
+      "feature_title": "User Authentication",
+      "completion_percentage": 0,
+      "tasks_total": 3,
+      "tasks_completed": 0
+    },
+    {
+      "feature_id": "97a499f0-c194-4d4d-8e98-d561e4c13b23",
+      "feature_title": "User Preferences",
+      "completion_percentage": 0,
+      "tasks_total": 3,
+      "tasks_completed": 0
+    },
+    {
+      "feature_id": "2d2cbe71-8b04-4f4e-8bda-a832f22aa835",
+      "feature_title": "Create Ride Offer",
+      "completion_percentage": 0,
+      "tasks_total": 3,
+      "tasks_completed": 0
+    },
+    {
+      "feature_id": "8d72f567-9f70-44db-b7de-11208e519854",
+      "feature_title": "Request Ride",
+      "completion_percentage": 0,
+      "tasks_total": 3,
+      "tasks_completed": 0
+    },
+    {
+      "feature_id": "15ac6040-0f45-4a7c-b909-2315810de617",
+      "feature_title": "Ride Matching",
+      "completion_percentage": 0,
+      "tasks_total": 3,
+      "tasks_completed": 0
+    },
+    {
+      "feature_id": "a7eaf427-5d65-45e9-bc5b-59bf0d018ec5",
+      "feature_title": "Payment Method Setup",
+      "completion_percentage": 0,
+      "tasks_total": 3,
+      "tasks_completed": 0
+    },
+    {
+      "feature_id": "c1130735-cbc7-48e9-a958-dd4244f3557f",
+      "feature_title": "Transaction Management",
+      "completion_percentage": 0,
+      "tasks_total": 3,
+      "tasks_completed": 0
+    },
+    {
+      "feature_id": "708ae2fd-8190-469d-9b5d-0395754eaf5f",
+      "feature_title": "Refunds and Disputes",
+      "completion_percentage": 0,
+      "tasks_total": 3,
       "tasks_completed": 0
     }
   ],
-  "last_updated": "2025-11-18T04:21:48.138Z"
+  "last_updated": "2025-11-25T04:46:29.469Z"
 }

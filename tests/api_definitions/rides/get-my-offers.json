@@ -1,0 +1,27 @@
+{
+  "endpoint": "/api/rides/offers",
+  "method": "GET",
+  "description": "Get all ride offers created by the authenticated user",
+  "requiresAuth": true,
+  "tags": ["rides", "offers", "user"],
+  "testCases": [
+    {
+      "name": "Happy path - get user's ride offers",
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": [
+          {
+            "id": "123e4567-e89b-12d3-a456-426614174000",
+            "user_id": "user-id-from-token",
+            "pickup_location": "123 Main St, City",
+            "dropoff_location": "456 Oak Ave, Town",
+            "available_seats": 3,
+            "created_at": "2024-01-15T10:30:00Z",
+            "updated_at": "2024-01-15T10:30:00Z"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,73 +1,92 @@
-import api from './api';
-import { User, AuthResponse } from '../types';
+import api, { setToken, removeToken } from './api';
+import {
+  User,
+  AuthResponse,
+  ApiResponse,
+  LoginCredentials,
+  RegisterData,
+} from '../types';
 
-export interface RegisterData {
-  email: string;
-  username: string;
-  first_name: string;
-  last_name: string;
-  password: string;
-  phone?: string;
-  date_of_birth?: string;
-}
+/**
+ * Register a new user
+ */
+export async function register(data: RegisterData): Promise<AuthResponse> {
+  const response = await api.post<ApiResponse<AuthResponse>>('/auth/register', data);
 
-export interface LoginData {
-  email: string;
-  password: string;
+  if (response.data.success && response.data.data) {
+    setToken(response.data.data.token);
+    return response.data.data;
+  }
+
+  throw new Error(response.data.error?.message || 'Registration failed');
 }
 
 /**
- * Auth service
+ * Login user
  */
-export const authService = {
-  /**
-   * Register new user
-   */
-  async register(data: RegisterData): Promise<AuthResponse> {
-    const response = await api.post<{ status: string; data: AuthResponse }>('/auth/register', data);
-    const { accessToken, refreshToken, user } = response.data.data;
+export async function login(credentials: LoginCredentials): Promise<AuthResponse> {
+  const response = await api.post<ApiResponse<AuthResponse>>('/auth/login', credentials);
 
-    // Store tokens
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
-
+  if (response.data.success && response.data.data) {
+    setToken(response.data.data.token);
     return response.data.data;
-  },
+  }
 
-  /**
-   * Login user
-   */
-  async login(data: LoginData): Promise<AuthResponse> {
-    const response = await api.post<{ status: string; data: AuthResponse }>('/auth/login', data);
-    const { accessToken, refreshToken, user } = response.data.data;
+  throw new Error(response.data.error?.message || 'Login failed');
+}
 
-    // Store tokens
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
+/**
+ * Get current user profile
+ */
+export async function getCurrentUser(): Promise<User> {
+  const response = await api.get<ApiResponse<User>>('/auth/me');
 
+  if (response.data.success && response.data.data) {
     return response.data.data;
-  },
+  }
 
-  /**
-   * Logout user
-   */
-  logout(): void {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-  },
+  throw new Error(response.data.error?.message || 'Failed to get user');
+}
 
-  /**
-   * Get current user
-   */
-  async getCurrentUser(): Promise<User> {
-    const response = await api.get<{ status: string; data: { user: User } }>('/auth/me');
-    return response.data.data.user;
-  },
+/**
+ * Update user profile
+ */
+export async function updateProfile(data: { name?: string; preferences?: string }): Promise<User> {
+  const response = await api.put<ApiResponse<User>>('/auth/profile', data);
 
-  /**
-   * Check if user is authenticated
-   */
-  isAuthenticated(): boolean {
-    return !!localStorage.getItem('accessToken');
-  },
+  if (response.data.success && response.data.data) {
+    return response.data.data;
+  }
+
+  throw new Error(response.data.error?.message || 'Failed to update profile');
+}
+
+/**
+ * Change password
+ */
+export async function changePassword(currentPassword: string, newPassword: string): Promise<void> {
+  const response = await api.put<ApiResponse<void>>('/auth/password', {
+    currentPassword,
+    newPassword,
+  });
+
+  if (!response.data.success) {
+    throw new Error(response.data.error?.message || 'Failed to change password');
+  }
+}
+
+/**
+ * Logout user
+ */
+export function logout(): void {
+  removeToken();
+}
+
+export default {
+  register,
+  login,
+  getCurrentUser,
+  updateProfile,
+  changePassword,
+  logout,
 };

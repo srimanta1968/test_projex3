@@ -5,23 +5,24 @@
   "selectedPurposes": [
     "api_development",
     "ui_development",
-    "unit_tests",
-    "integration_tests"
+    "unit_tests"
   ],
   "frameworkConfig": {
     "backend": {
       "framework": "express",
-      "language": "typescript",
-      "database": "postgresql"
+      "language": "typescript"
     },
     "frontend": {
       "framework": "react",
       "language": "typescript",
       "styling": "tailwind"
     },
+    "database": {
+      "type": "postgresql"
+    },
     "testing": {
-      "unitTest": "jest",
-      "e2eTest": "playwright"
+      "unitFramework": "jest",
+      "e2eFramework": "playwright"
     }
   }
 }

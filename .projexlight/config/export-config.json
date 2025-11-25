@@ -5,8 +5,7 @@
   "selectedPurposes": [
     "api_development",
     "ui_development",
-    "unit_tests",
-    "integration_tests"
+    "unit_tests"
   ],
   "folderMapping": {
     "models": "server/src/models",

@@ -1,0 +1,27 @@
+{
+  "endpoint": "/api/payments/transactions",
+  "method": "POST",
+  "description": "Create a new transaction",
+  "requiresAuth": true,
+  "tags": ["payments", "transactions", "create"],
+  "testCases": [
+    {
+      "name": "Happy path - create transaction",
+      "payload": {
+        "amount": 25.50
+      },
+      "expectedStatus": 201,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "id": "def67890-e89b-12d3-a456-426614174004",
+          "user_id": "user-id-from-token",
+          "amount": 25.50,
+          "transaction_date": "2024-01-15T10:30:00Z",
+          "status": "pending",
+          "created_at": "2024-01-15T10:30:00Z"
+        }
+      }
+    }
+  ]
+}

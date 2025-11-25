@@ -1,35 +1,35 @@
 {
   "sequence_number": 5,
-  "task_id": "5b233618-b8f2-404e-ba90-e3644569c7ef",
-  "title": "Conduct Testing for Financial Dashboard Features",
-  "description": "Perform testing on the financial dashboard to ensure all features (data retrieval, updates, UI responsiveness) are functioning correctly.",
-  "task_type": "testing",
+  "task_id": "34f84f33-161f-4303-acb1-be903935d84b",
+  "title": "Store Match Results",
+  "description": "Create a schema to store matched rides and user connections.",
+  "task_type": "database",
   "task_role": "developer",
   "status": "pending",
   "started_at": null,
   "completed_at": null,
-  "total_sub_tasks": 4,
+  "total_sub_tasks": 3,
   "completed_sub_tasks": 0,
   "in_progress_sub_tasks": 0,
-  "pending_sub_tasks": 4,
+  "pending_sub_tasks": 3,
   "current_sub_task_index": 1,
-  "acceptance_criteria": [
-    "All features of the dashboard are tested for functionality and performance.",
-    "Bugs and issues are documented and tracked.",
-    "User acceptance testing is completed with feedback collected."
-  ],
+  "acceptance_criteria": [],
   "acceptance_criteria_met": [],
   "sub_tasks": [
     {
       "sequence_number": 1,
-      "title": "Set up test environment and configuration",
-      "description": "Configure Jest, testing libraries, and test database",
+      "title": "Design database schema and entity relationships",
+      "description": "🚨 CRITICAL: FIRST read .projexlight/context/requirements.md to understand the specific requirements for \"Store Match Results\". Look for the task's acceptance criteria and implement according to those exact specifications. 🚨 CRITICAL: FIRST read .projexlight/schemas/user-defined-schemas.sql and init-scripts/01-schema.sql to check for EXISTING tables. REUSE existing tables by adding columns instead of creating new ones. Only create new tables if absolutely necessary. Then create ERD, define tables, columns, types, constraints, and relationships based on the specific requirements and acceptance criteria",
       "status": "pending",
       "files_to_generate": [
-        "jest.config.js",
-        "tests/utils/*.ts"
+        "server/src/models/*.ts",
+        "server/src/migrations/*.sql"
       ],
-      "estimated_tokens": 1000,
+      "estimated_tokens": 2000,
+      "dependencies": [
+        "Task 0: Database connection must exist",
+        "MANDATORY: Read requirements.md AND .projexlight/schemas/ first"
+      ],
       "started_at": null,
       "completed_at": null,
       "files_generated": [],
@@ -37,15 +37,17 @@
     },
     {
       "sequence_number": 2,
-      "title": "Write unit tests for all components/services",
-      "description": "Create comprehensive unit test coverage",
+      "title": "Create database migration scripts",
+      "description": "🚨 CRITICAL: FIRST check .projexlight/schemas/user-defined-schemas.sql for existing tables. REUSE and ALTER existing tables instead of creating duplicates. Write SQL migration scripts only for NEW tables or columns that don't exist",
       "status": "pending",
       "files_to_generate": [
-        "tests/**/*.test.ts",
-        "server/tests/**/*.test.ts",
-        "client/tests/**/*.test.ts"
+        "server/src/migrations/*.sql"
       ],
-      "estimated_tokens": 3000,
+      "estimated_tokens": 1500,
+      "dependencies": [
+        "Task 0: Database connection must exist",
+        "MANDATORY: Verify no duplicate tables by checking schema file first"
+      ],
       "started_at": null,
       "completed_at": null,
       "files_generated": [],
@@ -53,27 +55,17 @@
     },
     {
       "sequence_number": 3,
-      "title": "Write integration tests for API flows",
-      "description": "Test complete user flows and API integrations",
+      "title": "Implement data models and TypeScript interfaces",
+      "description": "🚨 CRITICAL: Read .projexlight/schemas/user-defined-schemas.sql to understand existing table structure. Create TypeScript models that match the EXISTING database schema. Do not create models for tables that don't exist in the schema",
       "status": "pending",
       "files_to_generate": [
-        "tests/integration/*.test.ts"
+        "server/src/models/*.ts"
       ],
-      "estimated_tokens": 2500,
-      "started_at": null,
-      "completed_at": null,
-      "files_generated": [],
-      "notes": ""
-    },
-    {
-      "sequence_number": 4,
-      "title": "Document test results and coverage",
-      "description": "Generate coverage reports and document test results",
-      "status": "pending",
-      "files_to_generate": [
-        "TEST_RESULTS.md"
+      "estimated_tokens": 1500,
+      "dependencies": [
+        "Task 0: Server and database setup must be complete",
+        "MANDATORY: Models must match schema file structure"
       ],
-      "estimated_tokens": 500,
       "started_at": null,
       "completed_at": null,
       "files_generated": [],

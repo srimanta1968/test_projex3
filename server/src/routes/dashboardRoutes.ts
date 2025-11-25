@@ -1,47 +1,111 @@
-import { Router, Request, Response, NextFunction } from 'express';
-import { DashboardService } from '../services/DashboardService';
+import { Router, Request, Response } from 'express';
+import { dashboardService } from '../services/DashboardService';
 import { authenticate } from '../middleware/authMiddleware';
+import { asyncHandler } from '../middleware/errorHandler';
 
 const router = Router();
-const dashboardService = new DashboardService();
 
 /**
- * GET /api/dashboard/overview
- * Get dashboard overview for current user
+ * @route   GET /api/dashboard
+ * @desc    Get dashboard data for authenticated user
+ * @access  Private
  */
-router.get('/overview', authenticate, async (req: Request, res: Response, next: NextFunction) => {
-  try {
+router.get(
+  '/',
+  authenticate,
+  asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user!.userId;
-    const data = await dashboardService.getDashboardOverview(userId);
+
+    const dashboardData = await dashboardService.getDashboardData(userId);
+
     res.status(200).json({
-      status: 'success',
-      data,
+      success: true,
+      data: dashboardData,
     });
-  } catch (error) {
-    next(error);
-  }
-});
+  })
+);
 
 /**
- * GET /api/dashboard/summary
- * Get financial summary for date range
+ * @route   GET /api/dashboard/stats
+ * @desc    Get dashboard statistics only
+ * @access  Private
  */
-router.get('/summary', authenticate, async (req: Request, res: Response, next: NextFunction) => {
-  try {
+router.get(
+  '/stats',
+  authenticate,
+  asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user!.userId;
-    const { startDate, endDate } = req.query;
 
-    const start = startDate ? new Date(startDate as string) : new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    const end = endDate ? new Date(endDate as string) : new Date();
+    const stats = await dashboardService.getStats(userId);
 
-    const data = await dashboardService.getFinancialSummary(userId, start, end);
     res.status(200).json({
-      status: 'success',
-      data,
+      success: true,
+      data: stats,
     });
-  } catch (error) {
-    next(error);
-  }
-});
+  })
+);
+
+/**
+ * @route   GET /api/dashboard/activity
+ * @desc    Get recent activity
+ * @access  Private
+ */
+router.get(
+  '/activity',
+  authenticate,
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user!.userId;
+    const limit = parseInt(req.query.limit as string, 10) || 10;
+
+    const activity = await dashboardService.getRecentActivity(userId, limit);
+
+    res.status(200).json({
+      success: true,
+      data: activity,
+    });
+  })
+);
+
+/**
+ * @route   GET /api/dashboard/offers
+ * @desc    Get user's ride offers
+ * @access  Private
+ */
+router.get(
+  '/offers',
+  authenticate,
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user!.userId;
+    const limit = parseInt(req.query.limit as string, 10) || 10;
+
+    const offers = await dashboardService.getMyOffers(userId, limit);
+
+    res.status(200).json({
+      success: true,
+      data: offers,
+    });
+  })
+);
+
+/**
+ * @route   GET /api/dashboard/requests
+ * @desc    Get user's ride requests
+ * @access  Private
+ */
+router.get(
+  '/requests',
+  authenticate,
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user!.userId;
+    const limit = parseInt(req.query.limit as string, 10) || 10;
+
+    const requests = await dashboardService.getMyRequests(userId, limit);
+
+    res.status(200).json({
+      success: true,
+      data: requests,
+    });
+  })
+);
 
 export default router;

@@ -1,80 +1,89 @@
 /**
- * User interface matching database schema
+ * User entity interface - matches database schema
  */
 export interface User {
   id: string;
+  name: string | null;
   email: string;
-  username: string;
-  first_name: string;
-  last_name: string;
-  phone?: string;
-  date_of_birth?: Date;
-  status: string;
-  password_hash: string;
+  password: string;
+  preferences: string | null;
   email_verified: boolean;
-  email_verified_at?: Date;
-  two_factor_enabled: boolean;
-  two_factor_secret?: string;
-  preferences?: any;
-  last_login_at?: Date;
-  last_login_ip?: string;
-  failed_login_attempts: number;
-  locked_until?: Date;
+  verification_token: string | null;
+  verification_token_expires: Date | null;
+  reset_password_token: string | null;
+  reset_password_expires: Date | null;
   created_at: Date;
   updated_at: Date;
 }
 
 /**
- * User DTO (without sensitive data)
+ * User data for registration
  */
-export interface UserDTO {
+export interface CreateUserDTO {
+  name: string;
+  email: string;
+  password: string;
+}
+
+/**
+ * User data for login
+ */
+export interface LoginDTO {
+  email: string;
+  password: string;
+}
+
+/**
+ * User response (without sensitive data)
+ */
+export interface UserResponseDTO {
   id: string;
+  name: string | null;
   email: string;
-  username: string;
-  first_name: string;
-  last_name: string;
-  phone?: string;
-  date_of_birth?: Date;
-  status: string;
+  preferences: string | null;
   email_verified: boolean;
-  two_factor_enabled: boolean;
-  last_login_at?: Date;
   created_at: Date;
+  updated_at: Date;
 }
 
 /**
- * User registration input
+ * User update data
  */
-export interface RegisterInput {
+export interface UpdateUserDTO {
+  name?: string;
+  email?: string;
+  preferences?: string;
+}
+
+/**
+ * Authentication response with token
+ */
+export interface AuthResponseDTO {
+  user: UserResponseDTO;
+  token: string;
+}
+
+/**
+ * JWT payload structure
+ */
+export interface JWTPayload {
+  userId: string;
   email: string;
-  username: string;
-  first_name: string;
-  last_name: string;
-  password: string;
-  phone?: string;
-  date_of_birth?: Date;
+  iat?: number;
+  exp?: number;
 }
 
 /**
- * User login input
+ * Convert User to UserResponseDTO (strip sensitive data)
  */
-export interface LoginInput {
-  email: string;
-  password: string;
-}
-
-/**
- * Convert User to UserDTO (remove sensitive fields)
- */
-export function userToDTO(user: User): UserDTO {
-  const {
-    password_hash,
-    two_factor_secret,
-    failed_login_attempts,
-    locked_until,
-    last_login_ip,
-    preferences,
-    ...dto
-  } = user;
-  return dto;
+export function toUserResponse(user: User): UserResponseDTO {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    preferences: user.preferences,
+    email_verified: user.email_verified ?? false,
+    created_at: user.created_at,
+    updated_at: user.updated_at,
+  };
 }

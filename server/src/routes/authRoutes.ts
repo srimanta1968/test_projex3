@@ -1,158 +1,166 @@
-import { Router, Request, Response, NextFunction } from 'express';
-import { AuthService } from '../services/AuthService';
-import { validate, registerSchema, loginSchema } from '../middleware/validation';
+import { Router, Request, Response } from 'express';
+import { body } from 'express-validator';
+import { authService } from '../services/AuthService';
 import { authenticate } from '../middleware/authMiddleware';
+import { validate } from '../middleware/validation';
+import { asyncHandler } from '../middleware/errorHandler';
 
 const router = Router();
-const authService = new AuthService();
 
 /**
- * POST /api/auth/register
- * Register a new user
+ * @route   POST /api/auth/register
+ * @desc    Register a new user
+ * @access  Public
  */
-router.post('/register', validate(registerSchema), async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const result = await authService.register(req.body);
+router.post(
+  '/register',
+  validate([
+    body('name')
+      .trim()
+      .notEmpty()
+      .withMessage('Name is required')
+      .isLength({ min: 2, max: 100 })
+      .withMessage('Name must be between 2 and 100 characters'),
+    body('email')
+      .trim()
+      .notEmpty()
+      .withMessage('Email is required')
+      .isEmail()
+      .withMessage('Invalid email format')
+      .normalizeEmail(),
+    body('password')
+      .notEmpty()
+      .withMessage('Password is required')
+      .isLength({ min: 8 })
+      .withMessage('Password must be at least 8 characters'),
+  ]),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { name, email, password } = req.body;
+
+    const result = await authService.register({ name, email, password });
+
     res.status(201).json({
-      status: 'success',
+      success: true,
+      message: 'User registered successfully',
       data: result,
     });
-  } catch (error) {
-    next(error);
-  }
-});
+  })
+);
 
 /**
- * POST /api/auth/login
- * Login user
+ * @route   POST /api/auth/login
+ * @desc    Login user
+ * @access  Public
  */
-router.post('/login', validate(loginSchema), async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const ipAddress = req.ip || req.socket.remoteAddress;
-    const result = await authService.login(req.body, ipAddress);
+router.post(
+  '/login',
+  validate([
+    body('email')
+      .trim()
+      .notEmpty()
+      .withMessage('Email is required')
+      .isEmail()
+      .withMessage('Invalid email format')
+      .normalizeEmail(),
+    body('password')
+      .notEmpty()
+      .withMessage('Password is required'),
+  ]),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { email, password } = req.body;
+
+    const result = await authService.login({ email, password });
+
     res.status(200).json({
-      status: 'success',
+      success: true,
+      message: 'Login successful',
       data: result,
     });
-  } catch (error) {
-    next(error);
-  }
-});
+  })
+);
 
 /**
- * GET /api/auth/me
- * Get current user
+ * @route   GET /api/auth/me
+ * @desc    Get current user profile
+ * @access  Private
  */
-router.get('/me', authenticate, async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const user = await authService.getUserById(req.user!.userId);
-    res.status(200).json({
-      status: 'success',
-      data: { user },
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-export default router;
-
-/**
- * POST /api/auth/logout
- * Logout user
- */
-router.post('/logout', authenticate, async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    // Clear session/token
-    res.status(200).json({
-      status: 'success',
-      message: 'Logged out successfully',
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-
-/**
- * PUT /api/auth/change-password
- * Change user password
- */
-router.put('/change-password', authenticate, async (req: Request, res: Response, next: NextFunction) => {
-  try {
+router.get(
+  '/me',
+  authenticate,
+  asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user!.userId;
-    await authService.changePassword(userId, req.body.currentPassword, req.body.newPassword);
+
+    const user = await authService.getUserById(userId);
+
     res.status(200).json({
-      status: 'success',
+      success: true,
+      data: user,
+    });
+  })
+);
+
+/**
+ * @route   PUT /api/auth/profile
+ * @desc    Update user profile
+ * @access  Private
+ */
+router.put(
+  '/profile',
+  authenticate,
+  validate([
+    body('name')
+      .optional()
+      .trim()
+      .isLength({ min: 2, max: 100 })
+      .withMessage('Name must be between 2 and 100 characters'),
+    body('preferences')
+      .optional()
+      .isString()
+      .withMessage('Preferences must be a string'),
+  ]),
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user!.userId;
+    const { name, preferences } = req.body;
+
+    const user = await authService.updateProfile(userId, { name, preferences });
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully',
+      data: user,
+    });
+  })
+);
+
+/**
+ * @route   PUT /api/auth/password
+ * @desc    Change user password
+ * @access  Private
+ */
+router.put(
+  '/password',
+  authenticate,
+  validate([
+    body('currentPassword')
+      .notEmpty()
+      .withMessage('Current password is required'),
+    body('newPassword')
+      .notEmpty()
+      .withMessage('New password is required')
+      .isLength({ min: 8 })
+      .withMessage('New password must be at least 8 characters'),
+  ]),
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user!.userId;
+    const { currentPassword, newPassword } = req.body;
+
+    await authService.changePassword(userId, currentPassword, newPassword);
+
+    res.status(200).json({
+      success: true,
       message: 'Password changed successfully',
     });
-  } catch (error) {
-    next(error);
-  }
-});
+  })
+);
 
-// Test API detection after fixes
-// Final test after fixes
-// Testing pre-push hook API detection - Nov 17, 2025
-// Updated MCP server binary - should detect ALL endpoints now!
-
-/**
- * GET /api/test/detection
- * Test endpoint for MCP API detection
- */
-router.get('/api/test/detection', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    res.status(200).json({
-      status: 'success',
-      message: 'MCP API detection test endpoint',
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-// API detection test - Mon, Nov 17, 2025  4:28:46 PM
-// Final test
-// test
-
-/**
- * POST /verify-email
- * NEW endpoint to demonstrate API testing with PASSED count
- */
-router.post('/verify-email', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    res.status(200).json({
-      status: 'success',
-      message: 'Email verified successfully',
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-// Testing API detection - Mon, Nov 17, 2025  5:09:19 PM
-// Test API detection - Mon, Nov 17, 2025  5:12:41 PM
-// Testing improved duplicate detection - $(date)
-// Test change 1
-
-// Testing route prefix detection
-
-// Test: Verify .env detection and route prefix detection
-// Verify complete fix
-// Final test of complete fix
-// Final test with production executable
-// Testing route prefix detection
-// Testing route prefix detection
-// Testing route prefix detection
-// Testing route prefix detection
-// Testing route prefix detection
-// Testing route prefix detection
-// Test route detection
-
-/**
- * GET /test-route-detection  
- * Test route to verify MCP server detects it
- */
-router.get('/test-route-detection', async (req: Request, res: Response) => {
-  res.json({ message: 'Route detection test', timestamp: new Date() });
-});
-// Testing fixed project_root path
+export default router;

@@ -1,0 +1,28 @@
+{
+  "endpoint": "/api/rides/offers/available",
+  "method": "GET",
+  "description": "Get available ride offers from other users",
+  "requiresAuth": true,
+  "tags": ["rides", "offers", "search"],
+  "testCases": [
+    {
+      "name": "Happy path - get available ride offers",
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": [
+          {
+            "id": "123e4567-e89b-12d3-a456-426614174000",
+            "user_id": "driver-user-id",
+            "pickup_location": "Downtown Station",
+            "dropoff_location": "Airport Terminal",
+            "available_seats": 2,
+            "driver_name": "John Driver",
+            "created_at": "2024-01-15T10:30:00Z",
+            "updated_at": "2024-01-15T10:30:00Z"
+          }
+        ]
+      }
+    }
+  ]
+}

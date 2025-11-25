@@ -1,0 +1,27 @@
+{
+  "endpoint": "/api/rides/matches/accept",
+  "method": "POST",
+  "description": "Accept a ride request and create a match",
+  "requiresAuth": true,
+  "tags": ["rides", "matches", "create"],
+  "testCases": [
+    {
+      "name": "Happy path - accept request and create match",
+      "payload": {
+        "request_id": "456e7890-e89b-12d3-a456-426614174001"
+      },
+      "expectedStatus": 201,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "id": "789e0123-e89b-12d3-a456-426614174002",
+          "ride_offer_id": "123e4567-e89b-12d3-a456-426614174000",
+          "user_id": "rider-user-id",
+          "status": "active",
+          "created_at": "2024-01-15T10:30:00Z",
+          "updated_at": "2024-01-15T10:30:00Z"
+        }
+      }
+    }
+  ]
+}

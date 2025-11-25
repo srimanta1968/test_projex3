@@ -21,7 +21,6 @@ NC='\033[0m' # No Color
 
 # Configuration
 MCP_SERVER_URL="${MCP_SERVER_URL:-http://localhost:8766}"
-PROJECT_ROOT="/workspace"  # MCP Docker container mounts project root at /workspace
 
 # ============================================================
 # Detect Operating System
@@ -48,6 +47,15 @@ detect_os() {
 }
 
 OS_TYPE=$(detect_os)
+
+# Set PROJECT_ROOT based on where the hook is running
+if [ "$OS_TYPE" = "linux" ] && [ -d "/workspace" ]; then
+    # Running inside Docker container
+    PROJECT_ROOT="/workspace"
+else
+    # Running on host (Windows/Mac/WSL) - use git repository root
+    PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+fi
 
 echo -e "${BLUE}🚀 ProjexLight Pre-Push Hook${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -85,24 +93,73 @@ else
     STARTUP_COMMAND="bash"
 fi
 
+# ============================================================
+# AUTO-DETECT PORT from .env file (PRIORITY 1)
+# ============================================================
+SERVER_PORT=""
+DB_PORT=""
+ENV_FILE=""
+
+# Check common .env locations
+for env_path in "$PROJECT_ROOT/.env" "$PROJECT_ROOT/server/.env" "$PROJECT_ROOT/backend/.env"; do
+    if [ -f "$env_path" ]; then
+        ENV_FILE="$env_path"
+        break
+    fi
+done
+
+if [ -n "$ENV_FILE" ]; then
+    echo -e "\n${BLUE}📋 Reading configuration from .env file...${NC}"
+    echo -e "   Location: ${GREEN}${ENV_FILE}${NC}"
+
+    # Load ALL environment variables from .env file (make them available to subprocesses)
+    set -a  # Enable export for all variables
+    source "$ENV_FILE" 2>/dev/null || true
+    set +a  # Disable export
+
+    # Parse PORT from .env (handle various formats: PORT=3005, PORT = 3005, PORT="3005")
+    if grep -q "^PORT[[:space:]]*=" "$ENV_FILE"; then
+        SERVER_PORT=$(grep "^PORT[[:space:]]*=" "$ENV_FILE" | head -1 | sed 's/^PORT[[:space:]]*=[[:space:]]*//; s/"//g; s/'"'"'//g; s/#.*//; s/[[:space:]]*$//')
+        export SERVER_PORT
+        echo -e "   Server port: ${GREEN}${SERVER_PORT}${NC} (from .env)"
+    fi
+
+    # Parse DB_PORT from .env
+    if grep -q "^DB_PORT[[:space:]]*=" "$ENV_FILE"; then
+        DB_PORT=$(grep "^DB_PORT[[:space:]]*=" "$ENV_FILE" | head -1 | sed 's/^DB_PORT[[:space:]]*=[[:space:]]*//; s/"//g; s/'"'"'//g; s/#.*//; s/[[:space:]]*$//')
+        export DB_PORT
+        echo -e "   Database port: ${GREEN}${DB_PORT}${NC} (from .env)"
+    fi
+fi
+
+# ============================================================
+# LOAD PROJECT CONFIGURATION (PRIORITY 2)
+# ============================================================
 if [ -f "$CONFIG_FILE" ]; then
     echo -e "\n${BLUE}📋 Loading project configuration...${NC}"
     PROJECT_TYPE=$(jq -r '.project_type // "unknown"' "$CONFIG_FILE" 2>/dev/null || echo "unknown")
     FRAMEWORK=$(jq -r '.framework // "unknown"' "$CONFIG_FILE" 2>/dev/null || echo "unknown")
-    SERVER_PORT=$(jq -r '.server_port // 3000' "$CONFIG_FILE" 2>/dev/null || echo "3000")
+
+    # Only use config.json port if .env didn't provide one
+    if [ -z "$SERVER_PORT" ]; then
+        SERVER_PORT=$(jq -r '.server_port // 3000' "$CONFIG_FILE" 2>/dev/null || echo "3000")
+        echo -e "   Server port: ${GREEN}${SERVER_PORT}${NC} (from config.json)"
+    fi
+
     HEALTH_ENDPOINT=$(jq -r '.health_endpoint // "/health"' "$CONFIG_FILE" 2>/dev/null || echo "/health")
 
     echo -e "   Project type: ${GREEN}${PROJECT_TYPE}${NC}"
     echo -e "   Framework: ${GREEN}${FRAMEWORK}${NC}"
-    echo -e "   Server port: ${GREEN}${SERVER_PORT}${NC}"
 else
-    # Fallback to environment variables
-    SERVER_PORT="${BACKEND_PORT:-3000}"
+    # Fallback to environment variables or defaults
+    if [ -z "$SERVER_PORT" ]; then
+        SERVER_PORT="${BACKEND_PORT:-3000}"
+        echo -e "\n${YELLOW}⚠️  No .env or config.json found${NC}"
+        echo -e "${YELLOW}   Using default port: ${SERVER_PORT}${NC}"
+    fi
     HEALTH_ENDPOINT="/health"
     PROJECT_TYPE="unknown"
     FRAMEWORK="unknown"
-    echo -e "\n${YELLOW}⚠️  No project configuration found${NC}"
-    echo -e "${YELLOW}   Using default port: ${SERVER_PORT}${NC}"
 fi
 
 # Full health endpoint URL
@@ -306,7 +363,7 @@ echo -e "\n${BLUE}🧪 Running API tests on changed files...${NC}"
 API_TEST_RESULT=$(curl -s -X POST "${MCP_SERVER_URL}/api/test" \
     -H "Content-Type: application/json" \
     -d "{
-        \"project_root\": \"${PROJECT_ROOT}\",
+        \"project_root\": \"/workspace\",
         \"triggered_by\": \"git_push\",
         \"changed_files\": ${CHANGED_FILES_JSON},
         \"local_server_running\": true,
@@ -317,17 +374,26 @@ API_TEST_RESULT=$(curl -s -X POST "${MCP_SERVER_URL}/api/test" \
 if [ $? -eq 0 ] && [ -n "$API_TEST_RESULT" ]; then
     # Parse test results
     TOTAL_APIS=$(echo "$API_TEST_RESULT" | jq -r '.summary.totalAPIs // 0' 2>/dev/null || echo "0")
+    NEW_APIS=$(echo "$API_TEST_RESULT" | jq -r '.summary.newAPIs // 0' 2>/dev/null || echo "0")
+    MODIFIED_APIS=$(echo "$API_TEST_RESULT" | jq -r '.summary.modifiedAPIs // 0' 2>/dev/null || echo "0")
     PASSED=$(echo "$API_TEST_RESULT" | jq -r '.summary.passedAPIs // 0' 2>/dev/null || echo "0")
     FAILED=$(echo "$API_TEST_RESULT" | jq -r '.summary.failedAPIs // 0' 2>/dev/null || echo "0")
-    DUPLICATES=$(echo "$API_TEST_RESULT" | jq -r '.summary.duplicateAPIs // 0' 2>/dev/null || echo "0")
+    BLOCKING_CONFLICTS=$(echo "$API_TEST_RESULT" | jq -r '.summary.blockingConflicts // 0' 2>/dev/null || echo "0")
+    DUPLICATE_WARNINGS=$(echo "$API_TEST_RESULT" | jq -r '.summary.duplicateWarnings // 0' 2>/dev/null || echo "0")
     SKIPPED=$(echo "$API_TEST_RESULT" | jq -r '.summary.skippedAPIs // 0' 2>/dev/null || echo "0")
 
     echo -e "${GREEN}✓ API Testing completed${NC}"
-    echo -e "  Total APIs: ${TOTAL_APIS}"
-    echo -e "  Passed: ${GREEN}${PASSED}${NC}"
+    echo -e "  Total APIs discovered: ${TOTAL_APIS}"
+    echo -e "  New APIs: ${GREEN}${NEW_APIS}${NC}"
+
+    if [ "$MODIFIED_APIS" -gt 0 ]; then
+        echo -e "  Modified APIs: ${BLUE}${MODIFIED_APIS}${NC}"
+    fi
+
+    echo -e "  Tests passed: ${GREEN}${PASSED}${NC}"
 
     if [ "$FAILED" -gt 0 ]; then
-        echo -e "  Failed: ${RED}${FAILED}${NC}"
+        echo -e "  Tests failed: ${RED}${FAILED}${NC}"
 
         # Show failed test details
         FAILED_ENDPOINTS=$(echo "$API_TEST_RESULT" | jq -r '.failedTests[]? | "   - \(.method) \(.endpoint): \(.errorMessage)"' 2>/dev/null || echo "")
@@ -338,11 +404,39 @@ if [ $? -eq 0 ] && [ -n "$API_TEST_RESULT" ]; then
     fi
 
     if [ "$SKIPPED" -gt 0 ]; then
-        echo -e "  Skipped: ${YELLOW}${SKIPPED}${NC}"
+        echo -e "  Tests skipped: ${YELLOW}${SKIPPED}${NC}"
     fi
 
-    if [ "$DUPLICATES" -gt 0 ]; then
-        echo -e "  ${YELLOW}⚠️  Duplicate APIs detected: ${DUPLICATES}${NC}"
+    if [ "$BLOCKING_CONFLICTS" -gt 0 ]; then
+        echo -e "  ${RED}🚨 Blocking conflicts: ${BLOCKING_CONFLICTS}${NC}"
+    fi
+
+    if [ "$DUPLICATE_WARNINGS" -gt 0 ]; then
+        echo -e "  ${YELLOW}⚠️  Duplicate warnings: ${DUPLICATE_WARNINGS}${NC}"
+    fi
+
+    # BLOCK push if there are conflicting APIs
+    if [ "$BLOCKING_CONFLICTS" -gt 0 ]; then
+        echo -e "\n${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo -e "${RED}❌ PUSH BLOCKED: ${BLOCKING_CONFLICTS} conflicting API(s) detected${NC}"
+        echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo ""
+        echo -e "${YELLOW}You have created APIs that conflict with existing endpoints:${NC}"
+        echo ""
+
+        # Show conflict details
+        CONFLICT_DETAILS=$(echo "$API_TEST_RESULT" | jq -r '.duplicateAPIsDetected[]? | select(.blocking == true) | "   - \(.newAPI.method) \(.newAPI.endpoint) in \(.newAPI.routeFilePath)\n     Conflicts with existing API in \(.existingAPI.routeFilePath)\n     Action: \(.recommendation)"' 2>/dev/null || echo "")
+        if [ -n "$CONFLICT_DETAILS" ]; then
+            echo -e "${CONFLICT_DETAILS}"
+        fi
+
+        echo ""
+        echo -e "${YELLOW}Please resolve conflicts by:${NC}"
+        echo -e "  1. Renaming the new API to a different endpoint"
+        echo -e "  2. Removing the new API and using the existing one"
+        echo ""
+        echo -e "${YELLOW}To bypass (NOT RECOMMENDED): git push --no-verify${NC}"
+        exit 1
     fi
 
     # Optionally fail push if tests failed
@@ -367,7 +461,7 @@ echo -e "\n${BLUE}🔍 Scanning for duplicate components in changed files...${NC
 COMPONENT_SCAN_RESULT=$(curl -s -X POST "${MCP_SERVER_URL}/api/components/scan" \
     -H "Content-Type: application/json" \
     -d "{
-        \"project_root\": \"${PROJECT_ROOT}\",
+        \"project_root\": \"/workspace\",
         \"triggered_by\": \"git_push\",
         \"changed_files\": ${CHANGED_FILES_JSON}
     }" 2>&1)

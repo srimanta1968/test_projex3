@@ -1,0 +1,25 @@
+{
+  "endpoint": "/api/payments/refunds",
+  "method": "GET",
+  "description": "Get all refund requests for the authenticated user",
+  "requiresAuth": true,
+  "tags": ["payments", "refunds", "user"],
+  "testCases": [
+    {
+      "name": "Happy path - get refunds",
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": [
+          {
+            "id": "ghi01234-e89b-12d3-a456-426614174005",
+            "transaction_id": "def67890-e89b-12d3-a456-426614174004",
+            "amount": 25.50,
+            "status": "pending",
+            "created_at": "2024-01-15T10:30:00Z"
+          }
+        ]
+      }
+    }
+  ]
+}

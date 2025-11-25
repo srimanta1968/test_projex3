@@ -1,8 +1,8 @@
 {
   "sequence_number": 1,
-  "task_id": "400f015a-545f-4f01-b852-c5e63d21734b",
-  "title": "Implement Database Schema for Financial Dashboard",
-  "description": "Design and implement the database schema to store income, expenses, and net worth data for the financial dashboard.",
+  "task_id": "79ec2cde-e421-48e4-9dfc-639274042111",
+  "title": "Setup User Profile Storage",
+  "description": "Create a database schema to store user profile information securely.",
   "task_type": "database",
   "task_role": "developer",
   "status": "pending",
@@ -13,17 +13,13 @@
   "in_progress_sub_tasks": 0,
   "pending_sub_tasks": 3,
   "current_sub_task_index": 1,
-  "acceptance_criteria": [
-    "Database schema is designed and documented.",
-    "Tables for income, expenses, and net worth are created and functional.",
-    "Database is integrated with the application backend."
-  ],
+  "acceptance_criteria": [],
   "acceptance_criteria_met": [],
   "sub_tasks": [
     {
       "sequence_number": 1,
       "title": "Design database schema and entity relationships",
-      "description": "🚨 CRITICAL: FIRST read .projexlight/context/requirements.md to understand the specific requirements for \"Implement Database Schema for Financial Dashboard\". Look for the task's acceptance criteria and implement according to those exact specifications. 🚨 CRITICAL: FIRST read .projexlight/schemas/user-defined-schemas.sql and init-scripts/01-schema.sql to check for EXISTING tables. REUSE existing tables by adding columns instead of creating new ones. Only create new tables if absolutely necessary. Then create ERD, define tables, columns, types, constraints, and relationships based on the specific requirements and acceptance criteria",
+      "description": "🚨 CRITICAL: FIRST read .projexlight/context/requirements.md to understand the specific requirements for \"Setup User Profile Storage\". Look for the task's acceptance criteria and implement according to those exact specifications. 🚨 CRITICAL: FIRST read .projexlight/schemas/user-defined-schemas.sql and init-scripts/01-schema.sql to check for EXISTING tables. REUSE existing tables by adding columns instead of creating new ones. Only create new tables if absolutely necessary. Then create ERD, define tables, columns, types, constraints, and relationships based on the specific requirements and acceptance criteria",
       "status": "pending",
       "files_to_generate": [
         "server/src/models/*.ts",

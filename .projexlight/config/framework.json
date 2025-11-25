@@ -1,8 +1,7 @@
 {
   "backend": {
     "framework": "express",
-    "language": "typescript",
-    "database": "postgresql"
+    "language": "typescript"
   },
   "frontend": {
     "framework": "react",
@@ -10,7 +9,7 @@
     "styling": "tailwind"
   },
   "testing": {
-    "unitTest": "jest",
-    "e2eTest": "playwright"
+    "unitFramework": "jest",
+    "e2eFramework": "playwright"
   }
 }

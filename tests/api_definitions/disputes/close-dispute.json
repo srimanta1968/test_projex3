@@ -1,0 +1,29 @@
+{
+  "endpoint": "/api/disputes/:id/close",
+  "method": "POST",
+  "description": "Close a dispute (by the dispute creator)",
+  "requiresAuth": true,
+  "tags": ["disputes", "close"],
+  "testCases": [
+    {
+      "name": "Happy path - close dispute",
+      "pathParams": {
+        "id": "123e4567-e89b-12d3-a456-426614174000"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "id": "123e4567-e89b-12d3-a456-426614174000",
+          "user_id": "user-id-from-token",
+          "dispute_type": "service",
+          "status": "closed",
+          "reason": "Poor service quality during ride",
+          "description": "Driver was late and took a longer route",
+          "resolved_at": "2024-01-15T12:00:00Z",
+          "updated_at": "2024-01-15T12:00:00Z"
+        }
+      }
+    }
+  ]
+}
