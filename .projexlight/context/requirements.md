@@ -2,211 +2,225 @@
 
 ## Project: Quick Taxi
 
-I want to create quick taxi app where riders can shares cost with another rider in the way and find co riders and add to the ride
+To provide a reliable and affordable ride-sharing service that caters specifically to the local community, enhancing mobility and reducing reliance on personal vehicles.
 
 ## Sprint Overview
 
-A comprehensive ride-sharing platform with user management, ride management, and payment integration functionalities.
+Quick prototype sprint for generated project structure
+
+## Epics
+
+### User Management
+
+Manage user profiles, authentication, and ride history.
+
+### Driver Management
+
+Manage driver profiles, availability, and ratings.
+
+### Admin Dashboard
+
+Provide tools for administrators to manage users, drivers, and rides.
 
 ## Features
 
 ### User Registration
 
-Allow users to create an account and set up their profile.
+Allow users to create an account and manage their profiles.
 
-### User Authentication
+### Ride Booking
 
-Implement secure authentication methods for users.
+Allow users to book rides and track their status.
 
-### User Preferences
+### Ride History
 
-Allow users to set and manage their ride preferences.
+Allow users to view their past rides and receipts.
 
-### Create Ride Offer
+### Driver Registration
 
-Allow users to create offers for rides they are sharing.
+Allow drivers to create profiles and manage their vehicles.
 
-### Request Ride
+### Driver Availability
 
-Allow users to request rides from available offers.
+Enable drivers to set their availability for rides.
 
-### Ride Matching
+### Driver Ratings
 
-Implement a real-time matching system for riders.
+Collect and display ratings for drivers based on user feedback.
 
-### Payment Method Setup
+### User Management Tools
 
-Allow users to add and manage payment methods.
+Tools for administrators to view and manage user accounts.
 
-### Transaction Management
+### Ride Management Tools
 
-Handle transactions between users for ride payments.
+Tools for monitoring and managing ongoing rides.
 
-### Refunds and Disputes
+### Driver Management Tools
 
-Manage refund requests and payment disputes.
+Tools for administrators to manage driver profiles and performance.
 
 ## Tasks
 
-### Setup User Profile Storage
+### Database Schema for Users
 
-Create a database schema to store user profile information securely.
-
-**Acceptance Criteria:**
-
-### Store Preferences in Database
-
-Create schema to save user preferences in the database.
+Create a database schema to store user information.
 
 **Acceptance Criteria:**
 
-### Implement Ride Offer Storage
+### Database Schema for Rides
 
-Create a database schema to store active ride offers.
-
-**Acceptance Criteria:**
-
-### Implement Request Storage
-
-Create a database schema to store ride requests.
+Create a database schema to store ride information.
 
 **Acceptance Criteria:**
 
-### Store Match Results
+### Database Schema for Ride History
 
-Create a schema to store matched rides and user connections.
-
-**Acceptance Criteria:**
-
-### Store Payment Methods Securely
-
-Implement a database schema to store payment methods safely.
+Create a database schema to store ride history records.
 
 **Acceptance Criteria:**
 
-### Store Transactions in Database
+### Database Schema for Drivers
 
-Implement a schema to store transactions securely.
+Create a database schema to store driver information.
 
 **Acceptance Criteria:**
 
-### Store Refund and Dispute Records
+### Database Schema for Availability
 
-Create a database schema to track refunds and disputes.
+Create a database schema to store driver's availability status.
+
+**Acceptance Criteria:**
+
+### Database Schema for Driver Ratings
+
+Create a database schema to store driver ratings.
+
+**Acceptance Criteria:**
+
+### Database Schema for Admin Actions
+
+Create a schema to log admin actions on user accounts.
+
+**Acceptance Criteria:**
+
+### Database Schema for Admin Ride Logs
+
+Create a schema to log admin actions on rides.
+
+**Acceptance Criteria:**
+
+### Database Schema for Admin Driver Actions
+
+Create a schema to log admin actions on driver profiles.
 
 **Acceptance Criteria:**
 
 ### Design Registration Form
 
-Create a user-friendly registration form that collects necessary user information.
+Create a responsive registration form for new users.
 
 **Acceptance Criteria:**
 
-### Implement Email Verification
+### Implement User Authentication
 
-Ensure users verify their email addresses post-registration for security.
-
-**Acceptance Criteria:**
-
-### Develop Login API
-
-Create an API endpoint for user login with token-based authentication.
+Set up authentication using JWT for secure login.
 
 **Acceptance Criteria:**
 
-### Integrate OAuth Options
+### Create Ride Booking Interface
 
-Allow users to log in using their Google or Facebook accounts.
-
-**Acceptance Criteria:**
-
-### Setup Password Recovery
-
-Implement a password recovery system via email.
+Design the interface for users to book rides.
 
 **Acceptance Criteria:**
 
-### Create Preferences Management Page
+### Integrate Payment Gateway
 
-Design a page for users to customize their ride preferences.
-
-**Acceptance Criteria:**
-
-### Develop API for Preferences
-
-Create an API to get and update user preferences.
+Implement payment processing for ride bookings.
 
 **Acceptance Criteria:**
 
-### Develop Ride Offer Form
+### Design Ride History Page
 
-Create a form for users to enter details of their ride offer.
-
-**Acceptance Criteria:**
-
-### Notify Users of New Offers
-
-Implement a notification system for users about new ride offers.
+Create a page to display user's past rides.
 
 **Acceptance Criteria:**
 
-### Develop Request Ride Feature
+### Implement Filtering Options
 
-Create functionality for users to request a ride offer they see.
-
-**Acceptance Criteria:**
-
-### Notify Offer Creator of Request
-
-Send notifications to the ride offer creator when a request is made.
+Allow users to filter their ride history by date and status.
 
 **Acceptance Criteria:**
 
-### Develop Matching Algorithm
+### Create Driver Registration Form
 
-Create an algorithm to match riders based on location and preferences.
-
-**Acceptance Criteria:**
-
-### Integrate Real-Time Updates
-
-Implement WebSocket for real-time ride matching updates.
+Design a registration form for drivers.
 
 **Acceptance Criteria:**
 
-### Create Payment Method Form
+### Implement Vehicle Management
 
-Design a form for users to enter payment details securely.
-
-**Acceptance Criteria:**
-
-### Integrate Payment Gateway API
-
-Connect with a payment gateway for transaction processing.
+Allow drivers to add and manage their vehicles.
 
 **Acceptance Criteria:**
 
-### Create Transaction API
+### Build Availability Interface
 
-Develop an API for processing payments for rides.
-
-**Acceptance Criteria:**
-
-### Implement Transaction History
-
-Create a view for users to see their transaction history.
+Create an interface for drivers to indicate their availability.
 
 **Acceptance Criteria:**
 
-### Develop Refund Request Feature
+### Implement Notifications for Ride Requests
 
-Create functionality for users to submit refund requests.
+Notify drivers of incoming ride requests based on availability.
 
 **Acceptance Criteria:**
 
-### Implement Dispute Resolution Process
+### Create Rating System
 
-Design a process for resolving payment disputes.
+Design a system for users to rate drivers after rides.
+
+**Acceptance Criteria:**
+
+### Implement Rating Display on Driver Profiles
+
+Show average ratings on driver profiles.
+
+**Acceptance Criteria:**
+
+### Create User Management Interface
+
+Design an interface for admins to manage users.
+
+**Acceptance Criteria:**
+
+### Implement User Search and Filter Options
+
+Allow admins to search and filter users easily.
+
+**Acceptance Criteria:**
+
+### Create Ride Monitoring Interface
+
+Design an interface for admins to monitor rides in real-time.
+
+**Acceptance Criteria:**
+
+### Implement Ride Search Functionality
+
+Allow admins to search through active rides.
+
+**Acceptance Criteria:**
+
+### Create Driver Management Interface
+
+Design an interface for admins to manage drivers.
+
+**Acceptance Criteria:**
+
+### Implement Driver Performance Metrics
+
+Show performance metrics for drivers based on user ratings.
 
 **Acceptance Criteria:**
 

@@ -1,72 +1,53 @@
-import winston from 'winston';
 import { env } from '../config/env';
 
-const { combine, timestamp, printf, colorize, errors } = winston.format;
+type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
-/**
- * Custom log format for console output
- */
-const consoleFormat = printf(({ level, message, timestamp, stack, ...metadata }) => {
-  let log = `${timestamp} [${level}]: ${message}`;
+const LOG_LEVELS: Record<LogLevel, number> = {
+  debug: 0,
+  info: 1,
+  warn: 2,
+  error: 3,
+};
 
-  if (Object.keys(metadata).length > 0) {
-    log += ` ${JSON.stringify(metadata)}`;
-  }
+const currentLevel: LogLevel = (process.env.LOG_LEVEL as LogLevel) || 'debug';
 
-  if (stack) {
-    log += `\n${stack}`;
-  }
-
-  return log;
-});
-
-/**
- * Custom log format for JSON output
- */
-const jsonFormat = printf(({ level, message, timestamp, ...metadata }) => {
-  return JSON.stringify({
-    timestamp,
-    level,
-    message,
-    ...metadata,
-  });
-});
-
-/**
- * Winston logger instance
- */
-export const logger = winston.createLogger({
-  level: env.LOG_LEVEL,
-  format: combine(
-    timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    errors({ stack: true })
-  ),
-  defaultMeta: { service: 'quick-taxi-api' },
-  transports: [
-    new winston.transports.Console({
-      format: combine(
-        colorize(),
-        env.LOG_FORMAT === 'json' ? jsonFormat : consoleFormat
-      ),
-    }),
-  ],
-});
-
-// Add file transport in production
-if (env.NODE_ENV === 'production') {
-  logger.add(
-    new winston.transports.File({
-      filename: 'logs/error.log',
-      level: 'error',
-      format: combine(timestamp(), jsonFormat),
-    })
-  );
-  logger.add(
-    new winston.transports.File({
-      filename: 'logs/combined.log',
-      format: combine(timestamp(), jsonFormat),
-    })
-  );
+function formatMessage(level: LogLevel, message: string, meta?: Record<string, unknown>): string {
+  const timestamp = new Date().toISOString();
+  const metaStr = meta ? ` ${JSON.stringify(meta)}` : '';
+  return `[${timestamp}] [${level.toUpperCase()}] ${message}${metaStr}`;
 }
+
+function shouldLog(level: LogLevel): boolean {
+  return LOG_LEVELS[level] >= LOG_LEVELS[currentLevel];
+}
+
+export const logger = {
+  debug(message: string, meta?: Record<string, unknown>): void {
+    if (shouldLog('debug')) {
+      console.debug(formatMessage('debug', message, meta));
+    }
+  },
+
+  info(message: string, meta?: Record<string, unknown>): void {
+    if (shouldLog('info')) {
+      console.info(formatMessage('info', message, meta));
+    }
+  },
+
+  warn(message: string, meta?: Record<string, unknown>): void {
+    if (shouldLog('warn')) {
+      console.warn(formatMessage('warn', message, meta));
+    }
+  },
+
+  error(message: string, error?: Error | unknown, meta?: Record<string, unknown>): void {
+    if (shouldLog('error')) {
+      const errorMeta = error instanceof Error
+        ? { ...meta, error: error.message, stack: error.stack }
+        : { ...meta, error };
+      console.error(formatMessage('error', message, errorMeta));
+    }
+  },
+};
 
 export default logger;

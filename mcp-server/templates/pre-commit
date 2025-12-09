@@ -118,6 +118,304 @@ if [ "$WARNING_COUNT" -gt 0 ]; then
     echo -e "${YELLOW}💡 Review these similarities in the Leadership Dashboard${NC}"
 fi
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# TASK PROGRESS AUTO-UPDATE
+# Parse commit message and update task completion status if not already updated
+# Updates both tasks-completed.json (main tracker) and task-N.json (individual task file)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+echo -e "\n${BLUE}📊 Checking task progress update...${NC}"
+
+# Get the commit message from .git/COMMIT_EDITMSG if it exists
+COMMIT_MSG_FILE=".git/COMMIT_EDITMSG"
+if [ -f "$COMMIT_MSG_FILE" ]; then
+    COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+else
+    # Try to get from command line (for --message commits)
+    COMMIT_MSG=""
+fi
+
+# Parse commit message for task references
+# Expected format: "Complete task-N sub-task M: ..." or "task-N sub-task M"
+TASK_PATTERN="task-([0-9]+)"
+SUBTASK_PATTERN="sub-task[[:space:]]*([0-9]+)"
+
+if [[ $COMMIT_MSG =~ $TASK_PATTERN ]]; then
+    TASK_NUM="${BASH_REMATCH[1]}"
+    echo -e "   ${GREEN}Found task reference: task-${TASK_NUM}${NC}"
+
+    if [[ $COMMIT_MSG =~ $SUBTASK_PATTERN ]]; then
+        SUBTASK_NUM="${BASH_REMATCH[1]}"
+        echo -e "   ${GREEN}Found sub-task reference: sub-task ${SUBTASK_NUM}${NC}"
+
+        # Find the config directory and progress files
+        CONFIG_DIR=""
+        PROGRESS_FILE=""
+        TASK_FILE=""
+
+        for config_dir in ".claude" ".goose" ".cursor" ".aider" ".windsurf" ".cline" ".gemini" ".projexlight"; do
+            if [ -f "${config_dir}/progress/tasks-completed.json" ]; then
+                CONFIG_DIR="${config_dir}"
+                PROGRESS_FILE="${config_dir}/progress/tasks-completed.json"
+                TASK_FILE="${config_dir}/progress/major-tasks/task-${TASK_NUM}.json"
+                break
+            fi
+        done
+
+        if [ -n "$PROGRESS_FILE" ] && [ -f "$PROGRESS_FILE" ]; then
+            echo -e "   ${BLUE}Config directory: ${CONFIG_DIR}${NC}"
+            echo -e "   ${BLUE}Progress file: ${PROGRESS_FILE}${NC}"
+            echo -e "   ${BLUE}Task file: ${TASK_FILE}${NC}"
+
+            # ═══════════════════════════════════════════════════════════════════
+            # Read current state from tasks-completed.json
+            # ═══════════════════════════════════════════════════════════════════
+            CURRENT_MAJOR_INDEX=$(jq -r '.current_major_task_index // 0' "$PROGRESS_FILE" 2>/dev/null || echo "0")
+            CURRENT_SUB_INDEX=$(jq -r '.current_sub_task_index // 0' "$PROGRESS_FILE" 2>/dev/null || echo "0")
+            TOTAL_SUB_TASKS=$(jq -r '.current_task_summary.total_sub_tasks // 0' "$PROGRESS_FILE" 2>/dev/null || echo "0")
+
+            echo -e "   ${BLUE}Current state: Major task ${CURRENT_MAJOR_INDEX}, Sub-task ${CURRENT_SUB_INDEX}/${TOTAL_SUB_TASKS}${NC}"
+
+            # Check if this commit is for the current major task
+            if [ "$TASK_NUM" -eq "$CURRENT_MAJOR_INDEX" ]; then
+                # Check if update is needed (sub-task index should be incremented)
+                if [ "$CURRENT_SUB_INDEX" -lt "$SUBTASK_NUM" ]; then
+                    echo -e "   ${YELLOW}⚠️  Progress not updated by LLM - auto-updating...${NC}"
+                    echo -e "   ${YELLOW}   current_sub_task_index: ${CURRENT_SUB_INDEX} → ${SUBTASK_NUM}${NC}"
+
+                    # ═══════════════════════════════════════════════════════════════════
+                    # Update tasks-completed.json (main tracker)
+                    # ═══════════════════════════════════════════════════════════════════
+                    TEMP_FILE=$(mktemp)
+                    jq --argjson subIdx "$SUBTASK_NUM" \
+                       --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+                       '.current_sub_task_index = $subIdx |
+                        .current_task_summary.completed_sub_tasks = $subIdx |
+                        .current_task_summary.pending_sub_tasks = (.current_task_summary.total_sub_tasks - $subIdx) |
+                        .last_updated = $timestamp' \
+                       "$PROGRESS_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$PROGRESS_FILE"
+
+                    if [ $? -eq 0 ]; then
+                        echo -e "   ${GREEN}✅ tasks-completed.json updated${NC}"
+                        git add "$PROGRESS_FILE"
+                    else
+                        echo -e "   ${RED}❌ Failed to update tasks-completed.json${NC}"
+                    fi
+
+                    # ═══════════════════════════════════════════════════════════════════
+                    # Update task-N.json (individual task file)
+                    # ═══════════════════════════════════════════════════════════════════
+                    if [ -f "$TASK_FILE" ]; then
+                        TASK_TEMP=$(mktemp)
+
+                        # Read total sub-tasks from task file
+                        TASK_TOTAL_SUBS=$(jq -r '.total_sub_tasks // 0' "$TASK_FILE" 2>/dev/null || echo "0")
+
+                        # Calculate new pending count
+                        NEW_PENDING=$((TASK_TOTAL_SUBS - SUBTASK_NUM))
+                        if [ "$NEW_PENDING" -lt 0 ]; then
+                            NEW_PENDING=0
+                        fi
+
+                        # Determine status based on completion
+                        if [ "$SUBTASK_NUM" -ge "$TASK_TOTAL_SUBS" ]; then
+                            NEW_STATUS="completed"
+                            COMPLETED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+                        else
+                            NEW_STATUS="in_progress"
+                            COMPLETED_AT="null"
+                        fi
+
+                        # Update task file
+                        jq --argjson subIdx "$SUBTASK_NUM" \
+                           --argjson pending "$NEW_PENDING" \
+                           --arg status "$NEW_STATUS" \
+                           --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+                           '.current_sub_task_index = ($subIdx + 1) |
+                            .completed_sub_tasks = $subIdx |
+                            .pending_sub_tasks = $pending |
+                            .in_progress_sub_tasks = (if $status == "completed" then 0 else 1 end) |
+                            .status = $status |
+                            .started_at = (if .started_at == null then $timestamp else .started_at end)' \
+                           "$TASK_FILE" > "$TASK_TEMP" && mv "$TASK_TEMP" "$TASK_FILE"
+
+                        if [ $? -eq 0 ]; then
+                            echo -e "   ${GREEN}✅ task-${TASK_NUM}.json updated (status: ${NEW_STATUS})${NC}"
+                            git add "$TASK_FILE"
+                        else
+                            echo -e "   ${RED}❌ Failed to update task-${TASK_NUM}.json${NC}"
+                        fi
+
+                        # ═══════════════════════════════════════════════════════════════════
+                        # Update sub-task status within task file
+                        # ═══════════════════════════════════════════════════════════════════
+                        # Mark the completed sub-task as "completed"
+                        SUB_TEMP=$(mktemp)
+                        jq --argjson subNum "$SUBTASK_NUM" \
+                           --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+                           '(.sub_tasks[] | select(.sequence_number == $subNum)) |= . + {
+                              "status": "completed",
+                              "completed_at": $timestamp
+                            }' \
+                           "$TASK_FILE" > "$SUB_TEMP" && mv "$SUB_TEMP" "$TASK_FILE"
+
+                        if [ $? -eq 0 ]; then
+                            echo -e "   ${GREEN}✅ Sub-task ${SUBTASK_NUM} marked as completed${NC}"
+                            git add "$TASK_FILE"
+                        fi
+
+                        # ═══════════════════════════════════════════════════════════════════
+                        # Update completion-status.json (epic/feature level tracking)
+                        # ═══════════════════════════════════════════════════════════════════
+                        COMPLETION_STATUS_FILE="${CONFIG_DIR}/progress/completion-status.json"
+                        if [ -f "$COMPLETION_STATUS_FILE" ]; then
+                            echo -e "   ${BLUE}📊 Updating completion-status.json...${NC}"
+
+                            # Get epic_id and feature_id from the current task in tasks-completed.json
+                            CURRENT_TASK_DATA=$(jq -r ".all_tasks[$CURRENT_MAJOR_INDEX] // {}" "$PROGRESS_FILE" 2>/dev/null || echo "{}")
+                            EPIC_ID=$(echo "$CURRENT_TASK_DATA" | jq -r '.epic_id // null')
+                            FEATURE_ID=$(echo "$CURRENT_TASK_DATA" | jq -r '.feature_id // null')
+
+                            if [ "$EPIC_ID" != "null" ] && [ -n "$EPIC_ID" ]; then
+                                # Update epic completion
+                                EPIC_TEMP=$(mktemp)
+                                jq --arg epicId "$EPIC_ID" \
+                                   --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+                                   '(.epics_completion[] | select(.epic_id == $epicId)) |= . + {
+                                      tasks_completed: (.tasks_completed + 1),
+                                      completion_percentage: (((.tasks_completed + 1) / .tasks_total * 100) | floor)
+                                    } |
+                                    .last_updated = $timestamp' \
+                                   "$COMPLETION_STATUS_FILE" > "$EPIC_TEMP" && mv "$EPIC_TEMP" "$COMPLETION_STATUS_FILE"
+
+                                if [ $? -eq 0 ]; then
+                                    echo -e "   ${GREEN}✅ Updated epic completion for: ${EPIC_ID}${NC}"
+                                    git add "$COMPLETION_STATUS_FILE"
+                                fi
+                            fi
+
+                            if [ "$FEATURE_ID" != "null" ] && [ -n "$FEATURE_ID" ]; then
+                                # Update feature completion
+                                FEATURE_TEMP=$(mktemp)
+                                jq --arg featureId "$FEATURE_ID" \
+                                   --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+                                   '(.features_completion[] | select(.feature_id == $featureId)) |= . + {
+                                      tasks_completed: (.tasks_completed + 1),
+                                      completion_percentage: (((.tasks_completed + 1) / .tasks_total * 100) | floor)
+                                    } |
+                                    .last_updated = $timestamp' \
+                                   "$COMPLETION_STATUS_FILE" > "$FEATURE_TEMP" && mv "$FEATURE_TEMP" "$COMPLETION_STATUS_FILE"
+
+                                if [ $? -eq 0 ]; then
+                                    echo -e "   ${GREEN}✅ Updated feature completion for: ${FEATURE_ID}${NC}"
+                                    git add "$COMPLETION_STATUS_FILE"
+                                fi
+                            fi
+
+                            # Update overall completion percentage
+                            OVERALL_TEMP=$(mktemp)
+                            jq --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+                               '.tasks_by_status.completed = (.tasks_by_status.completed + 1) |
+                                .tasks_by_status.pending = ([.tasks_by_status.pending - 1, 0] | max) |
+                                .overall_completion_percentage = ((.tasks_by_status.completed / (.tasks_by_status.completed + .tasks_by_status.pending + .tasks_by_status.in_progress) * 100) | floor) |
+                                .last_updated = $timestamp' \
+                               "$COMPLETION_STATUS_FILE" > "$OVERALL_TEMP" && mv "$OVERALL_TEMP" "$COMPLETION_STATUS_FILE"
+
+                            if [ $? -eq 0 ]; then
+                                echo -e "   ${GREEN}✅ Updated overall completion percentage${NC}"
+                                git add "$COMPLETION_STATUS_FILE"
+                            fi
+                        fi
+
+                        # ═══════════════════════════════════════════════════════════════════
+                        # Check if all sub-tasks complete - move to next major task
+                        # ═══════════════════════════════════════════════════════════════════
+                        if [ "$NEW_STATUS" == "completed" ]; then
+                            echo -e "   ${GREEN}🎉 All sub-tasks complete for task-${TASK_NUM}!${NC}"
+
+                            # Update tasks-completed.json to move to next major task
+                            NEXT_MAJOR=$((TASK_NUM + 1))
+                            TOTAL_MAJOR=$(jq -r '.total_tasks // 0' "$PROGRESS_FILE" 2>/dev/null || echo "0")
+
+                            if [ "$NEXT_MAJOR" -lt "$TOTAL_MAJOR" ]; then
+                                echo -e "   ${BLUE}Moving to next major task: task-${NEXT_MAJOR}${NC}"
+
+                                NEXT_TASK_FILE="${CONFIG_DIR}/progress/major-tasks/task-${NEXT_MAJOR}.json"
+                                if [ -f "$NEXT_TASK_FILE" ]; then
+                                    NEXT_TOTAL_SUBS=$(jq -r '.total_sub_tasks // 0' "$NEXT_TASK_FILE" 2>/dev/null || echo "0")
+                                    NEXT_TITLE=$(jq -r '.title // "Next Task"' "$NEXT_TASK_FILE" 2>/dev/null || echo "Next Task")
+
+                                    # Update main progress file for next task
+                                    MAIN_TEMP=$(mktemp)
+                                    jq --argjson nextMajor "$NEXT_MAJOR" \
+                                       --arg nextFile "task-${NEXT_MAJOR}.json" \
+                                       --arg nextPath "${CONFIG_DIR}/progress/major-tasks/task-${NEXT_MAJOR}.json" \
+                                       --argjson nextTotalSubs "$NEXT_TOTAL_SUBS" \
+                                       --arg nextTitle "$NEXT_TITLE" \
+                                       --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+                                       '.current_major_task_index = $nextMajor |
+                                        .current_major_task_file = $nextFile |
+                                        .current_major_task_path = $nextPath |
+                                        .current_sub_task_index = 0 |
+                                        .completed_tasks = (.completed_tasks + 1) |
+                                        .in_progress_tasks = 1 |
+                                        .pending_tasks = (.pending_tasks - 1) |
+                                        .current_task_summary = {
+                                          "title": $nextTitle,
+                                          "total_sub_tasks": $nextTotalSubs,
+                                          "completed_sub_tasks": 0,
+                                          "files_to_generate": []
+                                        } |
+                                        .last_updated = $timestamp' \
+                                       "$PROGRESS_FILE" > "$MAIN_TEMP" && mv "$MAIN_TEMP" "$PROGRESS_FILE"
+
+                                    echo -e "   ${GREEN}✅ Advanced to task-${NEXT_MAJOR}: ${NEXT_TITLE}${NC}"
+                                    git add "$PROGRESS_FILE"
+                                fi
+                            else
+                                echo -e "   ${GREEN}🎉🎉 ALL TASKS COMPLETED! 🎉🎉${NC}"
+
+                                # Mark project as complete
+                                FINAL_TEMP=$(mktemp)
+                                jq --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+                                   '.completed_tasks = .total_tasks |
+                                    .in_progress_tasks = 0 |
+                                    .pending_tasks = 0 |
+                                    .project_completed = true |
+                                    .completed_at = $timestamp |
+                                    .last_updated = $timestamp' \
+                                   "$PROGRESS_FILE" > "$FINAL_TEMP" && mv "$FINAL_TEMP" "$PROGRESS_FILE"
+
+                                git add "$PROGRESS_FILE"
+                            fi
+                        fi
+                    else
+                        echo -e "   ${YELLOW}⚠️  Task file not found: ${TASK_FILE}${NC}"
+                    fi
+
+                    echo -e "   ${GREEN}✅ All progress files staged for commit${NC}"
+                else
+                    echo -e "   ${GREEN}✓ Progress already up to date (sub-task index: ${CURRENT_SUB_INDEX})${NC}"
+                fi
+            else
+                echo -e "   ${YELLOW}⚠️  Commit references task-${TASK_NUM} but current task is ${CURRENT_MAJOR_INDEX}${NC}"
+                echo -e "   ${YELLOW}   This may indicate out-of-order task completion${NC}"
+            fi
+        else
+            echo -e "   ${YELLOW}⚠️  No progress file found - skipping auto-update${NC}"
+            echo -e "   ${YELLOW}   Checked: .claude, .goose, .cursor, .aider, .windsurf, .cline, .gemini, .projexlight${NC}"
+        fi
+    else
+        echo -e "   ${YELLOW}⚠️  No sub-task number found in commit message${NC}"
+        echo -e "   ${YELLOW}   Expected format: 'Complete task-N sub-task M: ...'${NC}"
+    fi
+else
+    echo -e "   ${YELLOW}ℹ️  No task reference in commit message - skipping progress update${NC}"
+    echo -e "   ${YELLOW}   Expected format: 'Complete task-N sub-task M: ...'${NC}"
+fi
+
+# ═══════════════════════════════════════════════════════════════════════════════
+
 # Success
 echo -e "\n${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${GREEN}✅ Pre-commit scan passed${NC}"

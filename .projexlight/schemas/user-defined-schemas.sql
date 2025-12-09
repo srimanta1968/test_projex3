@@ -5,7 +5,7 @@
 
 -- ========================================
 -- Schema: Quick Taxi Schema
--- Description: Auto-generated database schema for Quick Taxi. A comprehensive ride-sharing platform with user management, ride management, and payment integration functionalities....
+-- Description: Auto-generated database schema for Quick Taxi. Generated from project description...
 -- Version: 1
 -- ========================================
 
@@ -13,102 +13,106 @@ CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(255),
   email VARCHAR(255),
+  phone VARCHAR(255),
   password VARCHAR(255),
-  preferences VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 COMMENT ON TABLE users IS 'Schema: Quick Taxi Schema - Entity: Users';
 
-CREATE TABLE IF NOT EXISTS sessions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID,
-  token VARCHAR(255),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE sessions IS 'Schema: Quick Taxi Schema - Entity: Sessions';
-
-CREATE TABLE IF NOT EXISTS user_preferences (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID,
-  preference_type VARCHAR(255),
-  preference_value VARCHAR(255),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE user_preferences IS 'Schema: Quick Taxi Schema - Entity: User_preferences';
-
-CREATE TABLE IF NOT EXISTS ride_offers (
+CREATE TABLE IF NOT EXISTS rides (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID,
   pickup_location VARCHAR(255),
   dropoff_location VARCHAR(255),
-  available_seats VARCHAR(255),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE ride_offers IS 'Schema: Quick Taxi Schema - Entity: Ride_offers';
-
-CREATE TABLE IF NOT EXISTS ride_requests (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID,
-  offer_id UUID,
   status VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE ride_requests IS 'Schema: Quick Taxi Schema - Entity: Ride_requests';
+COMMENT ON TABLE rides IS 'Schema: Quick Taxi Schema - Entity: Rides';
 
-CREATE TABLE IF NOT EXISTS matched_rides (
+CREATE TABLE IF NOT EXISTS ridehistory (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  ride_offer_id UUID,
+  ride_id UUID,
   user_id UUID,
-  status VARCHAR(255),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE matched_rides IS 'Schema: Quick Taxi Schema - Entity: Matched_rides';
-
-CREATE TABLE IF NOT EXISTS payment_methods (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID,
-  card_number INTEGER,
-  expiry_date TIMESTAMP WITH TIME ZONE,
-  cardholder_name VARCHAR(255),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE payment_methods IS 'Schema: Quick Taxi Schema - Entity: Payment_methods';
-
-CREATE TABLE IF NOT EXISTS transactions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID,
+  date TIMESTAMP WITH TIME ZONE,
   amount DECIMAL(10,2),
-  transaction_date TIMESTAMP WITH TIME ZONE,
-  status VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE transactions IS 'Schema: Quick Taxi Schema - Entity: Transactions';
+COMMENT ON TABLE ridehistory IS 'Schema: Quick Taxi Schema - Entity: Ridehistory';
 
-CREATE TABLE IF NOT EXISTS refunds (
+CREATE TABLE IF NOT EXISTS drivers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  transaction_id UUID,
-  user_id UUID,
-  amount DECIMAL(10,2),
-  status VARCHAR(255),
+  name VARCHAR(255),
+  vehicle_type VARCHAR(255),
+  license_number INTEGER,
+  rating VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE refunds IS 'Schema: Quick Taxi Schema - Entity: Refunds';
+COMMENT ON TABLE drivers IS 'Schema: Quick Taxi Schema - Entity: Drivers';
+
+CREATE TABLE IF NOT EXISTS driveravailability (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  driver_id UUID,
+  available_from VARCHAR(255),
+  available_to VARCHAR(255),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE driveravailability IS 'Schema: Quick Taxi Schema - Entity: Driveravailability';
+
+CREATE TABLE IF NOT EXISTS driverratings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  driver_id UUID,
+  user_id UUID,
+  rating VARCHAR(255),
+  comment VARCHAR(255),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE driverratings IS 'Schema: Quick Taxi Schema - Entity: Driverratings';
+
+CREATE TABLE IF NOT EXISTS adminactions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  admin_id UUID,
+  user_id UUID,
+  action VARCHAR(255),
+  timestamp TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE adminactions IS 'Schema: Quick Taxi Schema - Entity: Adminactions';
+
+CREATE TABLE IF NOT EXISTS adminridelogs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  admin_id UUID,
+  ride_id UUID,
+  action VARCHAR(255),
+  timestamp TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE adminridelogs IS 'Schema: Quick Taxi Schema - Entity: Adminridelogs';
+
+CREATE TABLE IF NOT EXISTS admindriveractions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  admin_id UUID,
+  driver_id UUID,
+  action VARCHAR(255),
+  timestamp TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE admindriveractions IS 'Schema: Quick Taxi Schema - Entity: Admindriveractions';
 

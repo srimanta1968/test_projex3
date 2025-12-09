@@ -1,6 +1,6 @@
 # Dependencies
 node_modules/
-.pnp
+.pnp/
 .pnp.js
 
 # Build outputs
@@ -11,18 +11,19 @@ build/
 # Environment files
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
-*.env
+.env.*.local
+!.env.example
 
-# IDE and editor files
-.idea/
+# IDE
 .vscode/
+.idea/
 *.swp
 *.swo
 *~
+
+# OS files
 .DS_Store
+Thumbs.db
 
 # Logs
 logs/
@@ -30,44 +31,24 @@ logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lerna-debug.log*
 
 # Testing
 coverage/
 .nyc_output/
 
-# Cache
-.cache/
-.eslintcache
-.parcel-cache/
-*.tgz
-
-# OS files
-Thumbs.db
-ehthumbs.db
-
 # Temporary files
 tmp/
 temp/
 *.tmp
-*.temp
 
-# Package manager lock files (keep one, ignore others)
-# Uncomment the ones you want to ignore
+# Package manager locks (keep one, ignore others if switching)
 # package-lock.json
 # yarn.lock
 # pnpm-lock.yaml
 
-# Database
-*.sqlite
-*.sqlite3
-*.db
-
-# Docker volumes
+# Docker volumes (local data)
 postgres_data/
 
-# MCP Server cache
-.mcp-cache/
-
-# ProjexLight feedback (keep structure, ignore logs)
-.projexlight/feedback/logs/
+# MCP Server feedback
+.projexlight/feedback/
+feedback/

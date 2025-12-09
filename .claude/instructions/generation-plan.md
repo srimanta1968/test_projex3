@@ -26,7 +26,7 @@ You are generating **production-ready code** with the following characteristics:
 
 ## Project Context
 
-**Selected Purposes:** API Development, UI Development, Unit Tests
+**Selected Purposes:** API Development, UI Development, Unit Tests, DB Schema Design
 
 **Backend Stack:**
 - Framework: express
@@ -40,7 +40,203 @@ You are generating **production-ready code** with the following characteristics:
 
 ---
 
+## 🚀 Getting Started
+
+## 🚨 CRITICAL: READ THIS ENTIRE FILE FIRST!
+
+**⚠️ DO NOT START WORKING YET!** Before doing anything:
+
+1. **READ THIS ENTIRE FILE** from top to bottom
+2. Pay special attention to:
+   - **API Test Definition Requirements** (JSON files BEFORE writing APIs)
+   - **Commit Step Requirements** (commit after each sub-task)
+   - **Progress Tracking Requirements**
+3. Only AFTER reading everything, proceed with the steps below
+
+**Why?** This file contains critical instructions about creating JSON test definitions BEFORE writing any API code. If you skip reading, you'll miss this and the API library won't be updated correctly.
+
+---
+
+### Step 1: Check Your Progress
+
+**After reading the ENTIRE file above, check if progress files exist:**
+
+```bash
+# Check for progress tracking
+if [ -f ".claude/progress/tasks-completed.json" ]; then
+  echo "📊 RESUME SESSION - Progress files found!"
+  echo "I will continue from where we left off."
+else
+  echo "🆕 NEW SESSION - Starting fresh!"
+  echo "I will create the initial plan and structure."
+fi
+```
+
+### ✅ If Progress Files Exist (Resume Session)
+
+**You are RESUMING work. Follow these steps:**
+
+1. **Read Progress Files:**
+   - `.claude/progress/tasks-completed.json` - See what's done
+   - `.claude/progress/completion-status.json` - Check overall progress
+   - `.claude/instructions/actionable-instructions.md` - Review the plan
+
+2. **Identify Remaining Work:**
+   - Find tasks with `status: "pending"`
+   - Check if any task is `status: "in_progress"` (was interrupted)
+   - Skip all tasks with `status: "completed"`
+
+3. **Continue Generation:**
+   - Pick the next pending task or continue interrupted task
+   - Update task status to "in_progress"
+   - Generate the code for that task
+   - Mark task as "completed" when done
+   - Repeat until all tasks are done
+
+4. **Progress Updates:**
+   - Update `.claude/progress/tasks-completed.json` after each task
+   - Update `.claude/progress/completion-status.json` with new percentage
+   - Add session info to `.claude/progress/session-history.json`
+   - **CRITICAL:** Use proper JSON file update method - read entire file, modify structure, write back
+
+### 🆕 If Progress Files DON'T Exist (New Session)
+
+**You are STARTING FRESH. Follow the Pre-Step (if needed) and then Step 0 below.**
+
+---
+
+## 🔍 PRE-STEP: API Definition Bootstrap (EXISTING PROJECTS ONLY)
+
+**⚠️ This step runs ONLY for EXISTING projects with APIs but missing test definitions.**
+**🆕 NEW PROJECTS: Skip this step entirely and proceed to Step 0.**
+
+### Step 1: Detect Project Type
+
+**Run this detection script to determine if bootstrap is needed:**
+
+```bash
+# Check if this is an existing project with routes
+# Framework detected: Express.js
+ROUTE_FILES=$(find . -type f \( -name "*.ts" -o -name "*.js" \) 2>/dev/null | head -20)
+ROUTE_COUNT=$(echo "$ROUTE_FILES" | grep -c . || echo 0)
+
+# Check existing API definitions
+API_DEF_COUNT=$(find tests/api_definitions -name "*.json" 2>/dev/null | wc -l || echo 0)
+
+echo "📁 Route files found: $ROUTE_COUNT"
+echo "📋 API definitions found: $API_DEF_COUNT"
+
+if [ "$ROUTE_COUNT" -eq 0 ]; then
+  echo "🆕 NEW PROJECT - No routes found. Skip to Step 0."
+elif [ "$API_DEF_COUNT" -ge "$ROUTE_COUNT" ]; then
+  echo "✅ API definitions appear complete. Skip to Step 0."
+else
+  echo "⚠️ MISSING API DEFINITIONS - Run bootstrap below"
+fi
+```
+
+### Step 2: Scan Routes (If Bootstrap Needed)
+
+**Framework:** Express.js (typescript)
+
+**Files to scan:**
+- `server/src/routes/**/*.ts`
+- `server/src/routes/**/*.js`
+- `src/routes/**/*.ts`
+- `src/routes/**/*.js`
+- `routes/**/*.ts`
+- `routes/**/*.js`
+
+**Route patterns to find:**
+```regex
+router\.(get|post|put|patch|delete)\s*\(\s*['"`]([^'"` ]+)['"`]
+app\.(get|post|put|patch|delete)\s*\(\s*['"`]([^'"` ]+)['"`]
+```
+
+**Auth middleware indicators:**
+- `router\.use\s*\(\s*(authMiddleware|authenticate|requireAuth|verifyToken|protect)`
+- `(authMiddleware|authenticate|requireAuth|verifyToken|protect)\s*,`
+
+**Scan command:**
+```bash
+# Scan Express.js routes
+grep -rn "\.(get|post|put|patch|delete)\s*(" server/src/routes/**/*.ts server/src/routes/**/*.js src/routes/**/*.ts 2>/dev/null | head -50
+# Or for NestJS:
+grep -rn "@(Get|Post|Put|Patch|Delete)" server/src/routes/**/*.ts server/src/routes/**/*.js src/routes/**/*.ts 2>/dev/null | head -50```
+
+### Step 3: Generate Missing API Definitions
+
+**For each discovered endpoint without a definition, create:**
+
+**File:** `tests/api_definitions/{resource}/{action}.json`
+
+**Filename conventions:**
+| Endpoint Pattern | Filename |
+|-----------------|----------|
+| `POST /api/users` | `tests/api_definitions/users/create.json` |
+| `GET /api/users` | `tests/api_definitions/users/list.json` |
+| `GET /api/users/:id` | `tests/api_definitions/users/get-by-id.json` |
+| `PUT /api/users/:id` | `tests/api_definitions/users/update-by-id.json` |
+| `DELETE /api/users/:id` | `tests/api_definitions/users/delete-by-id.json` |
+| `POST /api/users/:id/activate` | `tests/api_definitions/users/activate.json` |
+
+**Template for generated files:**
+```json
+{
+  "endpoint": "/api/{resource}",
+  "method": "GET|POST|PUT|PATCH|DELETE",
+  "description": "[Auto-generated] Description - REVIEW AND ENHANCE",
+  "requiresAuth": true,
+  "tags": ["{resource}", "auto-generated"],
+  "testCases": [
+    {
+      "name": "Happy path",
+      "payload": {},
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {}
+      }
+    }
+  ],
+  "_metadata": {
+    "autoGenerated": true,
+    "sourceFile": "path/to/route/file",
+    "needsReview": true
+  }
+}
+```
+
+### Step 4: Log Bootstrap Results
+
+**After generating all missing definitions, create:**
+
+**File:** `.claude/progress/bootstrap-log.json`
+
+```json
+{
+  "bootstrapCompleted": true,
+  "timestamp": "ISO-8601-timestamp",
+  "framework": "express",
+  "language": "typescript",
+  "routeFilesScanned": 0,
+  "endpointsDiscovered": 0,
+  "existingDefinitions": 0,
+  "definitionsGenerated": 0,
+  "generatedFiles": [],
+  "warnings": []
+}
+```
+
+### Step 5: Continue to Step 0
+
+After bootstrap completes (or if skipped for new projects), proceed to **Step 0: Create Actionable Instructions**.
+
+---
+
 ## ⚠️ Step 0: Create Actionable Instructions (REQUIRED FIRST STEP)
+
+**⚠️ SKIP THIS STEP if you found progress files above! Jump to "Continue Generation" instead.**
 
 **STOP!** Before generating any code, you MUST complete this step.
 
@@ -645,6 +841,7 @@ new_string:
 - API Development
 - UI Development
 - Unit Tests
+- DB Schema Design
 
 ## Step-by-Step Generation Tasks
 
@@ -719,10 +916,27 @@ These test definitions serve as **API documentation** and **happy path validatio
 
 **File Location:** `tests/api_definitions/{route-name}/{endpoint-name}.json`
 
+**🚨 CRITICAL: FILE NAMING RULES FOR PATH PARAMETERS:**
+- Path parameters like `:id`, `:feedbackId`, `:userId` are NOT valid filenames!
+- Convert path parameters to descriptive names:
+  - `/api/feedback/:feedbackId` → `tests/api_definitions/feedback/get-by-id.json`
+  - `/api/users/:id` → `tests/api_definitions/users/get-by-id.json`
+  - `/api/rides/:rideId/status` → `tests/api_definitions/rides/update-status-by-id.json`
+  - `/api/orders/:orderId/items/:itemId` → `tests/api_definitions/orders/get-item-by-ids.json`
+
+**File Naming Pattern:**
+- Use HTTP method prefix for clarity: `get-`, `create-`, `update-`, `delete-`
+- Replace `:param` with `by-id` or descriptive suffix
+- Use kebab-case (lowercase with hyphens)
+
 **Examples:**
-- `tests/api_definitions/auth/register.json`
-- `tests/api_definitions/auth/login.json`
-- `tests/api_definitions/users/get-user.json`
+- `tests/api_definitions/auth/register.json` (POST /api/auth/register)
+- `tests/api_definitions/auth/login.json` (POST /api/auth/login)
+- `tests/api_definitions/users/get-by-id.json` (GET /api/users/:id)
+- `tests/api_definitions/users/update-by-id.json` (PUT /api/users/:id)
+- `tests/api_definitions/feedback/create.json` (POST /api/feedback)
+- `tests/api_definitions/feedback/get-by-id.json` (GET /api/feedback/:feedbackId)
+- `tests/api_definitions/feedback/delete-by-id.json` (DELETE /api/feedback/:feedbackId)
 
 **JSON Format (ONE HAPPY PATH TEST CASE ONLY):**
 ```json
@@ -786,15 +1000,34 @@ When creating the ONE happy path test case:
    - Use realistic sample data
    - DO NOT use placeholder values like "test@test.com"
 
-3. **Standard formats to use:**
+3. **🆕 DECLARATIVE DYNAMIC FIELD SYNTAX (RECOMMENDED):**
+
+   Use special placeholders to explicitly mark fields that need dynamic values:
+
+   **Placeholder Types:**
+   - `{{dynamic:email}}` → MCP generates unique email (e.g., testuser_123456@example.com)
+   - `{{dynamic:username}}` → MCP generates unique username (e.g., testuser_123456)
+   - `{{dynamic:phone}}` → MCP generates unique phone number
+   - `{{dynamic:uuid}}` → MCP generates unique UUID
+   - `{{cache:auth.email}}` → Uses email from previous registration (for login)
+   - `{{cache:auth.password}}` → Uses password from previous registration (for login)
+   - `{{cache:auth.token}}` → Uses auth token from previous login
+   - `{{static:Value}}` → Keep exact value (e.g., {{static:SecurePass123!}})
+
+   **When to use each:**
+   - Register endpoint → Use `{{dynamic:...}}` for email, username
+   - Login endpoint → Use `{{cache:auth.email}}`, `{{cache:auth.password}}`
+   - Static values (password, names) → Use `{{static:...}}`
+
+4. **Standard formats (when NOT using placeholders):**
    - Email: `user@example.com`, `john.doe@example.com`
    - Phone: `+15550123456` (E.164 format)
    - Date: `1990-05-15` (ISO 8601)
    - Password: `SecurePassword123!` (meets strength requirements)
    - UUID: `123e4567-e89b-12d3-a456-426614174000`
 
-4. **MCP Runtime Behavior (Automatic - You Don't Need to Worry)**
-   - 🤖 MCP server will generate UNIQUE test data dynamically
+5. **MCP Runtime Behavior (Automatic)**
+   - 🤖 MCP server processes placeholders and generates unique test data
    - 🔗 MCP automatically chains authentication flows (register → login → use token)
    - 📊 MCP captures request/response and updates `api_library` table
    - ✅ Your test will PASS even on repeated runs (no "user already exists" errors)
@@ -818,11 +1051,11 @@ File: `tests/api_definitions/auth/register.json`
     {
       "name": "Happy path - successful registration",
       "payload": {
-        "email": "user@example.com",
-        "username": "johndoe",
-        "password": "SecurePass123!",
-        "first_name": "John",
-        "last_name": "Doe"
+        "email": "{{dynamic:email}}",
+        "username": "{{dynamic:username}}",
+        "password": "{{static:SecurePass123!}}",
+        "first_name": "{{static:John}}",
+        "last_name": "{{static:Doe}}"
       },
       "expectedStatus": 201,
       "expectedResponse": {
@@ -922,6 +1155,36 @@ router.post('/api/auth/register', [
   ]
 }
 ```
+
+**Login Endpoint Example (using {{cache:...}} for credentials):**
+```json
+{
+  "endpoint": "/api/auth/login",
+  "method": "POST",
+  "description": "Authenticate user and return tokens",
+  "requiresAuth": false,
+  "tags": ["auth", "login"],
+  "testCases": [
+    {
+      "name": "Happy path - successful login",
+      "payload": {
+        "identifier": "{{cache:auth.email}}",
+        "password": "{{cache:auth.password}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "message": "Login successful",
+        "data": {
+          "user": { "id": "...", "email": "..." },
+          "tokens": { "accessToken": "..." }
+        }
+      }
+    }
+  ]
+}
+```
+**Note:** Login uses `{{cache:auth.email}}` and `{{cache:auth.password}}` to reference the credentials created during registration.
 
 **Protected Endpoints Example (with expectedResponse):**
 ```json

@@ -1,47 +1,32 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { User, LoginCredentials, RegisterData, AuthResponse } from '../types';
-import * as authService from '../services/authService';
-import { hasToken, getToken } from '../services/api';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { User, LoginCredentials, RegisterData } from '../types';
+import authService from '../services/authService';
 
-/**
- * Auth context state interface
- */
-interface AuthContextState {
+interface AuthContextType {
   user: User | null;
-  token: string | null;
-  isAuthenticated: boolean;
   isLoading: boolean;
-  error: string | null;
+  isAuthenticated: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => void;
-  clearError: () => void;
+  refreshUser: () => Promise<void>;
 }
 
-/**
- * Auth context with default values
- */
-const AuthContext = createContext<AuthContextState | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-/**
- * Auth provider component
- */
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  /**
-   * Check if user is authenticated on mount
-   */
   useEffect(() => {
+    // Check for existing auth on mount
     const initAuth = async () => {
-      if (hasToken()) {
+      const token = authService.getToken();
+      if (token) {
         try {
-          const currentUser = await authService.getCurrentUser();
-          setUser(currentUser);
+          const userData = await authService.getMe();
+          setUser(userData);
         } catch {
-          // Token invalid or expired
           authService.logout();
         }
       }
@@ -51,83 +36,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initAuth();
   }, []);
 
-  /**
-   * Login handler
-   */
-  const login = useCallback(async (credentials: LoginCredentials) => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response: AuthResponse = await authService.login(credentials);
-      setUser(response.user);
-    } catch (err: any) {
-      setError(err.message || 'Login failed');
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  /**
-   * Register handler
-   */
-  const register = useCallback(async (data: RegisterData) => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response: AuthResponse = await authService.register(data);
-      setUser(response.user);
-    } catch (err: any) {
-      setError(err.message || 'Registration failed');
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  /**
-   * Logout handler
-   */
-  const logout = useCallback(() => {
-    authService.logout();
-    setUser(null);
-    setError(null);
-  }, []);
-
-  /**
-   * Clear error
-   */
-  const clearError = useCallback(() => {
-    setError(null);
-  }, []);
-
-  const value: AuthContextState = {
-    user,
-    token: getToken(),
-    isAuthenticated: !!user,
-    isLoading,
-    error,
-    login,
-    register,
-    logout,
-    clearError,
+  const login = async (credentials: LoginCredentials) => {
+    const response = await authService.login(credentials);
+    authService.saveAuth(response);
+    setUser(response.user);
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  const register = async (data: RegisterData) => {
+    const response = await authService.register(data);
+    authService.saveAuth(response);
+    setUser(response.user);
+  };
+
+  const logout = () => {
+    authService.logout();
+    setUser(null);
+  };
+
+  const refreshUser = async () => {
+    const userData = await authService.getMe();
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        isAuthenticated: !!user,
+        login,
+        register,
+        logout,
+        refreshUser,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
-/**
- * Hook to use auth context
- */
-export function useAuth(): AuthContextState {
+export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
-
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-
   return context;
 }
 

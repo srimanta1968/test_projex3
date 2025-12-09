@@ -1,166 +1,153 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { body } from 'express-validator';
-import { authService } from '../services/AuthService';
-import { authenticate } from '../middleware/authMiddleware';
 import { validate } from '../middleware/validation';
-import { asyncHandler } from '../middleware/errorHandler';
+import { authMiddleware } from '../middleware/authMiddleware';
+import { authService } from '../services/AuthService';
+import { CreateUserDTO, LoginDTO } from '../models/User';
 
 const router = Router();
 
 /**
- * @route   POST /api/auth/register
- * @desc    Register a new user
- * @access  Public
+ * POST /api/auth/register
+ * Register a new user
  */
 router.post(
   '/register',
   validate([
-    body('name')
-      .trim()
-      .notEmpty()
-      .withMessage('Name is required')
-      .isLength({ min: 2, max: 100 })
-      .withMessage('Name must be between 2 and 100 characters'),
     body('email')
-      .trim()
-      .notEmpty()
-      .withMessage('Email is required')
       .isEmail()
-      .withMessage('Invalid email format')
+      .withMessage('Valid email is required')
       .normalizeEmail(),
     body('password')
-      .notEmpty()
-      .withMessage('Password is required')
       .isLength({ min: 8 })
       .withMessage('Password must be at least 8 characters'),
+    body('name')
+      .notEmpty()
+      .withMessage('Name is required')
+      .trim()
+      .isLength({ min: 2, max: 100 })
+      .withMessage('Name must be between 2 and 100 characters'),
+    body('phone')
+      .optional()
+      .isMobilePhone('any')
+      .withMessage('Invalid phone number'),
   ]),
-  asyncHandler(async (req: Request, res: Response) => {
-    const { name, email, password } = req.body;
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data: CreateUserDTO = {
+        email: req.body.email,
+        password: req.body.password,
+        name: req.body.name,
+        phone: req.body.phone,
+      };
 
-    const result = await authService.register({ name, email, password });
+      const result = await authService.register(data);
 
-    res.status(201).json({
-      success: true,
-      message: 'User registered successfully',
-      data: result,
-    });
-  })
+      res.status(201).json({
+        success: true,
+        message: 'User registered successfully',
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 );
 
 /**
- * @route   POST /api/auth/login
- * @desc    Login user
- * @access  Public
+ * POST /api/auth/login
+ * Login a user
  */
 router.post(
   '/login',
   validate([
     body('email')
-      .trim()
-      .notEmpty()
-      .withMessage('Email is required')
       .isEmail()
-      .withMessage('Invalid email format')
+      .withMessage('Valid email is required')
       .normalizeEmail(),
     body('password')
       .notEmpty()
       .withMessage('Password is required'),
   ]),
-  asyncHandler(async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data: LoginDTO = {
+        email: req.body.email,
+        password: req.body.password,
+      };
 
-    const result = await authService.login({ email, password });
+      const result = await authService.login(data);
 
-    res.status(200).json({
-      success: true,
-      message: 'Login successful',
-      data: result,
-    });
-  })
+      res.status(200).json({
+        success: true,
+        message: 'Login successful',
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 );
 
 /**
- * @route   GET /api/auth/me
- * @desc    Get current user profile
- * @access  Private
+ * GET /api/auth/me
+ * Get current user profile (protected)
  */
 router.get(
   '/me',
-  authenticate,
-  asyncHandler(async (req: Request, res: Response) => {
-    const userId = req.user!.userId;
+  authMiddleware,
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = req.user!.userId;
+      const user = await authService.getUserById(userId);
 
-    const user = await authService.getUserById(userId);
-
-    res.status(200).json({
-      success: true,
-      data: user,
-    });
-  })
+      res.status(200).json({
+        success: true,
+        data: user,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 );
 
 /**
- * @route   PUT /api/auth/profile
- * @desc    Update user profile
- * @access  Private
+ * PUT /api/auth/me
+ * Update current user profile (protected)
  */
 router.put(
-  '/profile',
-  authenticate,
+  '/me',
+  authMiddleware,
   validate([
     body('name')
       .optional()
       .trim()
       .isLength({ min: 2, max: 100 })
       .withMessage('Name must be between 2 and 100 characters'),
-    body('preferences')
+    body('phone')
       .optional()
-      .isString()
-      .withMessage('Preferences must be a string'),
+      .isMobilePhone('any')
+      .withMessage('Invalid phone number'),
   ]),
-  asyncHandler(async (req: Request, res: Response) => {
-    const userId = req.user!.userId;
-    const { name, preferences } = req.body;
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = req.user!.userId;
+      const data = {
+        name: req.body.name,
+        phone: req.body.phone,
+      };
 
-    const user = await authService.updateProfile(userId, { name, preferences });
+      const user = await authService.updateUser(userId, data);
 
-    res.status(200).json({
-      success: true,
-      message: 'Profile updated successfully',
-      data: user,
-    });
-  })
-);
-
-/**
- * @route   PUT /api/auth/password
- * @desc    Change user password
- * @access  Private
- */
-router.put(
-  '/password',
-  authenticate,
-  validate([
-    body('currentPassword')
-      .notEmpty()
-      .withMessage('Current password is required'),
-    body('newPassword')
-      .notEmpty()
-      .withMessage('New password is required')
-      .isLength({ min: 8 })
-      .withMessage('New password must be at least 8 characters'),
-  ]),
-  asyncHandler(async (req: Request, res: Response) => {
-    const userId = req.user!.userId;
-    const { currentPassword, newPassword } = req.body;
-
-    await authService.changePassword(userId, currentPassword, newPassword);
-
-    res.status(200).json({
-      success: true,
-      message: 'Password changed successfully',
-    });
-  })
+      res.status(200).json({
+        success: true,
+        message: 'Profile updated successfully',
+        data: user,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 );
 
 export default router;

@@ -13,6 +13,10 @@ services:
       - ../:/workspace  # Project root (parent of mcp-server/) mounted to /workspace
       - ./feedback:/feedback  # Feedback files (read-write)
       - ./mcp-config.json:/app/mcp-config.json:ro  # Encrypted configuration
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # Enable host network access for API testing
+    env_file:
+      - .env  # Load environment variables from .env file (includes PROJEXLIGHT_API_URL)
     environment:
       # Configuration will be decrypted on startup from mcp-config.json
       - WORKSPACE_PATH=/workspace
@@ -20,6 +24,17 @@ services:
       - MCP_SERVER_PORT=8766
       - MCP_SERVER_HOST=0.0.0.0
       - MCP_CONFIG_FILE=/app/mcp-config.json
+      # Note: PROJEXLIGHT_API_URL is loaded from .env file above
+      # To change API URL, edit mcp-server/.env file
+      # Database connection is configured via mcp-config.json "databaseConfig" section
+      # Or override with environment variables:
+      # - DB_HOST=postgres           # Container name on same network
+      # - DB_HOST=host.docker.internal  # For database on host machine
+      # - DB_HOST=your-rds-host.amazonaws.com  # For external database
+    networks:
+      - mcp-network
+    depends_on:
+      - postgres  # Remove this line if not using the postgres container
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8766/health"]
@@ -27,3 +42,134 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+  # ============================================================
+  # DATABASE CONTAINERS (Choose one or configure external DB in mcp-config.json)
+  # ============================================================
+  # Supported databases: PostgreSQL, MySQL, MariaDB, MongoDB, Redis, Cassandra, SQLite, DynamoDB
+  # Configure in mcp-config.json "databaseConfig" section or use containers below
+
+  # PostgreSQL (default) - Uncomment to use
+  postgres:
+    image: postgres:15-alpine
+    container_name: projexlight-postgres
+    environment:
+      - POSTGRES_USER=${DB_USER:-appuser}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-apppassword}
+      - POSTGRES_DB=${DB_NAME:-appdb}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-appuser} -d ${DB_NAME:-appdb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MySQL - Uncomment to use instead of PostgreSQL
+  # mysql:
+  #   image: mysql:8.0
+  #   container_name: projexlight-mysql
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-apppassword}
+  #     - MYSQL_DATABASE=${DB_NAME:-appdb}
+  #     - MYSQL_USER=${DB_USER:-appuser}
+  #     - MYSQL_PASSWORD=${DB_PASSWORD:-apppassword}
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  #   networks:
+  #     - mcp-network
+  #   restart: unless-stopped
+
+  # MariaDB - Uncomment to use instead of PostgreSQL
+  # mariadb:
+  #   image: mariadb:10.11
+  #   container_name: projexlight-mariadb
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-apppassword}
+  #     - MYSQL_DATABASE=${DB_NAME:-appdb}
+  #     - MYSQL_USER=${DB_USER:-appuser}
+  #     - MYSQL_PASSWORD=${DB_PASSWORD:-apppassword}
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - mariadb_data:/var/lib/mysql
+  #   networks:
+  #     - mcp-network
+  #   restart: unless-stopped
+
+  # MongoDB - Uncomment to use for NoSQL
+  # mongodb:
+  #   image: mongo:6.0
+  #   container_name: projexlight-mongodb
+  #   environment:
+  #     - MONGO_INITDB_ROOT_USERNAME=${DB_USER:-appuser}
+  #     - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD:-apppassword}
+  #     - MONGO_INITDB_DATABASE=${DB_NAME:-appdb}
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongodb_data:/data/db
+  #   networks:
+  #     - mcp-network
+  #   restart: unless-stopped
+
+  # Redis - Uncomment to use for caching
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: projexlight-redis
+  #   command: redis-server --requirepass ${DB_PASSWORD:-apppassword}
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - mcp-network
+  #   restart: unless-stopped
+
+  # Cassandra - Uncomment to use for distributed NoSQL
+  # cassandra:
+  #   image: cassandra:4.1
+  #   container_name: projexlight-cassandra
+  #   environment:
+  #     - CASSANDRA_CLUSTER_NAME=projexlight
+  #   ports:
+  #     - "9042:9042"
+  #   volumes:
+  #     - cassandra_data:/var/lib/cassandra
+  #   networks:
+  #     - mcp-network
+  #   restart: unless-stopped
+
+  # DynamoDB Local - Uncomment to use for AWS DynamoDB development
+  # dynamodb:
+  #   image: amazon/dynamodb-local:latest
+  #   container_name: projexlight-dynamodb
+  #   command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /data"
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - dynamodb_data:/data
+  #   networks:
+  #     - mcp-network
+  #   restart: unless-stopped
+
+networks:
+  mcp-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  # Uncomment volumes for other databases as needed:
+  # mysql_data:
+  # mariadb_data:
+  # mongodb_data:
+  # redis_data:
+  # cassandra_data:
+  # dynamodb_data:
