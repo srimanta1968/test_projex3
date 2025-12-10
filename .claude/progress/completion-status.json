@@ -3,99 +3,106 @@
   "sprint_name": "Quick Prototype Sprint",
   "project_id": "d66a4ee7-4bbb-45bf-bfde-9de00ec3b9f3",
   "project_name": "Quick Taxi",
-  "overall_completion_percentage": 0,
+  "overall_completion_percentage": 36,
   "tasks_by_status": {
-    "pending": 27,
-    "in_progress": 0,
-    "completed": 0
+    "pending": 18,
+    "in_progress": 1,
+    "completed": 10
   },
   "epics_completion": [
     {
+      "epic_id": "foundation",
+      "epic_title": "Foundation",
+      "completion_percentage": 100,
+      "tasks_total": 1,
+      "tasks_completed": 1
+    },
+    {
       "epic_id": "993b9ad1-4ab8-40d5-8073-3c955922605c",
       "epic_title": "User Management",
-      "completion_percentage": 0,
+      "completion_percentage": 33,
       "tasks_total": 9,
-      "tasks_completed": 0
+      "tasks_completed": 3
     },
     {
       "epic_id": "569d4b94-1af7-410f-bd3e-3158c1745a79",
       "epic_title": "Driver Management",
-      "completion_percentage": 0,
+      "completion_percentage": 33,
       "tasks_total": 9,
-      "tasks_completed": 0
+      "tasks_completed": 3
     },
     {
       "epic_id": "6542f06c-e4a2-43cb-9bfa-f178138bb284",
       "epic_title": "Admin Dashboard",
-      "completion_percentage": 0,
+      "completion_percentage": 33,
       "tasks_total": 9,
-      "tasks_completed": 0
+      "tasks_completed": 3
     }
   ],
   "features_completion": [
     {
       "feature_id": "9d2fa831-e0e7-4d9d-8e09-729fd0c41f3e",
       "feature_title": "User Registration",
-      "completion_percentage": 0,
+      "completion_percentage": 33,
       "tasks_total": 3,
-      "tasks_completed": 0
+      "tasks_completed": 1
     },
     {
       "feature_id": "69bc1c90-8366-43f9-8f60-9fcddd1f6d73",
       "feature_title": "Ride Booking",
-      "completion_percentage": 0,
+      "completion_percentage": 33,
       "tasks_total": 3,
-      "tasks_completed": 0
+      "tasks_completed": 1
     },
     {
       "feature_id": "436cd52d-5d1a-4855-8e9a-ba9ffda1962e",
       "feature_title": "Ride History",
-      "completion_percentage": 0,
+      "completion_percentage": 33,
       "tasks_total": 3,
-      "tasks_completed": 0
+      "tasks_completed": 1
     },
     {
       "feature_id": "080c1da3-1feb-4862-9d47-5904a5e77e09",
       "feature_title": "Driver Registration",
-      "completion_percentage": 0,
+      "completion_percentage": 33,
       "tasks_total": 3,
-      "tasks_completed": 0
+      "tasks_completed": 1
     },
     {
       "feature_id": "7208f7af-1d69-4359-88ee-14dc82a94a0f",
       "feature_title": "Driver Availability",
-      "completion_percentage": 0,
+      "completion_percentage": 33,
       "tasks_total": 3,
-      "tasks_completed": 0
+      "tasks_completed": 1
     },
     {
       "feature_id": "c4f5449c-fc72-4eb2-9e63-ff41fd460a9f",
       "feature_title": "Driver Ratings",
-      "completion_percentage": 0,
+      "completion_percentage": 33,
       "tasks_total": 3,
-      "tasks_completed": 0
+      "tasks_completed": 1
     },
     {
       "feature_id": "6fb90497-7fd1-404d-9bcc-a72af02af513",
       "feature_title": "User Management Tools",
-      "completion_percentage": 0,
+      "completion_percentage": 33,
       "tasks_total": 3,
-      "tasks_completed": 0
+      "tasks_completed": 1
     },
     {
       "feature_id": "225e3508-c834-433f-abe5-3d15b9bd60e2",
       "feature_title": "Ride Management Tools",
-      "completion_percentage": 0,
+      "completion_percentage": 33,
       "tasks_total": 3,
-      "tasks_completed": 0
+      "tasks_completed": 1
     },
     {
       "feature_id": "f6b3d3ca-b664-4413-b943-b1d041c6ceb5",
       "feature_title": "Driver Management Tools",
-      "completion_percentage": 0,
+      "completion_percentage": 33,
       "tasks_total": 3,
-      "tasks_completed": 0
+      "tasks_completed": 1
     }
   ],
-  "last_updated": "2025-12-09T02:36:45.839Z"
+  "last_updated": "2025-12-09T20:05:00.000Z"
 }

@@ -1,0 +1,30 @@
+{
+  "endpoint": "/api/rides/:id/status",
+  "method": "PATCH",
+  "description": "Update the status of a ride",
+  "requiresAuth": true,
+  "tags": ["rides", "status", "update"],
+  "testCases": [
+    {
+      "name": "Happy path - update ride status to accepted",
+      "pathParams": { "id": "{{cache:rides.id}}" },
+      "payload": {
+        "status": "{{static:accepted}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "message": "Ride status updated successfully",
+        "data": {
+          "id": "uuid",
+          "user_id": "uuid",
+          "pickup_location": "123 Main Street, Downtown",
+          "dropoff_location": "456 Oak Avenue, Uptown",
+          "status": "accepted",
+          "created_at": "2024-01-15T10:30:00Z",
+          "updated_at": "2024-01-15T10:35:00Z"
+        }
+      }
+    }
+  ]
+}

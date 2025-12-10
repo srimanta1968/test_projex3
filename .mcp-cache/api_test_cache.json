@@ -1,0 +1,21 @@
+{
+  "last_test_run": "2025-12-09T17:16:55.331463",
+  "tested_apis": {
+    "POST:/api/auth/register": {
+      "lastTested": "2025-12-09T17:16:55.331472",
+      "fileHash": "7ddcfd16a13dec2837482e1d43b594864fa46460f14a5595383e2b4cec580987"
+    },
+    "POST:/api/auth/login": {
+      "lastTested": "2025-12-09T17:16:55.331476",
+      "fileHash": "7ddcfd16a13dec2837482e1d43b594864fa46460f14a5595383e2b4cec580987"
+    },
+    "GET:/api/auth/me": {
+      "lastTested": "2025-12-09T17:16:55.331478",
+      "fileHash": "7ddcfd16a13dec2837482e1d43b594864fa46460f14a5595383e2b4cec580987"
+    },
+    "PUT:/api/auth/me": {
+      "lastTested": "2025-12-09T17:16:55.331479",
+      "fileHash": "7ddcfd16a13dec2837482e1d43b594864fa46460f14a5595383e2b4cec580987"
+    }
+  }
+}

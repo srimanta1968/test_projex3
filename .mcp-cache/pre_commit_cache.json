@@ -1,0 +1,35 @@
+{
+  "last_scan": "2025-12-09T15:43:22.221091Z",
+  "scanned_files": {
+    ".claude/settings.local.json": {
+      "hash": "f482f37d0741eb8d44d504a8d59bcd517e4caa17ab958cbb42658f599056aecc",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2025-12-09T15:43:15.497149Z"
+    },
+    "server/src/routes/authRoutes.ts": {
+      "hash": "7ddcfd16a13dec2837482e1d43b594864fa46460f14a5595383e2b4cec580987",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2025-12-09T15:43:18.946035Z"
+    }
+  },
+  "registered_apis": {
+    "POST:/api/auth/register": {
+      "filePath": "server/src/routes/authRoutes.ts",
+      "timestamp": "2025-12-09T15:43:22.221102Z"
+    },
+    "POST:/api/auth/login": {
+      "filePath": "server/src/routes/authRoutes.ts",
+      "timestamp": "2025-12-09T15:43:22.221106Z"
+    },
+    "GET:/api/auth/me": {
+      "filePath": "server/src/routes/authRoutes.ts",
+      "timestamp": "2025-12-09T15:43:22.221109Z"
+    },
+    "PUT:/api/auth/me": {
+      "filePath": "server/src/routes/authRoutes.ts",
+      "timestamp": "2025-12-09T15:43:22.221112Z"
+    }
+  }
+}

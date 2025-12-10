@@ -3,6 +3,8 @@ import { useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import BookRide from './pages/BookRide';
+import RideHistory from './pages/RideHistory';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -64,6 +66,22 @@ function App() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/book-ride"
+        element={
+          <ProtectedRoute>
+            <BookRide />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/ride-history"
+        element={
+          <ProtectedRoute>
+            <RideHistory />
           </ProtectedRoute>
         }
       />

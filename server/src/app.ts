@@ -4,8 +4,9 @@ import { env } from './config/env';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { logger } from './utils/logger';
 
-// Import routes (will be added later)
+// Import routes
 import authRoutes from './routes/authRoutes';
+import rideRoutes from './routes/rideRoutes';
 
 const app: Application = express();
 
@@ -38,6 +39,7 @@ app.get('/health', (_req: Request, res: Response) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/rides', rideRoutes);
 
 // 404 handler
 app.use(notFoundHandler);

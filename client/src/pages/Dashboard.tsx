@@ -1,5 +1,5 @@
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -48,9 +48,12 @@ export default function Dashboard() {
                   <p className="mt-2 text-sm text-primary-600">
                     Request a ride to your destination
                   </p>
-                  <button className="mt-4 w-full bg-primary-600 text-white py-2 px-4 rounded-md hover:bg-primary-700 transition-colors">
+                  <Link
+                    to="/book-ride"
+                    className="mt-4 w-full bg-primary-600 text-white py-2 px-4 rounded-md hover:bg-primary-700 transition-colors block text-center"
+                  >
                     Book Now
-                  </button>
+                  </Link>
                 </div>
 
                 <div className="bg-green-50 p-6 rounded-lg">
@@ -60,9 +63,12 @@ export default function Dashboard() {
                   <p className="mt-2 text-sm text-green-600">
                     View your past rides and receipts
                   </p>
-                  <button className="mt-4 w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors">
+                  <Link
+                    to="/ride-history"
+                    className="mt-4 w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors block text-center"
+                  >
                     View History
-                  </button>
+                  </Link>
                 </div>
 
                 <div className="bg-blue-50 p-6 rounded-lg">

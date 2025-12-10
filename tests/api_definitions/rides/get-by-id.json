@@ -1,0 +1,26 @@
+{
+  "endpoint": "/api/rides/:id",
+  "method": "GET",
+  "description": "Get a specific ride by ID",
+  "requiresAuth": true,
+  "tags": ["rides", "get"],
+  "testCases": [
+    {
+      "name": "Happy path - get ride by ID",
+      "pathParams": { "id": "{{cache:rides.id}}" },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "id": "uuid",
+          "user_id": "uuid",
+          "pickup_location": "123 Main Street, Downtown",
+          "dropoff_location": "456 Oak Avenue, Uptown",
+          "status": "pending",
+          "created_at": "2024-01-15T10:30:00Z",
+          "updated_at": "2024-01-15T10:30:00Z"
+        }
+      }
+    }
+  ]
+}
