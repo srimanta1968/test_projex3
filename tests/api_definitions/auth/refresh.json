@@ -1,0 +1,53 @@
+{
+  "endpoint": "/api/auth/refresh",
+  "method": "POST",
+  "description": "Refresh JWT token for authenticated user",
+  "headers": {
+    "Authorization": {
+      "type": "string",
+      "required": true,
+      "format": "Bearer {token}",
+      "description": "Current JWT token"
+    }
+  },
+  "requestBody": null,
+  "expectedResponse": {
+    "success": {
+      "statusCode": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "token": "string",
+          "expiresIn": "string"
+        },
+        "message": "Token refreshed successfully"
+      }
+    }
+  },
+  "errorResponses": [
+    {
+      "statusCode": 401,
+      "condition": "Invalid or expired token",
+      "body": {
+        "success": false,
+        "error": "Authentication required"
+      }
+    }
+  ],
+  "testCases": [
+    {
+      "name": "Happy path - token refreshed",
+      "type": "happy_path",
+      "headers": {
+        "Authorization": "Bearer valid-jwt-token"
+      },
+      "expectedOutput": {
+        "statusCode": 200,
+        "body": {
+          "success": true,
+          "message": "Token refreshed successfully"
+        }
+      }
+    }
+  ]
+}

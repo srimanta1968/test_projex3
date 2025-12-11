@@ -1,5 +1,7 @@
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import authService from '../services/auth.service';
+import { authMiddleware, AuthenticatedRequest } from '../middleware/auth.middleware';
+import userService from '../services/user.service';
 import type { ApiResponse, LoginRequest, AuthenticatedUser } from '../types';
 
 const router = Router();
@@ -64,6 +66,73 @@ router.post('/login', async (req: Request, res: Response) => {
       error: 'Internal server error',
     };
     console.error('Login error:', error);
+    return res.status(500).json(response);
+  }
+});
+
+router.get('/me', authMiddleware, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!req.user) {
+      const response: ApiResponse = {
+        success: false,
+        error: 'Authentication required',
+      };
+      return res.status(401).json(response);
+    }
+
+    const response: ApiResponse<AuthenticatedUser> = {
+      success: true,
+      data: req.user,
+    };
+
+    return res.status(200).json(response);
+  } catch (error) {
+    const response: ApiResponse = {
+      success: false,
+      error: 'Internal server error',
+    };
+    console.error('Get current user error:', error);
+    return res.status(500).json(response);
+  }
+});
+
+router.post('/refresh', authMiddleware, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!req.user) {
+      const response: ApiResponse = {
+        success: false,
+        error: 'Authentication required',
+      };
+      return res.status(401).json(response);
+    }
+
+    const user = await userService.findById(req.user.id);
+    if (!user) {
+      const response: ApiResponse = {
+        success: false,
+        error: 'User not found',
+      };
+      return res.status(404).json(response);
+    }
+
+    const { token, expiresIn } = authService.generateToken(user);
+
+    const response: ApiResponse<{ token: string; expiresIn: string }> = {
+      success: true,
+      data: {
+        token,
+        expiresIn,
+      },
+      message: 'Token refreshed successfully',
+    };
+
+    return res.status(200).json(response);
+  } catch (error) {
+    const response: ApiResponse = {
+      success: false,
+      error: 'Internal server error',
+    };
+    console.error('Token refresh error:', error);
     return res.status(500).json(response);
   }
 });
