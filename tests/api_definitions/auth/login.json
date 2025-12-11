@@ -1,0 +1,87 @@
+{
+  "endpoint": "/api/auth/login",
+  "method": "POST",
+  "description": "Authenticate user with email and password, returns JWT token",
+  "requestBody": {
+    "email": {
+      "type": "string",
+      "required": true,
+      "inputType": "dynamic",
+      "description": "User's email address",
+      "validation": {
+        "format": "email",
+        "maxLength": 255
+      }
+    },
+    "password": {
+      "type": "string",
+      "required": true,
+      "inputType": "dynamic",
+      "description": "User's password",
+      "validation": {
+        "minLength": 1
+      }
+    }
+  },
+  "expectedResponse": {
+    "success": {
+      "statusCode": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "user": {
+            "id": "uuid",
+            "name": "string",
+            "email": "string",
+            "phone": "string",
+            "email_verified": "boolean",
+            "phone_verified": "boolean"
+          },
+          "token": "string",
+          "expiresIn": "string"
+        },
+        "message": "Login successful"
+      }
+    }
+  },
+  "errorResponses": [
+    {
+      "statusCode": 400,
+      "condition": "Invalid input data",
+      "body": {
+        "success": false,
+        "error": {
+          "fields": {
+            "email": "Email is required",
+            "password": "Password is required"
+          }
+        }
+      }
+    },
+    {
+      "statusCode": 401,
+      "condition": "Invalid credentials",
+      "body": {
+        "success": false,
+        "error": "Invalid email or password"
+      }
+    }
+  ],
+  "testCases": [
+    {
+      "name": "Happy path - successful login",
+      "type": "happy_path",
+      "input": {
+        "email": "john.doe@example.com",
+        "password": "SecurePass123"
+      },
+      "expectedOutput": {
+        "statusCode": 200,
+        "body": {
+          "success": true,
+          "message": "Login successful"
+        }
+      }
+    }
+  ]
+}
