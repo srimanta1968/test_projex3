@@ -81,3 +81,28 @@ export interface RideResponse {
   data?: Ride;
   error?: string;
 }
+
+export type PartnerCategory =
+  | 'restaurant'
+  | 'hotel'
+  | 'healthcare'
+  | 'education'
+  | 'retail'
+  | 'entertainment'
+  | 'corporate';
+
+export type PartnerStatus = 'prospect' | 'active' | 'inactive';
+
+export type PartnerTier = 'gold' | 'silver' | 'bronze';
+
+export interface Partnership {
+  id: string;
+  businessName: string;
+  contactInfo: string;
+  promotionDetails: string;
+  category?: PartnerCategory;
+  status?: PartnerStatus;
+  tier?: PartnerTier;
+  createdAt: string;
+  updatedAt: string;
+}
