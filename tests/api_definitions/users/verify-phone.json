@@ -1,0 +1,66 @@
+{
+  "endpoint": "/api/users/verify-phone",
+  "method": "POST",
+  "description": "Verify user's phone using the verification code",
+  "requestBody": {
+    "phone": {
+      "type": "string",
+      "required": true,
+      "inputType": "dynamic",
+      "description": "User's phone number"
+    },
+    "code": {
+      "type": "string",
+      "required": true,
+      "inputType": "dynamic",
+      "description": "6-digit verification code sent via SMS",
+      "validation": {
+        "pattern": "^[0-9]{6}$"
+      }
+    }
+  },
+  "expectedResponse": {
+    "success": {
+      "statusCode": 200,
+      "body": {
+        "success": true,
+        "message": "Phone verified successfully"
+      }
+    }
+  },
+  "errorResponses": [
+    {
+      "statusCode": 400,
+      "condition": "Invalid or expired code",
+      "body": {
+        "success": false,
+        "error": "Invalid or expired verification code"
+      }
+    },
+    {
+      "statusCode": 404,
+      "condition": "User not found",
+      "body": {
+        "success": false,
+        "error": "User not found"
+      }
+    }
+  ],
+  "testCases": [
+    {
+      "name": "Happy path - phone verified successfully",
+      "type": "happy_path",
+      "input": {
+        "phone": "+1234567890",
+        "code": "123456"
+      },
+      "expectedOutput": {
+        "statusCode": 200,
+        "body": {
+          "success": true,
+          "message": "Phone verified successfully"
+        }
+      }
+    }
+  ]
+}

@@ -54,6 +54,15 @@ export interface VerifyEmailRequest {
   token: string;
 }
 
+export interface SendPhoneVerificationRequest {
+  phone: string;
+}
+
+export interface VerifyPhoneRequest {
+  phone: string;
+  code: string;
+}
+
 export interface LoginRequest {
   email: string;
   password: string;

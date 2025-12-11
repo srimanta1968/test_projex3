@@ -3,10 +3,12 @@ import { v4 as uuidv4 } from 'uuid';
 import crypto from 'crypto';
 import dataService from '../config/database';
 import emailService from '../config/email';
+import smsService from '../config/sms';
 import type { User, RegisterUserRequest, AuthenticatedUser } from '../types';
 
 const SALT_ROUNDS = 10;
 const VERIFICATION_TOKEN_EXPIRES_HOURS = 24;
+const PHONE_VERIFICATION_EXPIRES_MINUTES = 10;
 
 export const userService = {
   async findByEmail(email: string): Promise<User | null> {
@@ -132,6 +134,69 @@ export const userService = {
 
     const isValid = await bcrypt.compare(password, user.password_hash);
     return isValid ? user : null;
+  },
+
+  async findByPhone(phone: string): Promise<User | null> {
+    const normalizedPhone = phone.replace(/[\s-]/g, '');
+    const sql = 'SELECT * FROM users WHERE phone = $1';
+    return dataService.queryOne<User>(sql, [normalizedPhone]);
+  },
+
+  async sendPhoneVerification(phone: string): Promise<void> {
+    const normalizedPhone = phone.replace(/[\s-]/g, '');
+    const user = await this.findByPhone(normalizedPhone);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    if (user.phone_verified) {
+      throw new Error('Phone already verified');
+    }
+
+    const verificationCode = smsService.generateVerificationCode();
+    const verificationExpires = new Date();
+    verificationExpires.setMinutes(verificationExpires.getMinutes() + PHONE_VERIFICATION_EXPIRES_MINUTES);
+
+    const sql = `
+      UPDATE users
+      SET phone_verification_code = $1,
+          phone_verification_expires = $2,
+          updated_at = NOW()
+      WHERE id = $3
+    `;
+
+    await dataService.execute(sql, [verificationCode, verificationExpires, user.id]);
+
+    const smsSent = await smsService.sendVerificationCode(normalizedPhone, verificationCode);
+    if (!smsSent) {
+      throw new Error('Failed to send verification SMS');
+    }
+  },
+
+  async verifyPhone(phone: string, code: string): Promise<void> {
+    const normalizedPhone = phone.replace(/[\s-]/g, '');
+    const sql = `
+      SELECT * FROM users
+      WHERE phone = $1
+      AND phone_verification_code = $2
+      AND phone_verification_expires > NOW()
+    `;
+
+    const user = await dataService.queryOne<User>(sql, [normalizedPhone, code]);
+    if (!user) {
+      throw new Error('Invalid or expired verification code');
+    }
+
+    const updateSql = `
+      UPDATE users
+      SET phone_verified = true,
+          phone_verification_code = NULL,
+          phone_verification_expires = NULL,
+          updated_at = NOW()
+      WHERE id = $1
+    `;
+
+    await dataService.execute(updateSql, [user.id]);
   },
 };
 

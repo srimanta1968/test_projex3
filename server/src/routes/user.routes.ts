@@ -6,6 +6,8 @@ import type {
   RegisterUserRequest,
   SendVerificationEmailRequest,
   VerifyEmailRequest,
+  SendPhoneVerificationRequest,
+  VerifyPhoneRequest,
   AuthenticatedUser,
 } from '../types';
 
@@ -176,6 +178,110 @@ router.post('/verify-email', async (req: Request, res: Response) => {
       error: 'Internal server error',
     };
     console.error('Email verification error:', error);
+    return res.status(500).json(response);
+  }
+});
+
+router.post('/send-phone-verification', async (req: Request, res: Response) => {
+  try {
+    const { phone } = req.body as SendPhoneVerificationRequest;
+
+    if (!phone || !validatePhone(phone)) {
+      const response: ApiResponse = {
+        success: false,
+        error: 'Invalid phone number format',
+      };
+      return res.status(400).json(response);
+    }
+
+    await userService.sendPhoneVerification(phone);
+
+    const response: ApiResponse = {
+      success: true,
+      message: 'Verification code sent successfully',
+    };
+
+    return res.status(200).json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to send verification code';
+
+    if (message === 'User not found') {
+      const response: ApiResponse = {
+        success: false,
+        error: 'User not found',
+      };
+      return res.status(404).json(response);
+    }
+
+    if (message === 'Phone already verified') {
+      const response: ApiResponse = {
+        success: false,
+        error: 'Phone already verified',
+      };
+      return res.status(409).json(response);
+    }
+
+    const response: ApiResponse = {
+      success: false,
+      error: 'Internal server error',
+    };
+    console.error('Send phone verification error:', error);
+    return res.status(500).json(response);
+  }
+});
+
+router.post('/verify-phone', async (req: Request, res: Response) => {
+  try {
+    const { phone, code } = req.body as VerifyPhoneRequest;
+
+    if (!phone || !validatePhone(phone)) {
+      const response: ApiResponse = {
+        success: false,
+        error: 'Invalid phone number format',
+      };
+      return res.status(400).json(response);
+    }
+
+    if (!code || !/^[0-9]{6}$/.test(code)) {
+      const response: ApiResponse = {
+        success: false,
+        error: 'Invalid verification code format',
+      };
+      return res.status(400).json(response);
+    }
+
+    await userService.verifyPhone(phone, code);
+
+    const response: ApiResponse = {
+      success: true,
+      message: 'Phone verified successfully',
+    };
+
+    return res.status(200).json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Phone verification failed';
+
+    if (message === 'Invalid or expired verification code') {
+      const response: ApiResponse = {
+        success: false,
+        error: 'Invalid or expired verification code',
+      };
+      return res.status(400).json(response);
+    }
+
+    if (message === 'User not found') {
+      const response: ApiResponse = {
+        success: false,
+        error: 'User not found',
+      };
+      return res.status(404).json(response);
+    }
+
+    const response: ApiResponse = {
+      success: false,
+      error: 'Internal server error',
+    };
+    console.error('Phone verification error:', error);
     return res.status(500).json(response);
   }
 });
