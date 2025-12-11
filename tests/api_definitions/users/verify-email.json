@@ -1,0 +1,56 @@
+{
+  "endpoint": "/api/users/verify-email",
+  "method": "POST",
+  "description": "Verify user's email using the verification token",
+  "requestBody": {
+    "token": {
+      "type": "string",
+      "required": true,
+      "inputType": "dynamic",
+      "description": "Email verification token sent to user's email"
+    }
+  },
+  "expectedResponse": {
+    "success": {
+      "statusCode": 200,
+      "body": {
+        "success": true,
+        "message": "Email verified successfully"
+      }
+    }
+  },
+  "errorResponses": [
+    {
+      "statusCode": 400,
+      "condition": "Invalid or expired token",
+      "body": {
+        "success": false,
+        "error": "Invalid or expired verification token"
+      }
+    },
+    {
+      "statusCode": 404,
+      "condition": "User not found",
+      "body": {
+        "success": false,
+        "error": "User not found"
+      }
+    }
+  ],
+  "testCases": [
+    {
+      "name": "Happy path - email verified successfully",
+      "type": "happy_path",
+      "input": {
+        "token": "valid-verification-token"
+      },
+      "expectedOutput": {
+        "statusCode": 200,
+        "body": {
+          "success": true,
+          "message": "Email verified successfully"
+        }
+      }
+    }
+  ]
+}
