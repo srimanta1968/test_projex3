@@ -1,0 +1,118 @@
+{
+  "last_scan": "2025-12-11T04:34:14.443213Z",
+  "scanned_files": {
+    ".claude/settings.local.json": {
+      "hash": "12a9bc04739b13553bafc1f8e6c30b485d8bb0142998653bf1e56aaafd5a0884",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2025-12-11T04:33:31.391046Z",
+      "linesOfCode": 13
+    },
+    "claude_desktop_config.json": {
+      "hash": "4ff5429dacabe7573b8ff137ac1fafd895f13399a52c1fe08cc79447fad2554e",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2025-12-11T04:33:34.508770Z",
+      "linesOfCode": 14
+    },
+    "client/package.json": {
+      "hash": "8d3190734c0fbea4eb03fb3d6a41a09bfcaeeba624094a78ce719e0c55f929e7",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2025-12-11T04:33:37.158913Z",
+      "linesOfCode": 27
+    },
+    "client/postcss.config.js": {
+      "hash": "e32657baf631d7c5f4dc67b4b2ee0ec8e7d5b3c41860e09cddce7c0377cd80bc",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2025-12-11T04:33:39.621518Z",
+      "linesOfCode": 6
+    },
+    "client/src/App.tsx": {
+      "hash": "9f969d88e563227653ed6eea38663613c023bd8b38bbb6787951ad807c716b2a",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2025-12-11T04:33:41.394015Z",
+      "linesOfCode": 15
+    },
+    "client/src/components/RegistrationForm.tsx": {
+      "hash": "f719052a32a8baaf017a1e724da82d304f5dac0bbe650d1d771d687e4a98b10d",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2025-12-11T04:33:45.433066Z",
+      "linesOfCode": 267
+    },
+    "client/src/main.tsx": {
+      "hash": "f5297a6afed15af66b8fc1d11027acb37e88e3601ac703f7af43932f985ffd23",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2025-12-11T04:33:48.265685Z",
+      "linesOfCode": 12
+    },
+    "client/src/pages/Register.tsx": {
+      "hash": "2c2eca4e8ee4169fa617f51f03f84131891929d38dc30028fb93ad6632921961",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2025-12-11T04:33:51.310130Z",
+      "linesOfCode": 78
+    },
+    "client/src/types/index.ts": {
+      "hash": "2b7ffca48031eb84e8e123868ca6aa31c6da4c54585ea1df39312e109e3c5f26",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2025-12-11T04:33:54.246765Z",
+      "linesOfCode": 34
+    },
+    "client/tailwind.config.js": {
+      "hash": "d9dd085c8d6a7e9bfccc82156cf9a5a565539352356734452d61a0dc49cbd335",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2025-12-11T04:33:58.218777Z",
+      "linesOfCode": 26
+    },
+    "client/tsconfig.json": {
+      "hash": "e09b1d7398a757eae35c19efcd50710803fe8df7e8d6414d2b6f595166ebf906",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2025-12-11T04:34:02.034099Z",
+      "linesOfCode": 21
+    },
+    "client/vite.config.ts": {
+      "hash": "e4193cdec980610daee3fb6b77647069e2b38739d392a012ec7084b2b761eb68",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2025-12-11T04:34:04.540427Z",
+      "linesOfCode": 14
+    },
+    "mcp-server/mcp-bridge.js": {
+      "hash": "562f33f7592b74b3bc9aa762af9c7ae3e80b64658682031a5cb7a7cc350ee163",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2025-12-11T04:34:07.976095Z",
+      "linesOfCode": 391
+    },
+    "mcp-server/mcp-config.json": {
+      "hash": "bbc10c0196bd8118b16207856537833dc9ddc7f527fdbcb1f9c5d39bf19d4dbd",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2025-12-11T04:34:10.273063Z",
+      "linesOfCode": 17
+    },
+    "server/package.json": {
+      "hash": "3115ed9d39f3a10abc83ddfa52b4abdd45d5629ad8b02988be3ffbefc8a0fab4",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2025-12-11T04:34:12.207254Z",
+      "linesOfCode": 32
+    },
+    "server/tsconfig.json": {
+      "hash": "d49bdb658f222bf369488db5a7ef7f7193b692a31fc4f8d4fc979122df280caf",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2025-12-11T04:34:14.000422Z",
+      "linesOfCode": 19
+    }
+  },
+  "registered_apis": {}
+}

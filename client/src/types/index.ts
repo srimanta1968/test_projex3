@@ -37,3 +37,47 @@ export interface ValidationError {
   field: string;
   message: string;
 }
+
+export interface RideRequestFormData {
+  pickupLocation: string;
+  dropoffLocation: string;
+  scheduledTime?: string;
+  notes?: string;
+}
+
+export interface Ride {
+  id: string;
+  userId: string;
+  driverId?: string;
+  pickupLocation: string;
+  dropoffLocation: string;
+  status: RideStatus;
+  scheduledTime?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type RideStatus =
+  | 'pending'
+  | 'accepted'
+  | 'driver_assigned'
+  | 'in_progress'
+  | 'completed'
+  | 'cancelled';
+
+export interface Driver {
+  id: string;
+  name: string;
+  licenseNumber: number;
+  vehicleDetails: string;
+  rating?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RideResponse {
+  success: boolean;
+  data?: Ride;
+  error?: string;
+}
