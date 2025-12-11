@@ -4,8 +4,8 @@
 -- Total Schemas: 1
 
 -- ========================================
--- Schema: Quick Taxi Schema
--- Description: Auto-generated database schema for Quick Taxi. Generated from project description...
+-- Schema: Quick Ride Schema
+-- Description: Auto-generated database schema for Quick Ride. Generated from project description...
 -- Version: 1
 -- ========================================
 
@@ -13,17 +13,49 @@ CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(255),
   email VARCHAR(255),
-  phone VARCHAR(255),
-  password VARCHAR(255),
+  password_hash VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE users IS 'Schema: Quick Taxi Schema - Entity: Users';
+COMMENT ON TABLE users IS 'Schema: Quick Ride Schema - Entity: Users';
+
+CREATE TABLE IF NOT EXISTS feedback (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID,
+  comments VARCHAR(255),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE feedback IS 'Schema: Quick Ride Schema - Entity: Feedback';
+
+CREATE TABLE IF NOT EXISTS partnerships (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  business_name VARCHAR(255),
+  contact_info VARCHAR(255),
+  promotion_details VARCHAR(255),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE partnerships IS 'Schema: Quick Ride Schema - Entity: Partnerships';
+
+CREATE TABLE IF NOT EXISTS drivers (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(255),
+  license_number INTEGER,
+  vehicle_details VARCHAR(255),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE drivers IS 'Schema: Quick Ride Schema - Entity: Drivers';
 
 CREATE TABLE IF NOT EXISTS rides (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID,
+  driver_id UUID,
   pickup_location VARCHAR(255),
   dropoff_location VARCHAR(255),
   status VARCHAR(255),
@@ -31,88 +63,51 @@ CREATE TABLE IF NOT EXISTS rides (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE rides IS 'Schema: Quick Taxi Schema - Entity: Rides';
+COMMENT ON TABLE rides IS 'Schema: Quick Ride Schema - Entity: Rides';
 
-CREATE TABLE IF NOT EXISTS ridehistory (
+CREATE TABLE IF NOT EXISTS transactions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  ride_id UUID,
   user_id UUID,
-  date TIMESTAMP WITH TIME ZONE,
   amount DECIMAL(10,2),
+  transaction_type VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE ridehistory IS 'Schema: Quick Taxi Schema - Entity: Ridehistory';
+COMMENT ON TABLE transactions IS 'Schema: Quick Ride Schema - Entity: Transactions';
 
-CREATE TABLE IF NOT EXISTS drivers (
+CREATE TABLE IF NOT EXISTS marketing_campaigns (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name VARCHAR(255),
-  vehicle_type VARCHAR(255),
-  license_number INTEGER,
-  rating VARCHAR(255),
+  campaign_name VARCHAR(255),
+  start_date TIMESTAMP WITH TIME ZONE,
+  end_date TIMESTAMP WITH TIME ZONE,
+  budget VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE drivers IS 'Schema: Quick Taxi Schema - Entity: Drivers';
+COMMENT ON TABLE marketing_campaigns IS 'Schema: Quick Ride Schema - Entity: Marketing_campaigns';
 
-CREATE TABLE IF NOT EXISTS driveravailability (
+CREATE TABLE IF NOT EXISTS events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  driver_id UUID,
-  available_from VARCHAR(255),
-  available_to VARCHAR(255),
+  event_name VARCHAR(255),
+  date TIMESTAMP WITH TIME ZONE,
+  location VARCHAR(255),
+  attendee_count INTEGER,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE driveravailability IS 'Schema: Quick Taxi Schema - Entity: Driveravailability';
+COMMENT ON TABLE events IS 'Schema: Quick Ride Schema - Entity: Events';
 
-CREATE TABLE IF NOT EXISTS driverratings (
+CREATE TABLE IF NOT EXISTS loyalty_programs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  driver_id UUID,
   user_id UUID,
-  rating VARCHAR(255),
-  comment VARCHAR(255),
+  points_earned VARCHAR(255),
+  reward_details VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE driverratings IS 'Schema: Quick Taxi Schema - Entity: Driverratings';
-
-CREATE TABLE IF NOT EXISTS adminactions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  admin_id UUID,
-  user_id UUID,
-  action VARCHAR(255),
-  timestamp TIMESTAMP WITH TIME ZONE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE adminactions IS 'Schema: Quick Taxi Schema - Entity: Adminactions';
-
-CREATE TABLE IF NOT EXISTS adminridelogs (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  admin_id UUID,
-  ride_id UUID,
-  action VARCHAR(255),
-  timestamp TIMESTAMP WITH TIME ZONE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE adminridelogs IS 'Schema: Quick Taxi Schema - Entity: Adminridelogs';
-
-CREATE TABLE IF NOT EXISTS admindriveractions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  admin_id UUID,
-  driver_id UUID,
-  action VARCHAR(255),
-  timestamp TIMESTAMP WITH TIME ZONE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE admindriveractions IS 'Schema: Quick Taxi Schema - Entity: Admindriveractions';
+COMMENT ON TABLE loyalty_programs IS 'Schema: Quick Ride Schema - Entity: Loyalty_programs';
 

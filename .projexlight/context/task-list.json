@@ -1,0 +1,197 @@
+{
+  "sprintId": "c700990b-2399-4e6c-b1a0-db98628d4dea",
+  "sprintName": "Quick Prototype Sprint",
+  "totalTasks": 27,
+  "tasks": [
+    {
+      "taskId": "de7d9121-7f18-4e6e-82f5-50823f855b54",
+      "taskNumber": 1,
+      "title": "Test Registration Process",
+      "status": "not_started",
+      "taskType": "testing"
+    },
+    {
+      "taskId": "4982cf9e-f930-4378-9502-ff550c00117a",
+      "taskNumber": 2,
+      "title": "Design Registration Form",
+      "status": "not_started",
+      "taskType": "design"
+    },
+    {
+      "taskId": "2e5163cf-23d5-46c4-90e0-12c0bcf7c76a",
+      "taskNumber": 3,
+      "title": "Implement Backend API for Registration",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "38ea7238-ea45-409d-96f4-d6dbdd325e94",
+      "taskNumber": 4,
+      "title": "Develop Feedback Form",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "5ccec104-1034-4e6a-89e5-0600edc79cd8",
+      "taskNumber": 5,
+      "title": "Integrate Feedback Database",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "07298ff4-d871-4271-81fe-b9d63ec7e201",
+      "taskNumber": 6,
+      "title": "Analyze Feedback for Improvements",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "7dca14b1-3521-4b2a-8861-6578b6e75450",
+      "taskNumber": 7,
+      "title": "Identify Potential Local Partners",
+      "status": "not_started",
+      "taskType": "research"
+    },
+    {
+      "taskId": "3118e9ad-d32a-413a-ad1e-ba600944ba2e",
+      "taskNumber": 8,
+      "title": "Create Partnership Proposal Template",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "318683e6-0e0e-4bf8-bbc1-be75e40e4b0e",
+      "taskNumber": 9,
+      "title": "Launch Partnership Promotions",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "9efa0601-2404-4bb8-adcf-6bc1cfd0aaf1",
+      "taskNumber": 10,
+      "title": "Create Driver Training Program",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "1f2e4713-f3f8-46e4-ad3b-17c945de259f",
+      "taskNumber": 11,
+      "title": "Set Up Background Check Process",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "354feded-9b57-4cd9-87e1-6b962b6d94b8",
+      "taskNumber": 12,
+      "title": "Evaluate Driver Performance",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "52ea8cca-e981-45cb-b1a7-f811dbd276ca",
+      "taskNumber": 13,
+      "title": "Design Ride Request Interface",
+      "status": "not_started",
+      "taskType": "design"
+    },
+    {
+      "taskId": "df155fb4-eb3d-46a2-b7a1-258a54f9e5e8",
+      "taskNumber": 14,
+      "title": "Implement Ride Matching Algorithm",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "43756cc3-aa12-40af-9389-e6caa143d1f2",
+      "taskNumber": 15,
+      "title": "Monitor Ride Requests and Dispatch",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "99d526cf-0f64-4515-b340-5ad709e997ef",
+      "taskNumber": 16,
+      "title": "Integrate Payment Gateway",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "b6c4b5a4-7acd-4329-8c8a-09363b1d2c02",
+      "taskNumber": 17,
+      "title": "Implement User Wallet Feature",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "61c03b4a-3b8b-4bd8-8741-bef7a9122143",
+      "taskNumber": 18,
+      "title": "Create Billing Reports for Drivers",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "3bdd95bc-5508-4f18-ba00-f4c69ecaf4d9",
+      "taskNumber": 19,
+      "title": "Create Campaign Content",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "350c50f1-127d-4e80-a6b0-2113da0310aa",
+      "taskNumber": 20,
+      "title": "Set Up Campaign Tracking",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "8cf01ef0-0b44-4b6d-aa4b-46a6c01b5ae0",
+      "taskNumber": 21,
+      "title": "Analyze Campaign Results",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "a8642f89-c976-4214-a063-275a532d2b8e",
+      "taskNumber": 22,
+      "title": "Plan Community Event",
+      "status": "not_started",
+      "taskType": "planning"
+    },
+    {
+      "taskId": "3f61e33a-50ff-4b55-a562-3ae21e1a44d3",
+      "taskNumber": 23,
+      "title": "Promote Event Through Partnerships",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "8a1867c1-1cab-43a2-be50-a4669d90a337",
+      "taskNumber": 24,
+      "title": "Gather Feedback from Event Attendees",
+      "status": "not_started",
+      "taskType": "research"
+    },
+    {
+      "taskId": "5efaff6b-209d-4703-a369-1abcbf7e83d4",
+      "taskNumber": 25,
+      "title": "Design Referral Program Structure",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "a6cf5e69-6654-4f88-bf9d-f00899f2756d",
+      "taskNumber": 26,
+      "title": "Develop Loyalty Rewards System",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "65c069f0-de0d-4d04-a60a-a53695096dab",
+      "taskNumber": 27,
+      "title": "Monitor Program Effectiveness",
+      "status": "not_started",
+      "taskType": "development"
+    }
+  ],
+  "note": "Detailed instructions are delivered via MCP API. Call projexlight_get_instruction with taskId."
+}

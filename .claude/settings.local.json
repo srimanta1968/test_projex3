@@ -1,11 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm install:*)",
-      "Bash(npx tsc:*)",
-      "Bash(npm test)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "mcp__projexlight__projexlight_get_rules",
+      "mcp__projexlight__projexlight_get_template",
+      "Bash(mkdir:*)"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "projexlight"
+  ]
 }

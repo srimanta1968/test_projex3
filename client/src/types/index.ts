@@ -1,33 +1,39 @@
 export interface User {
   id: string;
-  name: string | null;
-  email: string | null;
-  phone: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface AuthResponse {
-  user: User;
-  token: string;
-}
-
-export interface ApiResponse<T> {
-  success: boolean;
-  message?: string;
-  data?: T;
-  error?: string;
-  code?: string;
-}
-
-export interface LoginCredentials {
+  name: string;
   email: string;
-  password: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface RegisterData {
+export interface RegistrationFormData {
   name: string;
   email: string;
   password: string;
-  phone?: string;
+  confirmPassword: string;
+}
+
+export interface LoginFormData {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  data?: {
+    user: User;
+    token: string;
+  };
+  error?: string;
+}
+
+export interface ApiError {
+  success: false;
+  error: string;
+  fields?: Record<string, string>;
+}
+
+export interface ValidationError {
+  field: string;
+  message: string;
 }

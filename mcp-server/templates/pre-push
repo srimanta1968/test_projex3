@@ -405,6 +405,18 @@ if [ $? -eq 0 ] && [ -n "$API_TEST_RESULT" ]; then
 
     if [ "$SKIPPED" -gt 0 ]; then
         echo -e "  Tests skipped: ${YELLOW}${SKIPPED}${NC}"
+
+        # Show skipped test details with actionable guidance
+        SKIPPED_ENDPOINTS=$(echo "$API_TEST_RESULT" | jq -r '.skippedTests[]? | "   - \(.method) \(.endpoint): \(.errorMessage)"' 2>/dev/null || echo "")
+        if [ -n "$SKIPPED_ENDPOINTS" ]; then
+            echo -e "${YELLOW}  Skipped tests (missing test definitions):${NC}"
+            echo "$SKIPPED_ENDPOINTS"
+            echo ""
+            echo -e "${YELLOW}  🔧 TO FIX: Ask your LLM to create missing test definitions:${NC}"
+            echo -e "     \"Create test definition JSON files for the skipped APIs above."
+            echo -e "      Include proper payload with {{dynamic:...}} or {{cache:...}} placeholders."
+            echo -e "      Then run 'git push' again.\""
+        fi
     fi
 
     if [ "$BLOCKING_CONFLICTS" -gt 0 ]; then
