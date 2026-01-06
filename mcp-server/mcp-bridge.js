@@ -203,6 +203,33 @@ const TOOLS = [
       },
       required: ['taskType']
     }
+  },
+  {
+    name: 'projexlight_self_check',
+    description: 'Get self-check validation checklist to run before writing files',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: 'projexlight_submit_feature_validation',
+    description: 'Submit feature validation results after completing all tasks in a feature',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        featureId: {
+          type: 'string',
+          description: 'The UUID of the feature being validated'
+        },
+        validationResults: {
+          type: 'object',
+          description: 'Results of feature validation against acceptance criteria'
+        }
+      },
+      required: ['featureId', 'validationResults']
+    }
   }
 ];
 
@@ -217,7 +244,9 @@ const TOOL_ENDPOINTS = {
   'projexlight_get_rules': { method: 'GET', path: '/api/instruction/rules' },
   'projexlight_decision_tree': { method: 'POST', path: '/api/instruction/decision-tree' },
   'projexlight_quality_gates': { method: 'POST', path: '/api/instruction/quality-gates' },
-  'projexlight_get_template': { method: 'POST', path: '/api/instruction/template' }
+  'projexlight_get_template': { method: 'POST', path: '/api/instruction/template' },
+  'projexlight_self_check': { method: 'GET', path: '/api/instruction/self-check' },
+  'projexlight_submit_feature_validation': { method: 'POST', path: '/api/instruction/feature-validation' }
 };
 
 // HTTP request helper

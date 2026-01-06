@@ -1,194 +1,124 @@
 {
-  "sprintId": "c700990b-2399-4e6c-b1a0-db98628d4dea",
+  "sprintId": "7c2e0bff-17ab-4295-8aac-4ba17ca075b7",
   "sprintName": "Quick Prototype Sprint",
-  "totalTasks": 27,
+  "totalTasks": 17,
   "tasks": [
     {
-      "taskId": "de7d9121-7f18-4e6e-82f5-50823f855b54",
+      "taskId": "2e042d28-024a-4ce8-b155-102b7886a68e",
       "taskNumber": 1,
-      "title": "Test Registration Process",
+      "title": "Implement User Interface backend logic",
+      "status": "not_started",
+      "taskType": "backend"
+    },
+    {
+      "taskId": "2dda33a0-c225-418d-90a9-66d3860a7b4b",
+      "taskNumber": 2,
+      "title": "Create User Interface UI components",
+      "status": "not_started",
+      "taskType": "frontend"
+    },
+    {
+      "taskId": "b7d01d9c-26f9-445b-b491-05390cff8940",
+      "taskNumber": 3,
+      "title": "Test CloudWatch ingestion",
       "status": "not_started",
       "taskType": "testing"
     },
     {
-      "taskId": "4982cf9e-f930-4378-9502-ff550c00117a",
-      "taskNumber": 2,
-      "title": "Design Registration Form",
-      "status": "not_started",
-      "taskType": "design"
-    },
-    {
-      "taskId": "2e5163cf-23d5-46c4-90e0-12c0bcf7c76a",
-      "taskNumber": 3,
-      "title": "Implement Backend API for Registration",
-      "status": "not_started",
-      "taskType": "development"
-    },
-    {
-      "taskId": "38ea7238-ea45-409d-96f4-d6dbdd325e94",
+      "taskId": "0e36ab21-0498-43a2-b835-3f285a791297",
       "taskNumber": 4,
-      "title": "Develop Feedback Form",
+      "title": "Validate custom logs ingestion",
       "status": "not_started",
-      "taskType": "development"
+      "taskType": "testing"
     },
     {
-      "taskId": "5ccec104-1034-4e6a-89e5-0600edc79cd8",
+      "taskId": "58094f5e-004f-4ef5-9e45-43cc175cb5d8",
       "taskNumber": 5,
-      "title": "Integrate Feedback Database",
+      "title": "Test aggregation functionality",
       "status": "not_started",
-      "taskType": "development"
+      "taskType": "testing"
     },
     {
-      "taskId": "07298ff4-d871-4271-81fe-b9d63ec7e201",
+      "taskId": "d197c759-e906-4ae9-87a4-37753f3e314c",
       "taskNumber": 6,
-      "title": "Analyze Feedback for Improvements",
+      "title": "Test parameter extraction",
       "status": "not_started",
-      "taskType": "development"
+      "taskType": "testing"
     },
     {
-      "taskId": "7dca14b1-3521-4b2a-8861-6578b6e75450",
+      "taskId": "ef16d232-c475-47d3-b64d-30c1b1b9b048",
       "taskNumber": 7,
-      "title": "Identify Potential Local Partners",
+      "title": "Set up AWS SDK",
       "status": "not_started",
-      "taskType": "research"
+      "taskType": "development"
     },
     {
-      "taskId": "3118e9ad-d32a-413a-ad1e-ba600944ba2e",
+      "taskId": "b3a16c97-7b35-43c2-a1a8-88457052c273",
       "taskNumber": 8,
-      "title": "Create Partnership Proposal Template",
+      "title": "Define log formats",
       "status": "not_started",
       "taskType": "development"
     },
     {
-      "taskId": "318683e6-0e0e-4bf8-bbc1-be75e40e4b0e",
+      "taskId": "b6a90669-3dc9-4656-8c40-2f82bc28c9d2",
       "taskNumber": 9,
-      "title": "Launch Partnership Promotions",
+      "title": "Set up Slack API",
       "status": "not_started",
       "taskType": "development"
     },
     {
-      "taskId": "9efa0601-2404-4bb8-adcf-6bc1cfd0aaf1",
+      "taskId": "1801714c-167c-4f4b-a3f0-e33aec570ec3",
       "taskNumber": 10,
-      "title": "Create Driver Training Program",
+      "title": "Define message parsing rules",
       "status": "not_started",
       "taskType": "development"
     },
     {
-      "taskId": "1f2e4713-f3f8-46e4-ad3b-17c945de259f",
+      "taskId": "e3193953-0bca-47dc-b789-bb1585c5579a",
       "taskNumber": 11,
-      "title": "Set Up Background Check Process",
+      "title": "Implement message ingestion",
       "status": "not_started",
       "taskType": "development"
     },
     {
-      "taskId": "354feded-9b57-4cd9-87e1-6b962b6d94b8",
+      "taskId": "7dc8cbaf-9d5b-4064-9520-c508dd80a155",
       "taskNumber": 12,
-      "title": "Evaluate Driver Performance",
+      "title": "Identify custom log formats",
       "status": "not_started",
       "taskType": "development"
     },
     {
-      "taskId": "52ea8cca-e981-45cb-b1a7-f811dbd276ca",
+      "taskId": "5bccf1ef-3b7e-43bf-b343-951444dc3a30",
       "taskNumber": 13,
-      "title": "Design Ride Request Interface",
+      "title": "Create ingestion pipeline",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "09d7acd9-cacd-4b51-8e28-05a770888679",
+      "taskNumber": 14,
+      "title": "Design aggregation model",
       "status": "not_started",
       "taskType": "design"
     },
     {
-      "taskId": "df155fb4-eb3d-46a2-b7a1-258a54f9e5e8",
-      "taskNumber": 14,
-      "title": "Implement Ride Matching Algorithm",
-      "status": "not_started",
-      "taskType": "development"
-    },
-    {
-      "taskId": "43756cc3-aa12-40af-9389-e6caa143d1f2",
+      "taskId": "4e506466-ce4a-4c8e-bea9-e0dcea0d710f",
       "taskNumber": 15,
-      "title": "Monitor Ride Requests and Dispatch",
+      "title": "Implement aggregation logic",
       "status": "not_started",
       "taskType": "development"
     },
     {
-      "taskId": "99d526cf-0f64-4515-b340-5ad709e997ef",
+      "taskId": "f1808fcf-787c-494c-bbf2-22fe00f2a55b",
       "taskNumber": 16,
-      "title": "Integrate Payment Gateway",
+      "title": "Identify critical parameters",
       "status": "not_started",
       "taskType": "development"
     },
     {
-      "taskId": "b6c4b5a4-7acd-4329-8c8a-09363b1d2c02",
+      "taskId": "24103ba8-9603-4aa9-bf42-6e36826f296c",
       "taskNumber": 17,
-      "title": "Implement User Wallet Feature",
-      "status": "not_started",
-      "taskType": "development"
-    },
-    {
-      "taskId": "61c03b4a-3b8b-4bd8-8741-bef7a9122143",
-      "taskNumber": 18,
-      "title": "Create Billing Reports for Drivers",
-      "status": "not_started",
-      "taskType": "development"
-    },
-    {
-      "taskId": "3bdd95bc-5508-4f18-ba00-f4c69ecaf4d9",
-      "taskNumber": 19,
-      "title": "Create Campaign Content",
-      "status": "not_started",
-      "taskType": "development"
-    },
-    {
-      "taskId": "350c50f1-127d-4e80-a6b0-2113da0310aa",
-      "taskNumber": 20,
-      "title": "Set Up Campaign Tracking",
-      "status": "not_started",
-      "taskType": "development"
-    },
-    {
-      "taskId": "8cf01ef0-0b44-4b6d-aa4b-46a6c01b5ae0",
-      "taskNumber": 21,
-      "title": "Analyze Campaign Results",
-      "status": "not_started",
-      "taskType": "development"
-    },
-    {
-      "taskId": "a8642f89-c976-4214-a063-275a532d2b8e",
-      "taskNumber": 22,
-      "title": "Plan Community Event",
-      "status": "not_started",
-      "taskType": "planning"
-    },
-    {
-      "taskId": "3f61e33a-50ff-4b55-a562-3ae21e1a44d3",
-      "taskNumber": 23,
-      "title": "Promote Event Through Partnerships",
-      "status": "not_started",
-      "taskType": "development"
-    },
-    {
-      "taskId": "8a1867c1-1cab-43a2-be50-a4669d90a337",
-      "taskNumber": 24,
-      "title": "Gather Feedback from Event Attendees",
-      "status": "not_started",
-      "taskType": "research"
-    },
-    {
-      "taskId": "5efaff6b-209d-4703-a369-1abcbf7e83d4",
-      "taskNumber": 25,
-      "title": "Design Referral Program Structure",
-      "status": "not_started",
-      "taskType": "development"
-    },
-    {
-      "taskId": "a6cf5e69-6654-4f88-bf9d-f00899f2756d",
-      "taskNumber": 26,
-      "title": "Develop Loyalty Rewards System",
-      "status": "not_started",
-      "taskType": "development"
-    },
-    {
-      "taskId": "65c069f0-de0d-4d04-a60a-a53695096dab",
-      "taskNumber": 27,
-      "title": "Monitor Program Effectiveness",
+      "title": "Develop extraction logic",
       "status": "not_started",
       "taskType": "development"
     }

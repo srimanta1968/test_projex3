@@ -1,0 +1,22 @@
+{
+  "endpoint": "/api/auth/register",
+  "method": "POST",
+  "requiresAuth": false,
+  "description": "User registration endpoint",
+  "testCases": [{
+    "name": "Register new user",
+    "payload": {
+      "email": "{{dynamic:email}}",
+      "username": "{{dynamic:username}}",
+      "password": "{{dynamic:password}}",
+      "first_name": "{{dynamic:first_name}}",
+      "last_name": "{{dynamic:last_name}}"
+    },
+    "expectedStatus": 201,
+    "cacheResponse": {
+      "auth.email": "$.data.email",
+      "auth.password": "$.password",
+      "user.id": "$.data.id"
+    }
+  }]
+}

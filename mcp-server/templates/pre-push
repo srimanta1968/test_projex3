@@ -22,6 +22,17 @@ NC='\033[0m' # No Color
 # Configuration
 MCP_SERVER_URL="${MCP_SERVER_URL:-http://localhost:8766}"
 
+# Report directories (separate from pre-commit)
+PREPUSH_REPORTS_DIR=""
+TODOS_REPORTS_DIR=""
+HAS_VIOLATIONS=false
+HAS_TODOS=false
+
+# API Test Mode Configuration
+# Set to 'full' to run ALL API tests (useful for CI/CD or before release)
+# Set to 'incremental' (default) to only test APIs related to changed files
+API_TEST_MODE="${API_TEST_MODE:-incremental}"
+
 # ============================================================
 # Detect Operating System
 # ============================================================
@@ -60,6 +71,12 @@ fi
 echo -e "${BLUE}🚀 ProjexLight Pre-Push Hook${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "   OS Detected: ${GREEN}${OS_TYPE}${NC}"
+
+# Create report directories
+PREPUSH_REPORTS_DIR="${PROJECT_ROOT}/.projexlight/reports/pre-push"
+TODOS_REPORTS_DIR="${PROJECT_ROOT}/.projexlight/reports/todos"
+mkdir -p "$PREPUSH_REPORTS_DIR"
+mkdir -p "$TODOS_REPORTS_DIR"
 
 # ============================================================
 # STEP 1: Check if MCP server is running
@@ -321,8 +338,12 @@ while read local_ref local_sha remote_ref remote_sha; do
     if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
         echo -e "   ${BLUE}New branch detected - analyzing all commits${NC}"
         # New branch: get all files in commits being pushed
-        # Compare against empty tree to get all files
-        CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r $local_sha 2>/dev/null || git diff --name-only 4b825dc642cb6eb9a060e54bf8d69288fbee4904..$local_sha 2>/dev/null || git ls-files)
+        # For initial commit, diff-tree returns empty (no parent), so use empty tree comparison
+        CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r $local_sha 2>/dev/null)
+        # If diff-tree returned empty (initial commit), compare against empty tree
+        if [ -z "$CHANGED_FILES" ]; then
+            CHANGED_FILES=$(git diff --name-only 4b825dc642cb6eb9a060e54bf8d69288fbee4904..$local_sha 2>/dev/null || git ls-files)
+        fi
     else
         # Existing branch: get files changed since remote
         CHANGED_FILES=$(git diff --name-only $remote_sha..$local_sha 2>/dev/null || echo "")
@@ -331,7 +352,7 @@ done
 
 # Fallback: if no input from pre-push hook (shouldn't happen, but just in case)
 if [ -z "$CHANGED_FILES" ]; then
-    REMOTE_BRANCH=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null)
+    REMOTE_BRANCH=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || true)
     if [ -n "$REMOTE_BRANCH" ]; then
         # Has upstream tracking branch
         CHANGED_FILES=$(git diff --name-only ${REMOTE_BRANCH}..HEAD 2>/dev/null || echo "")
@@ -356,11 +377,226 @@ echo -e "${GREEN}✓ Found ${FILE_COUNT} changed files${NC}"
 CHANGED_FILES_JSON=$(echo "$CHANGED_FILES" | jq -R -s -c 'split("\n") | map(select(length > 0))')
 
 # ============================================================
-# STEP 6: Run API tests
+# STEP 6: TODO Detection - Missing API/Mock Reminders
 # ============================================================
-echo -e "\n${BLUE}🧪 Running API tests on changed files...${NC}"
+echo -e "\n${BLUE}📝 Scanning for TODO comments in changed files...${NC}"
 
-API_TEST_RESULT=$(curl -s -X POST "${MCP_SERVER_URL}/api/test" \
+# Scan changed files for TODOs
+TODO_COUNT=0
+API_TODO_COUNT=0
+declare -a TODO_LIST
+declare -a API_TODO_LIST
+
+for file in $CHANGED_FILES; do
+    # Skip non-code files
+    if [[ ! "$file" =~ \.(ts|tsx|js|jsx|py|java|go|rb|php|cs|cpp|c|rs|swift|kt)$ ]]; then
+        continue
+    fi
+
+    # Check if file exists
+    if [ -f "$file" ]; then
+        # Search for TODO patterns with line numbers
+        while IFS= read -r line; do
+            if [ -n "$line" ]; then
+                LINE_NUM=$(echo "$line" | cut -d: -f1)
+                LINE_CONTENT=$(echo "$line" | cut -d: -f2-)
+
+                # Check if it's an API-related TODO
+                if echo "$LINE_CONTENT" | grep -qiE "(api|mock|placeholder|replace.*api|waiting.*api|endpoint|fetch|axios|http)"; then
+                    API_TODO_COUNT=$((API_TODO_COUNT + 1))
+                    API_TODO_LIST+=("${file}:${LINE_NUM}: ${LINE_CONTENT}")
+                else
+                    TODO_COUNT=$((TODO_COUNT + 1))
+                    TODO_LIST+=("${file}:${LINE_NUM}: ${LINE_CONTENT}")
+                fi
+            fi
+        done < <(grep -n -E "(TODO|FIXME|XXX|HACK)" "$file" 2>/dev/null || echo "")
+    fi
+done
+
+TOTAL_TODOS=$((TODO_COUNT + API_TODO_COUNT))
+
+if [ "$TOTAL_TODOS" -gt 0 ]; then
+    HAS_TODOS=true
+
+    echo -e "\n${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${YELLOW}⚠️  Found ${TOTAL_TODOS} TODO comment(s) in files being pushed${NC}"
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+    # Show API-related TODOs first (higher priority)
+    if [ "$API_TODO_COUNT" -gt 0 ]; then
+        echo -e "\n${RED}🔴 API/Mock TODOs (${API_TODO_COUNT}) - May Indicate Incomplete Features:${NC}"
+        echo -e "${RED}   These suggest missing API integrations or temporary mocks:${NC}\n"
+
+        # Show first 15 API TODOs
+        count=0
+        for todo in "${API_TODO_LIST[@]}"; do
+            if [ $count -lt 15 ]; then
+                echo -e "   ${RED}•${NC} $todo"
+                count=$((count + 1))
+            fi
+        done
+        if [ "$API_TODO_COUNT" -gt 15 ]; then
+            echo -e "   ... and $((API_TODO_COUNT - 15)) more"
+        fi
+
+        echo ""
+        echo -e "${YELLOW}   💡 Before pushing, consider:${NC}"
+        echo -e "${YELLOW}      1. Check if required APIs are now available:${NC}"
+        echo -e "${BLUE}         curl -X POST http://localhost:8766/api/search-apis -d '{\"pattern\": \"your-api\"}'${NC}"
+        echo -e "${YELLOW}      2. Replace mocks with actual API calls if APIs are ready${NC}"
+        echo -e "${YELLOW}      3. Coordinate with developers working on missing APIs${NC}"
+    fi
+
+    # Show other TODOs (summarized)
+    if [ "$TODO_COUNT" -gt 0 ]; then
+        echo -e "\n${YELLOW}🟡 Other TODOs (${TODO_COUNT}):${NC}"
+        # Show first 5 TODOs
+        count=0
+        for todo in "${TODO_LIST[@]}"; do
+            if [ $count -lt 5 ]; then
+                echo -e "   ${YELLOW}•${NC} $todo"
+                count=$((count + 1))
+            fi
+        done
+        if [ "$TODO_COUNT" -gt 5 ]; then
+            echo -e "   ... and $((TODO_COUNT - 5)) more"
+        fi
+    fi
+
+    # ============================================================
+    # Generate TODO Report (saved to todos folder)
+    # ============================================================
+    TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+    TODOS_REPORT_FILE="${TODOS_REPORTS_DIR}/pre-push_todos_${TIMESTAMP}.json"
+    TODOS_LATEST="${TODOS_REPORTS_DIR}/pre-push_latest.json"
+
+    # Build JSON array for TODO items
+    TODO_ITEMS_JSON="["
+    FIRST_ITEM=true
+
+    # Add API TODOs
+    for todo in "${API_TODO_LIST[@]}"; do
+        FILE_PATH=$(echo "$todo" | cut -d: -f1)
+        LINE_NUM=$(echo "$todo" | cut -d: -f2)
+        CONTENT=$(echo "$todo" | cut -d: -f3- | sed 's/"/\\"/g' | sed "s/'/\\\\'/g")
+
+        if [ "$FIRST_ITEM" = false ]; then
+            TODO_ITEMS_JSON+=","
+        fi
+        FIRST_ITEM=false
+
+        TODO_ITEMS_JSON+=$(cat <<ITEM
+{
+      "file": "${FILE_PATH}",
+      "line": ${LINE_NUM},
+      "content": "${CONTENT}",
+      "category": "api_related",
+      "priority": "high"
+    }
+ITEM
+)
+    done
+
+    # Add other TODOs
+    for todo in "${TODO_LIST[@]}"; do
+        FILE_PATH=$(echo "$todo" | cut -d: -f1)
+        LINE_NUM=$(echo "$todo" | cut -d: -f2)
+        CONTENT=$(echo "$todo" | cut -d: -f3- | sed 's/"/\\"/g' | sed "s/'/\\\\'/g")
+
+        if [ "$FIRST_ITEM" = false ]; then
+            TODO_ITEMS_JSON+=","
+        fi
+        FIRST_ITEM=false
+
+        TODO_ITEMS_JSON+=$(cat <<ITEM
+{
+      "file": "${FILE_PATH}",
+      "line": ${LINE_NUM},
+      "content": "${CONTENT}",
+      "category": "general",
+      "priority": "normal"
+    }
+ITEM
+)
+    done
+
+    TODO_ITEMS_JSON+="]"
+
+    # Create TODO report
+    TODO_REPORT=$(cat <<EOF
+{
+  "reportType": "todos",
+  "source": "pre-push",
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "priority": "end-of-sprint",
+  "description": "TODO items found during pre-push hook. These should be addressed before sprint end.",
+  "summary": {
+    "total": ${TOTAL_TODOS},
+    "api_related": ${API_TODO_COUNT},
+    "general": ${TODO_COUNT}
+  },
+  "items": ${TODO_ITEMS_JSON},
+  "llm_prompt": "Please review and fix the TODO items in this pre-push report. Focus on API-related TODOs first (priority: high) as they may indicate incomplete API integrations or temporary mocks. For each TODO: 1) Search api_library for available APIs that might fulfill the requirement, 2) Replace mocks with actual API calls if APIs exist, 3) If API is not available, coordinate with team or mark for later sprint.",
+  "actionable_commands": {
+    "search_apis": "curl -X POST http://localhost:8766/api/search-apis -H 'Content-Type: application/json' -d '{\"pattern\": \"your-search-term\"}'",
+    "find_all_todos": "grep -rn 'TODO\\|FIXME' . --include='*.ts' --include='*.tsx' --include='*.js' --include='*.py'"
+  }
+}
+EOF
+)
+
+    # Save TODO report
+    echo "$TODO_REPORT" | jq '.' > "$TODOS_REPORT_FILE" 2>/dev/null || echo "$TODO_REPORT" > "$TODOS_REPORT_FILE"
+    cp "$TODOS_REPORT_FILE" "$TODOS_LATEST"
+
+    echo ""
+    echo -e "${BLUE}📋 TODO report saved: ${TODOS_REPORT_FILE}${NC}"
+
+    # If there are many API-related TODOs, ask user to confirm
+    if [ "$API_TODO_COUNT" -ge 3 ]; then
+        if [ -t 0 ]; then
+            echo -e "${YELLOW}You have ${API_TODO_COUNT} API-related TODO(s). These may indicate incomplete features.${NC}"
+            echo -e "${YELLOW}Continue with push? [Y/n]${NC}"
+            read -r -n 1 response </dev/tty
+            echo ""
+
+            case "$response" in
+                [nN])
+                    echo -e "${RED}❌ Push cancelled. Please address the API TODOs first.${NC}"
+                    echo -e "${YELLOW}   Run: grep -rn 'TODO.*api\\|TODO.*mock' . --include='*.ts' --include='*.tsx'${NC}"
+                    exit 1
+                    ;;
+                *)
+                    echo -e "${GREEN}✓ Proceeding with push despite API TODOs${NC}"
+                    ;;
+            esac
+        else
+            # Non-interactive mode - warn but don't block
+            echo -e "${YELLOW}⚠️  Non-interactive mode: ${API_TODO_COUNT} API TODO(s) detected${NC}"
+        fi
+    fi
+else
+    echo -e "${GREEN}✓ No TODO comments found in changed files${NC}"
+fi
+
+# ============================================================
+# STEP 7: Run API tests
+# ============================================================
+echo -e "\n${BLUE}🧪 Running API tests (mode: ${API_TEST_MODE})...${NC}"
+echo -e "   ${BLUE}Source: tests/api_definitions/ (LLM-generated)${NC}"
+
+if [ "$API_TEST_MODE" = "full" ]; then
+    echo -e "   ${YELLOW}Full mode: Testing ALL APIs${NC}"
+else
+    echo -e "   ${GREEN}Incremental mode: Testing APIs matching changed files${NC}"
+fi
+
+# Set timeout for API tests (default: 120 seconds = 2 minutes)
+API_TEST_TIMEOUT="${API_TEST_TIMEOUT:-120}"
+
+# Make curl request with full HTTP response (including status code)
+HTTP_RESPONSE=$(curl -s -w "\n%{http_code}" --max-time ${API_TEST_TIMEOUT} -X POST "${MCP_SERVER_URL}/api/test" \
     -H "Content-Type: application/json" \
     -d "{
         \"project_root\": \"/workspace\",
@@ -368,10 +604,55 @@ API_TEST_RESULT=$(curl -s -X POST "${MCP_SERVER_URL}/api/test" \
         \"changed_files\": ${CHANGED_FILES_JSON},
         \"local_server_running\": true,
         \"local_server_port\": ${SERVER_PORT},
-        \"project_type\": \"${PROJECT_TYPE}\"
+        \"project_type\": \"${PROJECT_TYPE}\",
+        \"api_test_mode\": \"${API_TEST_MODE}\"
     }" 2>&1)
+CURL_EXIT_CODE=$?
 
-if [ $? -eq 0 ] && [ -n "$API_TEST_RESULT" ]; then
+# Extract HTTP status code (last line) and body (everything else)
+HTTP_STATUS=$(echo "$HTTP_RESPONSE" | tail -n 1)
+API_TEST_RESULT=$(echo "$HTTP_RESPONSE" | sed '$d')
+
+# Check if curl timed out
+if [ $CURL_EXIT_CODE -eq 28 ]; then
+    echo -e "${RED}❌ API test timed out after ${API_TEST_TIMEOUT} seconds${NC}"
+    echo -e "${YELLOW}   The server may still be processing tests.${NC}"
+    echo -e "${YELLOW}   Wait a moment and try again, or increase timeout: export API_TEST_TIMEOUT=300${NC}"
+    exit 1
+fi
+
+# Check if another test is already in progress (HTTP 409)
+if [ "$HTTP_STATUS" = "409" ]; then
+    ELAPSED=$(echo "$API_TEST_RESULT" | jq -r '.elapsed_seconds // 0' 2>/dev/null || echo "0")
+    echo -e "${YELLOW}⚠️  Another API test is already in progress (${ELAPSED}s elapsed)${NC}"
+    echo -e "${YELLOW}   Please wait for the current test to complete and try again.${NC}"
+    echo -e "${YELLOW}   If tests appear stuck, wait 90 seconds for auto-recovery.${NC}"
+    exit 1
+fi
+
+# Check if there was an error response from the server
+if [ "$HTTP_STATUS" = "500" ]; then
+    ERROR_MSG=$(echo "$API_TEST_RESULT" | jq -r '.detail // "Unknown error"' 2>/dev/null || echo "Unknown error")
+    echo -e "${RED}❌ API test server error: ${ERROR_MSG}${NC}"
+    echo -e "${YELLOW}   Check MCP server logs: docker logs mcp-server${NC}"
+    exit 1
+fi
+
+# Check for timeout flag in response
+TIMED_OUT=$(echo "$API_TEST_RESULT" | jq -r '.summary.timedOut // false' 2>/dev/null || echo "false")
+if [ "$TIMED_OUT" = "true" ]; then
+    echo -e "${YELLOW}⚠️  API tests timed out on the server${NC}"
+    echo -e "${YELLOW}   Some tests may not have completed.${NC}"
+fi
+
+# Check for error flag in response
+ERROR_OCCURRED=$(echo "$API_TEST_RESULT" | jq -r '.summary.errorOccurred // false' 2>/dev/null || echo "false")
+if [ "$ERROR_OCCURRED" = "true" ]; then
+    ERROR_MSG=$(echo "$API_TEST_RESULT" | jq -r '.error // "Unknown error"' 2>/dev/null || echo "Unknown error")
+    echo -e "${YELLOW}⚠️  API tests encountered an error: ${ERROR_MSG}${NC}"
+fi
+
+if [ $CURL_EXIT_CODE -eq 0 ] && [ -n "$API_TEST_RESULT" ]; then
     # Parse test results
     TOTAL_APIS=$(echo "$API_TEST_RESULT" | jq -r '.summary.totalAPIs // 0' 2>/dev/null || echo "0")
     NEW_APIS=$(echo "$API_TEST_RESULT" | jq -r '.summary.newAPIs // 0' 2>/dev/null || echo "0")
@@ -381,9 +662,13 @@ if [ $? -eq 0 ] && [ -n "$API_TEST_RESULT" ]; then
     BLOCKING_CONFLICTS=$(echo "$API_TEST_RESULT" | jq -r '.summary.blockingConflicts // 0' 2>/dev/null || echo "0")
     DUPLICATE_WARNINGS=$(echo "$API_TEST_RESULT" | jq -r '.summary.duplicateWarnings // 0' 2>/dev/null || echo "0")
     SKIPPED=$(echo "$API_TEST_RESULT" | jq -r '.summary.skippedAPIs // 0' 2>/dev/null || echo "0")
+    TEST_DURATION=$(echo "$API_TEST_RESULT" | jq -r '.summary.testDurationMs // 0' 2>/dev/null || echo "0")
 
-    echo -e "${GREEN}✓ API Testing completed${NC}"
-    echo -e "  Total APIs discovered: ${TOTAL_APIS}"
+    echo ""
+    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${GREEN}✓ API Testing completed (${TEST_DURATION}ms)${NC}"
+    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "  Total APIs tested: ${TOTAL_APIS}"
     echo -e "  New APIs: ${GREEN}${NEW_APIS}${NC}"
 
     if [ "$MODIFIED_APIS" -gt 0 ]; then
@@ -429,6 +714,8 @@ if [ $? -eq 0 ] && [ -n "$API_TEST_RESULT" ]; then
 
     # BLOCK push if there are conflicting APIs
     if [ "$BLOCKING_CONFLICTS" -gt 0 ]; then
+        HAS_VIOLATIONS=true
+
         echo -e "\n${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
         echo -e "${RED}❌ PUSH BLOCKED: ${BLOCKING_CONFLICTS} conflicting API(s) detected${NC}"
         echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -442,24 +729,145 @@ if [ $? -eq 0 ] && [ -n "$API_TEST_RESULT" ]; then
             echo -e "${CONFLICT_DETAILS}"
         fi
 
+        # Generate conflict violation report
+        TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+        CONFLICT_REPORT_FILE="${PREPUSH_REPORTS_DIR}/api_conflicts_${TIMESTAMP}.json"
+        CONFLICT_LATEST="${PREPUSH_REPORTS_DIR}/conflicts_latest.json"
+
+        CONFLICT_REPORT=$(cat <<EOF
+{
+  "reportType": "api_conflicts",
+  "source": "pre-push",
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "priority": "immediate",
+  "blocking": true,
+  "description": "Conflicting API endpoints detected. These must be resolved before pushing.",
+  "summary": {
+    "conflicts": ${BLOCKING_CONFLICTS},
+    "warnings": ${DUPLICATE_WARNINGS}
+  },
+  "conflicts": $(echo "$API_TEST_RESULT" | jq '.duplicateAPIsDetected // []'),
+  "llm_prompt": "Please resolve the API conflicts in this report. For each conflict: 1) Review both the new API and existing API, 2) Decide whether to rename the new endpoint or reuse the existing one, 3) If renaming, update all references to the new endpoint, 4) If reusing existing, remove the duplicate API code and update imports.",
+  "resolution_steps": [
+    "Review the conflicting endpoints listed above",
+    "Choose one: rename your new API OR use the existing one",
+    "If renaming: change the endpoint path in your route file",
+    "If reusing: delete your duplicate API and import/use the existing one",
+    "Run 'git push' again after resolving"
+  ]
+}
+EOF
+)
+
+        echo "$CONFLICT_REPORT" | jq '.' > "$CONFLICT_REPORT_FILE" 2>/dev/null || echo "$CONFLICT_REPORT" > "$CONFLICT_REPORT_FILE"
+        cp "$CONFLICT_REPORT_FILE" "$CONFLICT_LATEST"
+
         echo ""
+        echo -e "${BLUE}📋 Conflict report saved: ${CONFLICT_REPORT_FILE}${NC}"
         echo -e "${YELLOW}Please resolve conflicts by:${NC}"
         echo -e "  1. Renaming the new API to a different endpoint"
         echo -e "  2. Removing the new API and using the existing one"
+        echo ""
+        echo -e "${YELLOW}💡 To fix with LLM:${NC}"
+        echo -e "   \"Read ${CONFLICT_LATEST} and resolve the API conflicts\""
         echo ""
         echo -e "${YELLOW}To bypass (NOT RECOMMENDED): git push --no-verify${NC}"
         exit 1
     fi
 
-    # Optionally fail push if tests failed
-    if [ "$FAILED" -gt 0 ] && [ "${PROJEXLIGHT_FAIL_ON_TEST_FAILURE:-true}" = "true" ]; then
-        echo -e "\n${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-        echo -e "${RED}❌ Push blocked: ${FAILED} API test(s) failed${NC}"
-        echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    # Ask user interactively if tests failed
+    if [ "$FAILED" -gt 0 ]; then
+        HAS_VIOLATIONS=true
+
+        echo -e "\n${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo -e "${RED}⚠️  ${FAILED} API test(s) failed out of ${TOTAL_APIS} total tests${NC}"
+        echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
         echo ""
-        echo -e "${YELLOW}Fix the failing tests before pushing.${NC}"
-        echo -e "${YELLOW}To bypass: export PROJEXLIGHT_FAIL_ON_TEST_FAILURE=false${NC}"
-        exit 1
+        echo -e "${BLUE}📋 Test Summary:${NC}"
+        echo -e "   ✅ Passed: ${GREEN}${PASSED}${NC}"
+        echo -e "   ❌ Failed: ${RED}${FAILED}${NC}"
+        if [ "$SKIPPED" -gt 0 ]; then
+            echo -e "   ⏭️  Skipped: ${YELLOW}${SKIPPED}${NC}"
+        fi
+
+        # Generate API test failure report
+        TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+        FAILURE_REPORT_FILE="${PREPUSH_REPORTS_DIR}/api_failures_${TIMESTAMP}.json"
+        FAILURE_LATEST="${PREPUSH_REPORTS_DIR}/failures_latest.json"
+
+        FAILURE_REPORT=$(cat <<EOF
+{
+  "reportType": "api_test_failures",
+  "source": "pre-push",
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "priority": "immediate",
+  "blocking": false,
+  "description": "API tests failed during pre-push validation. These should be fixed before pushing.",
+  "summary": {
+    "total": ${TOTAL_APIS},
+    "passed": ${PASSED},
+    "failed": ${FAILED},
+    "skipped": ${SKIPPED},
+    "duration_ms": ${TEST_DURATION}
+  },
+  "failed_tests": $(echo "$API_TEST_RESULT" | jq '.failedTests // []'),
+  "skipped_tests": $(echo "$API_TEST_RESULT" | jq '.skippedTests // []'),
+  "llm_prompt": "Please analyze and fix the ${FAILED} failed API test(s). For each failure: 1) Read the error message to understand what went wrong, 2) Check the API implementation in the route file, 3) Verify test data in api_definitions is valid, 4) Fix the API code or test data as needed. Also check .projexlight/feedback/ for detailed error information.",
+  "investigation_paths": [
+    "${PROJECT_ROOT}/.projexlight/feedback/",
+    "${PROJECT_ROOT}/.projexlight/reports/",
+    "${PROJECT_ROOT}/tests/api_definitions/"
+  ],
+  "commands": {
+    "view_logs": "docker logs projexlight-mcp",
+    "rerun_tests": "curl -X POST http://localhost:8766/api/test -H 'Content-Type: application/json' -d '{\"project_root\": \"/workspace\", \"api_test_mode\": \"full\"}'"
+  }
+}
+EOF
+)
+
+        echo "$FAILURE_REPORT" | jq '.' > "$FAILURE_REPORT_FILE" 2>/dev/null || echo "$FAILURE_REPORT" > "$FAILURE_REPORT_FILE"
+        cp "$FAILURE_REPORT_FILE" "$FAILURE_LATEST"
+
+        echo ""
+        echo -e "${BLUE}📋 Failure report saved: ${FAILURE_REPORT_FILE}${NC}"
+        echo ""
+        echo -e "${BLUE}🔍 To investigate the failures:${NC}"
+        echo -e "   1. Check MCP server logs:"
+        echo -e "      ${YELLOW}docker logs projexlight-mcp${NC}"
+        echo -e ""
+        echo -e "   2. Review detailed failure reports:"
+        echo -e "      ${YELLOW}${PROJECT_ROOT}/.projexlight/feedback/${NC}"
+        echo -e "      ${YELLOW}${PROJECT_ROOT}/.projexlight/reports/${NC}"
+        echo ""
+        echo -e "${BLUE}🤖 To fix with LLM:${NC}"
+        echo -e "   ${YELLOW}\"Read ${FAILURE_LATEST} and fix the failed API tests\"${NC}"
+        echo ""
+
+        # Check if running in interactive mode (terminal attached)
+        if [ -t 0 ]; then
+            # Interactive mode - ask the user
+            echo -e "${YELLOW}Do you want to exit and fix the failed APIs? [Y/n]${NC}"
+            read -r -n 1 response </dev/tty
+            echo ""  # New line after response
+
+            # Default to Yes if empty or 'y' or 'Y'
+            case "$response" in
+                [nN])
+                    echo -e "${YELLOW}⚠️  Proceeding with push despite ${FAILED} failed test(s)...${NC}"
+                    # Continue with the push
+                    ;;
+                *)
+                    echo -e "${RED}❌ Push cancelled. Please fix the ${FAILED} failing API(s) and try again.${NC}"
+                    exit 1
+                    ;;
+            esac
+        else
+            # Non-interactive mode (CI/CD) - block by default
+            echo -e "${RED}❌ Push blocked: Running in non-interactive mode with ${FAILED} failed test(s)${NC}"
+            echo -e "${YELLOW}To bypass in CI/CD: git push --no-verify${NC}"
+            exit 1
+        fi
     fi
 else
     echo -e "${YELLOW}⚠️  API testing returned no results${NC}"
@@ -494,11 +902,35 @@ else
 fi
 
 # ============================================================
-# STEP 8: Summary
+# STEP 9: Summary
 # ============================================================
 echo -e "\n${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${GREEN}✅ Pre-push checks completed successfully${NC}"
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+# Show report locations if any were generated
+if [ "$HAS_VIOLATIONS" = true ] || [ "$HAS_TODOS" = true ]; then
+    echo -e "\n${BLUE}📋 Reports generated:${NC}"
+
+    if [ "$HAS_VIOLATIONS" = true ]; then
+        echo -e "   ${RED}Violations (immediate):${NC} ${PREPUSH_REPORTS_DIR}/"
+    fi
+
+    if [ "$HAS_TODOS" = true ]; then
+        echo -e "   ${YELLOW}TODOs (end-of-sprint):${NC} ${TODOS_REPORTS_DIR}/pre-push_latest.json"
+    fi
+
+    echo ""
+    echo -e "${BLUE}💡 To fix issues with LLM:${NC}"
+    if [ "$HAS_VIOLATIONS" = true ]; then
+        echo -e "   Violations: ${YELLOW}\"Read .projexlight/reports/pre-push/failures_latest.json and fix the issues\"${NC}"
+    fi
+    if [ "$HAS_TODOS" = true ]; then
+        echo -e "   TODOs: ${YELLOW}\"Read .projexlight/reports/todos/pre-push_latest.json and fix the TODO items\"${NC}"
+    fi
+fi
+
+echo ""
 echo -e "${BLUE}📊 View detailed results in Leadership Dashboard${NC}"
 echo ""
 

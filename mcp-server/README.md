@@ -19,12 +19,16 @@ The **MCP (Model Context Protocol) Server** connects your AI coding assistant (C
 
 ### Step 1: Start MCP Server
 
+The MCP server image is pulled automatically from Docker Hub (`projexlight/mcp-server`).
+
 ```bash
 cd mcp-server
 docker-compose up -d
 ```
 
 Wait about 30 seconds for services to initialize.
+
+See [DOCKER_HUB.md](DOCKER_HUB.md) for detailed Docker Hub usage and configuration options.
 
 ### Step 2: Verify It's Running
 
@@ -60,14 +64,57 @@ Add the MCP server to your AI coding tool configuration.
 
 ### Step 4: Start Coding!
 
-Open your AI coding assistant and tell it to start working on your project. The assistant will automatically:
-- Read the bootstrap instructions
-- Connect to the MCP server
-- Get task details and generate code
-- Validate the code before completing each task
+Navigate to your project directory and launch your AI coding assistant.
 
-**Example prompt to your AI assistant:**
-> "Read the bootstrap instructions and start working on the first task."
+#### MCP-Enabled Tools (Claude, Goose, Cline, Antigravity)
+
+These tools have native MCP support - instructions are fetched automatically:
+
+```bash
+cd your-project
+claude  # or goose, cline, etc.
+```
+> "Read .claude/instructions/bootstrap.md and start"
+
+#### HTTP API Tools (Cursor, Aider, Windsurf)
+
+These tools use curl to fetch instructions from the MCP server:
+
+```bash
+cd your-project
+
+# Start MCP server first
+cd mcp-server && docker-compose up -d && cd ..
+
+# Start your tool
+cursor  # or aider, windsurf
+```
+> "Read .cursor/instructions/bootstrap.md and start"
+
+The bootstrap.md contains curl commands to fetch rules and instructions.
+
+---
+
+### Continuing Work (After First Session)
+
+```bash
+cd your-project
+claude  # or your preferred tool
+```
+> "Continue from where I left off"
+
+**Or for specific tasks:**
+> "Execute tasks 3-5"
+
+---
+
+### What Happens Automatically
+
+1. AI reads bootstrap.md (minimal instructions)
+2. Calls MCP server to get rules and task details
+3. Generates code following fetched rules
+4. Validates code before writing
+5. Updates task progress
 
 ### Step 5: Initialize Git (When Ready)
 
@@ -123,18 +170,61 @@ git push --no-verify
 
 ---
 
-## Monitoring
+## Monitoring & Logs
 
+### Health Check
 ```bash
-# Health check
 curl http://localhost:8766/health
+```
 
-# View logs
+### View Logs
+
+**Option 1: Via HTTP API (Recommended)**
+```bash
+# Get log directory and file locations
+curl http://localhost:8766/logs
+
+# View server logs (last 100 lines)
+curl http://localhost:8766/logs/server
+
+# View error logs (last 200 lines)
+curl http://localhost:8766/logs/errors?lines=200
+
+# View all logs combined
+curl http://localhost:8766/logs/all?lines=100
+```
+
+**Option 2: Via Docker**
+```bash
+# View container stdout logs
 docker logs projexlight-mcp
 
 # Follow logs in real-time
 docker logs -f projexlight-mcp
 ```
+
+**Option 3: Direct File Access**
+
+Logs are stored in your project's `.mcp-logs/` directory (accessible in your workspace):
+```bash
+# List log files
+ls -la .mcp-logs/
+
+# View main server log
+cat .mcp-logs/mcp-server-YYYYMMDD-HHMMSS.log
+
+# View latest server log (symlink)
+cat .mcp-logs/latest-server.log
+```
+
+### Log Types
+
+| Log Type | Description | HTTP Endpoint |
+|----------|-------------|---------------|
+| `server` | Main server activity | `/logs/server` |
+| `activity` | File change detection | `/logs/activity` |
+| `reviews` | Code review results | `/logs/reviews` |
+| `errors` | Error messages | `/logs/errors` |
 
 ---
 
@@ -195,6 +285,7 @@ docker-compose down -v
 
 ## Additional Documentation
 
+- **[DOCKER_HUB.md](DOCKER_HUB.md)** - Docker Hub image usage guide
 - **[QUICK_START.md](QUICK_START.md)** - Detailed setup guide
 - **[DEBUGGING.md](DEBUGGING.md)** - Troubleshooting and logs
 - **[HOOKS_INSTALLATION.md](HOOKS_INSTALLATION.md)** - Git hooks details

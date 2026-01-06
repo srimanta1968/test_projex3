@@ -1,0 +1,113 @@
+version: '3.8'
+#
+# ProjexLight TEST/UI MCP Server - Docker Compose
+# =============================================
+# This file sets up the Test/UI MCP Server using Docker Hub image.
+# The TEST MCP provides UI testing, test execution, and result analysis.
+#
+# Usage:
+#   docker-compose -f test-mcp-compose.yml up -d       # Start Test MCP server
+#   docker-compose -f test-mcp-compose.yml down        # Stop Test MCP server
+#   docker-compose -f test-mcp-compose.yml pull        # Update to latest image
+#
+# Or use the setup script (recommended):
+#   ./setup-test-mcp.sh start
+#
+
+services:
+  # ProjexLight TEST MCP Server - UI Testing & Test Analysis Agent
+  test-mcp-server:
+    image: projexlight/projex-test-mcp:latest
+    container_name: projexlight-test-mcp
+    user: root  # Required for git hooks installation on Windows
+    ports:
+      - "${MCP_TEST_PORT:-8000}:8000"
+    volumes:
+      - ${PROJECT_PATH:-../}:/workspace                                  # Project root (read-write for git hooks)
+      - ./feedback:/feedback                                             # Feedback files (read-write)
+      - ${RESULTS_PATH:-../test-results}:/results                        # Test results output
+      - ${MCP_CONFIG_FILE:-./mcp-config.json}:/app/mcp-config.json:ro   # Encrypted configuration
+    extra_hosts:
+      - "host.docker.internal:host-gateway"        # Enable host network access
+    env_file:
+      - .env
+    environment:
+      - WORKSPACE_PATH=/workspace
+      - FEEDBACK_PATH=/feedback
+      - MCP_SERVER_PORT=8000
+      - MCP_SERVER_HOST=0.0.0.0
+      - MCP_CONFIG_FILE=/app/mcp-config.json
+      - MCP_TYPE=test
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# ============================================================
+# TEST MCP SERVER CAPABILITIES
+# ============================================================
+#
+# The Test/UI MCP Server provides:
+#   - UI test execution and analysis
+#   - Test result processing
+#   - Screenshot capture and comparison
+#   - Test report generation
+#   - Accessibility testing
+#   - Visual regression testing
+#
+# ============================================================
+# USAGE INSTRUCTIONS
+# ============================================================
+#
+# 1. Prerequisites:
+#    - Docker installed and running
+#    - mcp-config.json file in this directory
+#    - .env file with MCP_ENCRYPTION_KEY
+#
+# 2. Quick Start:
+#    docker-compose -f test-mcp-compose.yml up -d
+#
+# 3. Check Status:
+#    docker-compose -f test-mcp-compose.yml ps
+#    curl http://localhost:8000/health
+#
+# 4. View Logs:
+#    docker-compose -f test-mcp-compose.yml logs -f
+#
+# 5. Update to Latest:
+#    docker-compose -f test-mcp-compose.yml pull
+#    docker-compose -f test-mcp-compose.yml up -d
+#
+# 6. Stop Server:
+#    docker-compose -f test-mcp-compose.yml down
+#
+# ============================================================
+# CONFIGURATION
+# ============================================================
+#
+# Authentication (choose one method):
+#
+# Method 1 - mcp-config.json (Recommended for Developers):
+#   Place mcp-config.json in this directory (from CLI export)
+#   It will be auto-decrypted using the project ID
+#
+# Method 2 - Environment Variables (For QA/Production):
+#   Set these in .env file:
+#   PROJEXLIGHT_API_KEY  - ProjexLight session API key
+#   OPENAI_API_KEY       - OpenAI API key (for LLM healing)
+#
+# Priority: mcp-config.json > environment variables
+#
+# Other environment variables:
+#   MCP_TEST_PORT      - Port to expose (default: 8000)
+#   PROJEXLIGHT_API_URL - API server URL
+#
+# Volumes:
+#   /workspace         - Your project source code (read-only)
+#   /feedback          - Test feedback files
+#   /results           - Test results output
+#   /app/mcp-config.json - Encrypted project configuration
+#

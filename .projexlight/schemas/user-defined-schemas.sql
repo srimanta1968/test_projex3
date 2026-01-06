@@ -4,110 +4,78 @@
 -- Total Schemas: 1
 
 -- ========================================
--- Schema: Quick Ride Schema
--- Description: Auto-generated database schema for Quick Ride. Generated from project description...
+-- Schema: Log Analysis Schema
+-- Description: Auto-generated database schema for Log Analysis. Generated from project description...
 -- Version: 1
 -- ========================================
 
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS cloudwatch_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  timestamp TIMESTAMP WITH TIME ZONE,
+  message TEXT,
+  log_level VARCHAR(255),
+  service_name VARCHAR(255),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE cloudwatch_logs IS 'Schema: Log Analysis Schema - Entity: Cloudwatch_logs';
+
+CREATE TABLE IF NOT EXISTS slack_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  channel VARCHAR(255),
+  message TEXT,
+  timestamp TIMESTAMP WITH TIME ZONE,
+  user_id VARCHAR(255),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE slack_logs IS 'Schema: Log Analysis Schema - Entity: Slack_logs';
+
+CREATE TABLE IF NOT EXISTS custom_app_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  timestamp TIMESTAMP WITH TIME ZONE,
+  log_content TEXT,
+  application_name VARCHAR(255),
+  log_type VARCHAR(255),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE custom_app_logs IS 'Schema: Log Analysis Schema - Entity: Custom_app_logs';
+
+CREATE TABLE IF NOT EXISTS aggregated_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  source VARCHAR(255),
+  aggregated_message TEXT,
+  aggregated_timestamp TIMESTAMP WITH TIME ZONE,
+  log_count INTEGER,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE aggregated_logs IS 'Schema: Log Analysis Schema - Entity: Aggregated_logs';
+
+CREATE TABLE IF NOT EXISTS extracted_params (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  log_id UUID,
+  parameter_name VARCHAR(255),
+  parameter_value TEXT,
+  extraction_timestamp TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE extracted_params IS 'Schema: Log Analysis Schema - Entity: Extracted_params';
+
+CREATE TABLE IF NOT EXISTS user_interface (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(255),
-  email VARCHAR(255),
-  password_hash VARCHAR(255),
+  status VARCHAR(255) DEFAULT 'active',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE users IS 'Schema: Quick Ride Schema - Entity: Users';
-
-CREATE TABLE IF NOT EXISTS feedback (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID,
-  comments VARCHAR(255),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE feedback IS 'Schema: Quick Ride Schema - Entity: Feedback';
-
-CREATE TABLE IF NOT EXISTS partnerships (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  business_name VARCHAR(255),
-  contact_info VARCHAR(255),
-  promotion_details VARCHAR(255),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE partnerships IS 'Schema: Quick Ride Schema - Entity: Partnerships';
-
-CREATE TABLE IF NOT EXISTS drivers (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name VARCHAR(255),
-  license_number INTEGER,
-  vehicle_details VARCHAR(255),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE drivers IS 'Schema: Quick Ride Schema - Entity: Drivers';
-
-CREATE TABLE IF NOT EXISTS rides (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID,
-  driver_id UUID,
-  pickup_location VARCHAR(255),
-  dropoff_location VARCHAR(255),
-  status VARCHAR(255),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE rides IS 'Schema: Quick Ride Schema - Entity: Rides';
-
-CREATE TABLE IF NOT EXISTS transactions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID,
-  amount DECIMAL(10,2),
-  transaction_type VARCHAR(255),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE transactions IS 'Schema: Quick Ride Schema - Entity: Transactions';
-
-CREATE TABLE IF NOT EXISTS marketing_campaigns (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  campaign_name VARCHAR(255),
-  start_date TIMESTAMP WITH TIME ZONE,
-  end_date TIMESTAMP WITH TIME ZONE,
-  budget VARCHAR(255),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE marketing_campaigns IS 'Schema: Quick Ride Schema - Entity: Marketing_campaigns';
-
-CREATE TABLE IF NOT EXISTS events (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  event_name VARCHAR(255),
-  date TIMESTAMP WITH TIME ZONE,
-  location VARCHAR(255),
-  attendee_count INTEGER,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE events IS 'Schema: Quick Ride Schema - Entity: Events';
-
-CREATE TABLE IF NOT EXISTS loyalty_programs (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID,
-  points_earned VARCHAR(255),
-  reward_details VARCHAR(255),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE loyalty_programs IS 'Schema: Quick Ride Schema - Entity: Loyalty_programs';
+COMMENT ON TABLE user_interface IS 'Schema: Log Analysis Schema - Entity: User_interface';
 

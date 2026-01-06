@@ -1,8 +1,8 @@
 # Requirements - Quick Prototype Sprint
 
-## Project: Quick Ride
+## Project: Log Analysis
 
-To provide a reliable and affordable ride-sharing service that caters specifically to the local community, enhancing mobility and reducing reliance on personal vehicles.
+Some one give me a log file or I extract from slack or other log application including AWS cloud watch and I want to write the Ai agent which will extract all important information to debug and fix issues and store in database
 
 ## Sprint Overview
 
@@ -10,217 +10,141 @@ Quick prototype sprint for generated project structure
 
 ## Epics
 
-### User Engagement and Community Building
+### Log Ingestion
 
-Focus on creating a strong user community and engagement strategies to foster loyalty and trust among riders and drivers.
+Enable multi-source log ingestion to provide a unified view of logs from various platforms.
 
-### Service Operations and Logistics
+### Log Analysis
 
-Optimize the operational aspects of the ride-sharing service to ensure efficiency and reliability.
-
-### Marketing and User Acquisition
-
-Develop strategies to attract users and promote the ride-sharing service in the local community.
+Provide tools for analyzing ingested logs and extracting critical information.
 
 ## Features
 
-### User Registration and Profile Creation
+### AWS CloudWatch Integration
 
-Implement a user-friendly registration process that allows users to create and manage their profiles.
+Implement log ingestion from AWS CloudWatch to extract relevant debugging information.
 
-### Community Feedback Mechanism
+### Slack Integration
 
-Create a system for gathering user feedback to improve services and adapt to community needs.
+Integrate Slack to capture log messages and alerts for immediate action.
 
-### Local Partnerships and Promotions
+### Custom Application Logs
 
-Establish partnerships with local businesses to offer promotions and special deals to users.
+Develop log ingestion for custom application formats to enhance flexibility.
 
-### Driver Onboarding and Training
+### Aggregate Log Data
 
-Implement a comprehensive onboarding process for drivers to ensure they meet service standards.
+Implement functionality to aggregate logs from different sources for analysis.
 
-### Ride Scheduling and Dispatch
+### Critical Parameter Extraction
 
-Develop an efficient system for scheduling rides and dispatching drivers to customers.
+Extract key parameters from logs to facilitate quick debugging.
 
-### Payment and Billing System
+### User Interface
 
-Create a secure payment processing system for users and drivers.
-
-### Digital Marketing Campaigns
-
-Plan and execute digital marketing campaigns to raise awareness about the ride-sharing service.
-
-### Community Events and Outreach
-
-Organize community events to promote the ride-sharing service and engage with local residents.
-
-### Referral and Loyalty Programs
-
-Implement referral and loyalty programs to encourage user sign-ups and retention.
+Create a user-friendly interface for interacting with the log ingestion and analysis features.
 
 ## Tasks
 
-### Test Registration Process
+### Implement User Interface backend logic
 
-Conduct testing to ensure the registration process works smoothly and is free of bugs.
-
-**Acceptance Criteria:**
-
-### Design Registration Form
-
-Create a visually appealing and intuitive registration form for users to fill out.
+Develop the core backend functionality for User Interface
 
 **Acceptance Criteria:**
 
-### Implement Backend API for Registration
+### Create User Interface UI components
 
-Develop an API endpoint to handle user registration requests and store user data securely.
-
-**Acceptance Criteria:**
-
-### Develop Feedback Form
-
-Create a form for users to submit feedback about their ride experiences.
+Build the user interface components for User Interface
 
 **Acceptance Criteria:**
 
-### Integrate Feedback Database
+### Test CloudWatch ingestion
 
-Set up a database to store user feedback for analysis and reporting.
-
-**Acceptance Criteria:**
-
-### Analyze Feedback for Improvements
-
-Review collected feedback regularly and propose service improvements based on user suggestions.
+Ensure logs are ingested correctly from CloudWatch with sample data.
 
 **Acceptance Criteria:**
 
-### Identify Potential Local Partners
+### Validate custom logs ingestion
 
-Research and list local businesses that align with our service goals for potential partnerships.
-
-**Acceptance Criteria:**
-
-### Create Partnership Proposal Template
-
-Develop a proposal template to present to local businesses for partnership opportunities.
+Test the ingestion process with sample custom logs to ensure accuracy.
 
 **Acceptance Criteria:**
 
-### Launch Partnership Promotions
+### Test aggregation functionality
 
-Implement promotional campaigns in collaboration with local partners to attract new users.
-
-**Acceptance Criteria:**
-
-### Create Driver Training Program
-
-Develop training materials and sessions for new drivers.
+Ensure the aggregation logic works as intended with various log samples.
 
 **Acceptance Criteria:**
 
-### Set Up Background Check Process
+### Test parameter extraction
 
-Implement a system for conducting background checks on potential drivers.
-
-**Acceptance Criteria:**
-
-### Evaluate Driver Performance
-
-Create metrics and processes for regularly evaluating driver performance post-onboarding.
+Validate that the extraction logic accurately captures the critical parameters.
 
 **Acceptance Criteria:**
 
-### Design Ride Request Interface
+### Set up AWS SDK
 
-Create an interface for users to request rides easily.
-
-**Acceptance Criteria:**
-
-### Implement Ride Matching Algorithm
-
-Develop an algorithm that matches users with available drivers based on proximity and availability.
+Integrate AWS SDK to connect to CloudWatch.
 
 **Acceptance Criteria:**
 
-### Monitor Ride Requests and Dispatch
+### Define log formats
 
-Create a real-time dashboard for monitoring ride requests and dispatching drivers efficiently.
-
-**Acceptance Criteria:**
-
-### Integrate Payment Gateway
-
-Set up a payment gateway for processing user payments securely.
+Identify and define the log formats to be extracted from CloudWatch.
 
 **Acceptance Criteria:**
 
-### Implement User Wallet Feature
+### Set up Slack API
 
-Develop a wallet feature for users to manage their funds within the app.
-
-**Acceptance Criteria:**
-
-### Create Billing Reports for Drivers
-
-Develop a reporting system for drivers to track their earnings and payments.
+Integrate with Slack API to capture messages from specified channels.
 
 **Acceptance Criteria:**
 
-### Create Campaign Content
+### Define message parsing rules
 
-Develop engaging content for social media and online ads.
-
-**Acceptance Criteria:**
-
-### Set Up Campaign Tracking
-
-Implement tracking to measure the effectiveness of marketing campaigns.
+Establish rules for extracting relevant information from Slack messages.
 
 **Acceptance Criteria:**
 
-### Analyze Campaign Results
+### Implement message ingestion
 
-Review campaign performance and adjust strategies as needed.
-
-**Acceptance Criteria:**
-
-### Plan Community Event
-
-Organize a local event to introduce the ride-sharing service to the community.
+Create functionality to ingest messages from Slack into the database.
 
 **Acceptance Criteria:**
 
-### Promote Event Through Partnerships
+### Identify custom log formats
 
-Collaborate with local businesses to promote the event and increase attendance.
-
-**Acceptance Criteria:**
-
-### Gather Feedback from Event Attendees
-
-Collect feedback from attendees during and after the event for future improvements.
+Work with stakeholders to identify the various custom log formats.
 
 **Acceptance Criteria:**
 
-### Design Referral Program Structure
+### Create ingestion pipeline
 
-Create a structure for a referral program with incentives for users.
-
-**Acceptance Criteria:**
-
-### Develop Loyalty Rewards System
-
-Implement a system for rewarding loyal users with discounts or perks.
+Implement a pipeline for ingesting custom logs into the database.
 
 **Acceptance Criteria:**
 
-### Monitor Program Effectiveness
+### Design aggregation model
 
-Track the performance of referral and loyalty programs to assess their impact on user growth.
+Create a model for how logs will be aggregated in the database.
+
+**Acceptance Criteria:**
+
+### Implement aggregation logic
+
+Develop the logic to aggregate logs from various sources.
+
+**Acceptance Criteria:**
+
+### Identify critical parameters
+
+Work with stakeholders to define which parameters are critical for debugging.
+
+**Acceptance Criteria:**
+
+### Develop extraction logic
+
+Implement logic to extract the identified parameters from logs.
 
 **Acceptance Criteria:**
 

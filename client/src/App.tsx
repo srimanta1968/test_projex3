@@ -1,16 +1,10 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Register from './pages/Register';
-
-const App: React.FC = () => {
+function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/register" element={<Register />} />
-        <Route path="/" element={<Navigate to="/register" replace />} />
-      </Routes>
-    </Router>
+    <div className="App">
+      <h1>Log Analysis</h1>
+      <p>Welcome to your React application!</p>
+    </div>
   );
-};
+}
 
 export default App;

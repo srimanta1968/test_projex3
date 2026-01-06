@@ -3,6 +3,7 @@
 # ProjexLight MCP Pre-Commit Hook
 # Automatically scans staged files for duplicate APIs and components before commit
 # This hook is installed automatically by the MCP server on startup
+# Generates report in .projexlight/reports/pre-commit/ for LLM review
 
 set -e
 
@@ -15,7 +16,32 @@ NC='\033[0m' # No Color
 
 # Configuration
 MCP_SERVER_URL="${MCP_SERVER_URL:-http://localhost:8766}"
-PROJECT_ROOT="/workspace"  # MCP Docker container mounts project root at /workspace
+
+# Detect project root (handle both Docker and local execution)
+if [ -d "/workspace" ] && [ -f "/workspace/package.json" -o -f "/workspace/pyproject.toml" ]; then
+    PROJECT_ROOT="/workspace"
+else
+    PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+fi
+
+# Create reports directories
+# pre-commit/ - Immediate fixes required (duplicates, blocking violations)
+# todos/ - Can be fixed at end of sprint
+PRECOMMIT_REPORTS_DIR="${PROJECT_ROOT}/.projexlight/reports/pre-commit"
+TODOS_REPORTS_DIR="${PROJECT_ROOT}/.projexlight/reports/todos"
+mkdir -p "$PRECOMMIT_REPORTS_DIR"
+mkdir -p "$TODOS_REPORTS_DIR"
+
+# Generate unique report filenames with timestamp
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+PRECOMMIT_REPORT_FILE="${PRECOMMIT_REPORTS_DIR}/violations_${TIMESTAMP}.json"
+PRECOMMIT_LATEST="${PRECOMMIT_REPORTS_DIR}/latest.json"
+TODOS_REPORT_FILE="${TODOS_REPORTS_DIR}/todos_${TIMESTAMP}.json"
+TODOS_LATEST="${TODOS_REPORTS_DIR}/latest.json"
+
+# Track if we have issues to report
+HAS_PRECOMMIT_ISSUES=false
+HAS_TODOS=false
 
 echo -e "${BLUE}🔍 ProjexLight Pre-Commit Duplicate Scan${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -84,6 +110,8 @@ fi
 
 # Handle blocking duplicates
 if [ "$BLOCKING" = "true" ]; then
+    HAS_PRECOMMIT_ISSUES=true
+
     echo -e "\n${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo -e "${RED}🚨 COMMIT BLOCKED: Duplicate APIs detected${NC}"
     echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -105,6 +133,38 @@ if [ "$BLOCKING" = "true" ]; then
     echo -e "  git commit --no-verify -m \"your message\""
     echo -e ""
 
+    # ═══════════════════════════════════════════════════════════════════════════════
+    # SAVE PRE-COMMIT VIOLATIONS REPORT
+    # ═══════════════════════════════════════════════════════════════════════════════
+    PRECOMMIT_REPORT=$(cat <<EOF
+{
+  "reportType": "pre-commit-violations",
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "status": "BLOCKED",
+  "severity": "critical",
+  "staged_files": ${FILES_JSON},
+  "violations": {
+    "duplicate_apis": {
+      "count": ${DUPLICATE_COUNT},
+      "blocking": true,
+      "items": $(echo "$SCAN_RESULT" | jq '.duplicates.apis // []')
+    },
+    "warnings": $(echo "$SCAN_RESULT" | jq '.warnings // []')
+  },
+  "action_required": true,
+  "llm_prompt": "Please fix the following pre-commit violations. These are BLOCKING issues that must be resolved before committing:\n\n## Duplicate APIs Detected (${DUPLICATE_COUNT})\n\nThe following APIs conflict with existing endpoints:\n\n$(echo "$SCAN_RESULT" | jq -r '.duplicates.apis[]? | "- **\(.newAPI.method) \(.newAPI.endpoint)** in \(.newAPI.filePath)\n  Conflicts with: \(.existingAPI.filePath)\n  Solution: Either rename your endpoint or reuse the existing API.\n"' | sed 's/"/\\"/g')\n\n## How to Fix\n\n1. **Recommended**: Reuse the existing API instead of creating a duplicate\n2. **Alternative**: Rename your endpoint to make it unique\n3. Search for existing APIs: \`projexlight_search_apis(pattern: 'your-endpoint')\`"
+}
+EOF
+)
+    echo "$PRECOMMIT_REPORT" | jq '.' > "$PRECOMMIT_REPORT_FILE"
+    cp "$PRECOMMIT_REPORT_FILE" "$PRECOMMIT_LATEST"
+
+    echo -e "${BLUE}📄 Violation report saved to:${NC}"
+    echo -e "   ${PRECOMMIT_LATEST}"
+    echo -e "${YELLOW}💡 Ask your LLM to fix these issues:${NC}"
+    echo -e "   \"Please read ${PRECOMMIT_LATEST} and fix the violations\""
+    echo -e ""
+
     exit 1
 fi
 
@@ -116,6 +176,186 @@ if [ "$WARNING_COUNT" -gt 0 ]; then
         "     Similar to: \(.similarTo) (\(.similarity)% match)\n" +
         "     \(.message)\n"'
     echo -e "${YELLOW}💡 Review these similarities in the Leadership Dashboard${NC}"
+fi
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# TODO DETECTION - MISSING API/MOCK REMINDERS
+# Scans staged files for TODO comments, especially API-related ones
+# ═══════════════════════════════════════════════════════════════════════════════
+
+echo -e "\n${BLUE}📝 Scanning for TODO comments in staged files...${NC}"
+
+# Define TODO patterns to search for (prioritizing API-related TODOs)
+TODO_PATTERNS=(
+    "TODO.*[Aa][Pp][Ii]"           # TODO related to API
+    "TODO.*[Mm]ock"                 # TODO related to mock
+    "TODO.*[Pp]laceholder"          # TODO related to placeholder
+    "TODO.*[Rr]eplace"              # TODO related to replacement needed
+    "TODO.*[Ww]aiting"              # TODO waiting for something
+    "TODO.*[Mm]issing"              # TODO missing functionality
+    "TODO.*[Nn]ot.*[Ii]mplemented"  # TODO not implemented
+    "FIXME"                         # FIXME comments
+    "XXX"                           # XXX comments
+    "HACK"                          # HACK comments
+)
+
+# Scan staged files for TODOs
+TODO_COUNT=0
+API_TODO_COUNT=0
+declare -a TODO_LIST
+declare -a API_TODO_LIST
+
+for file in $STAGED_FILES; do
+    # Skip non-code files
+    if [[ ! "$file" =~ \.(ts|tsx|js|jsx|py|java|go|rb|php|cs|cpp|c|rs|swift|kt)$ ]]; then
+        continue
+    fi
+
+    # Get staged content of the file
+    if git show ":$file" > /dev/null 2>&1; then
+        CONTENT=$(git show ":$file" 2>/dev/null || echo "")
+
+        if [ -n "$CONTENT" ]; then
+            # Search for TODO patterns with line numbers
+            while IFS= read -r line; do
+                if [ -n "$line" ]; then
+                    LINE_NUM=$(echo "$line" | cut -d: -f1)
+                    LINE_CONTENT=$(echo "$line" | cut -d: -f2-)
+
+                    # Check if it's an API-related TODO
+                    if echo "$LINE_CONTENT" | grep -qiE "(api|mock|placeholder|replace.*api|waiting.*api)"; then
+                        API_TODO_COUNT=$((API_TODO_COUNT + 1))
+                        API_TODO_LIST+=("${file}:${LINE_NUM}: ${LINE_CONTENT}")
+                    else
+                        TODO_COUNT=$((TODO_COUNT + 1))
+                        TODO_LIST+=("${file}:${LINE_NUM}: ${LINE_CONTENT}")
+                    fi
+                fi
+            done < <(echo "$CONTENT" | grep -n -E "(TODO|FIXME|XXX|HACK)" 2>/dev/null || echo "")
+        fi
+    fi
+done
+
+TOTAL_TODOS=$((TODO_COUNT + API_TODO_COUNT))
+
+if [ "$TOTAL_TODOS" -gt 0 ]; then
+    echo -e "\n${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${YELLOW}⚠️  Found ${TOTAL_TODOS} TODO comment(s) in staged files${NC}"
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+    # Show API-related TODOs first (higher priority)
+    if [ "$API_TODO_COUNT" -gt 0 ]; then
+        echo -e "\n${RED}🔴 API/Mock TODOs (${API_TODO_COUNT}) - High Priority:${NC}"
+        echo -e "${RED}   These indicate missing API integrations or temporary mocks:${NC}\n"
+        for todo in "${API_TODO_LIST[@]}"; do
+            echo -e "   ${RED}•${NC} $todo"
+        done
+        echo ""
+        echo -e "${YELLOW}   💡 These TODOs suggest APIs that need to be implemented or integrated.${NC}"
+        echo -e "${YELLOW}   Consider:"
+        echo -e "      - Checking if the required API is now available: projexlight_search_apis"
+        echo -e "      - Implementing the missing API before this commit"
+        echo -e "      - Coordinating with the developer working on the API${NC}"
+    fi
+
+    # Show other TODOs
+    if [ "$TODO_COUNT" -gt 0 ]; then
+        echo -e "\n${YELLOW}🟡 Other TODOs (${TODO_COUNT}):${NC}\n"
+        # Show first 10 TODOs
+        count=0
+        for todo in "${TODO_LIST[@]}"; do
+            if [ $count -lt 10 ]; then
+                echo -e "   ${YELLOW}•${NC} $todo"
+                count=$((count + 1))
+            fi
+        done
+        if [ "$TODO_COUNT" -gt 10 ]; then
+            echo -e "   ... and $((TODO_COUNT - 10)) more"
+        fi
+    fi
+
+    echo ""
+
+    # ═══════════════════════════════════════════════════════════════════════════════
+    # SAVE TODO REPORT (for end-of-sprint cleanup)
+    # ═══════════════════════════════════════════════════════════════════════════════
+    HAS_TODOS=true
+
+    # Build TODO items JSON array
+    TODO_ITEMS_JSON="["
+    first=true
+    for todo in "${API_TODO_LIST[@]}"; do
+        file=$(echo "$todo" | cut -d: -f1)
+        line=$(echo "$todo" | cut -d: -f2)
+        content=$(echo "$todo" | cut -d: -f3-)
+        if [ "$first" = true ]; then
+            first=false
+        else
+            TODO_ITEMS_JSON+=","
+        fi
+        TODO_ITEMS_JSON+="{\"file\":\"$file\",\"line\":$line,\"content\":\"$(echo "$content" | sed 's/"/\\"/g')\",\"priority\":\"high\",\"category\":\"api\"}"
+    done
+    for todo in "${TODO_LIST[@]}"; do
+        file=$(echo "$todo" | cut -d: -f1)
+        line=$(echo "$todo" | cut -d: -f2)
+        content=$(echo "$todo" | cut -d: -f3-)
+        if [ "$first" = true ]; then
+            first=false
+        else
+            TODO_ITEMS_JSON+=","
+        fi
+        TODO_ITEMS_JSON+="{\"file\":\"$file\",\"line\":$line,\"content\":\"$(echo "$content" | sed 's/"/\\"/g')\",\"priority\":\"normal\",\"category\":\"general\"}"
+    done
+    TODO_ITEMS_JSON+="]"
+
+    # Create TODO report
+    TODO_REPORT=$(cat <<EOF
+{
+  "reportType": "todos",
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "status": "pending",
+  "priority": "end-of-sprint",
+  "summary": {
+    "total": ${TOTAL_TODOS},
+    "api_related": ${API_TODO_COUNT},
+    "general": ${TODO_COUNT}
+  },
+  "items": ${TODO_ITEMS_JSON},
+  "llm_prompt": "The following TODO items were found in the codebase. These should be addressed before the end of the sprint:\n\n## High Priority - API/Mock TODOs (${API_TODO_COUNT})\nThese indicate missing API integrations or temporary mocks:\n\n$(for todo in "${API_TODO_LIST[@]}"; do echo "- $todo"; done | sed 's/"/\\"/g')\n\n## Normal Priority - General TODOs (${TODO_COUNT})\n\n$(for todo in "${TODO_LIST[@]}"; do echo "- $todo"; done | head -10 | sed 's/"/\\"/g')\n\n## Actions\n1. For API TODOs: Check if the required API is now available using \`projexlight_search_apis\`\n2. Replace mocks with actual API calls\n3. Address remaining TODOs before sprint completion"
+}
+EOF
+)
+    echo "$TODO_REPORT" | jq '.' > "$TODOS_REPORT_FILE" 2>/dev/null || echo "$TODO_REPORT" > "$TODOS_REPORT_FILE"
+    cp "$TODOS_REPORT_FILE" "$TODOS_LATEST"
+
+    echo -e "\n${BLUE}📄 TODO report saved to:${NC}"
+    echo -e "   ${TODOS_LATEST}"
+    echo -e "${YELLOW}💡 Address these before end of sprint:${NC}"
+    echo -e "   \"Please read ${TODOS_LATEST} and fix the TODOs\""
+
+    # If there are API-related TODOs, ask user to confirm
+    if [ "$API_TODO_COUNT" -gt 0 ]; then
+        if [ -t 0 ]; then
+            echo -e "\n${YELLOW}You have ${API_TODO_COUNT} API-related TODO(s). Continue with commit? [Y/n]${NC}"
+            read -r -n 1 response </dev/tty
+            echo ""
+
+            case "$response" in
+                [nN])
+                    echo -e "${RED}❌ Commit cancelled. Please address the API TODOs first.${NC}"
+                    exit 1
+                    ;;
+                *)
+                    echo -e "${GREEN}✓ Proceeding with commit despite API TODOs${NC}"
+                    ;;
+            esac
+        else
+            # Non-interactive mode - just warn
+            echo -e "${YELLOW}⚠️  Non-interactive mode: Proceeding with ${API_TODO_COUNT} API TODO(s)${NC}"
+        fi
+    fi
+else
+    echo -e "${GREEN}✓ No TODO comments found in staged files${NC}"
 fi
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -416,10 +656,74 @@ fi
 
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# Success
+# ═══════════════════════════════════════════════════════════════════════════════
+# SUCCESS SUMMARY
+# ═══════════════════════════════════════════════════════════════════════════════
+
 echo -e "\n${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${GREEN}✅ Pre-commit scan passed${NC}"
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SCAN SUMMARY - Display all findings
+# ═══════════════════════════════════════════════════════════════════════════════
+echo -e "\n${BLUE}📊 Scan Summary:${NC}"
+echo -e "┌──────────────────────────────────────────────┐"
+echo -e "│  ${BLUE}Files Scanned:${NC}      ${SCANNED_FILES:-0}                      │"
+echo -e "│  ${GREEN}Duplicate APIs:${NC}     ${DUPLICATE_COUNT:-0} (blocking: ${BLOCKING:-false})       │"
+echo -e "│  ${YELLOW}Warnings:${NC}           ${WARNING_COUNT:-0}                      │"
+echo -e "│  ${YELLOW}API TODOs:${NC}          ${API_TODO_COUNT:-0} (high priority)       │"
+echo -e "│  ${YELLOW}Other TODOs:${NC}        ${TODO_COUNT:-0}                         │"
+echo -e "└──────────────────────────────────────────────┘"
+
+# Show detailed issues if any were found (non-blocking)
+if [ "${WARNING_COUNT:-0}" -gt 0 ] || [ "${TOTAL_TODOS:-0}" -gt 0 ]; then
+    echo -e "\n${YELLOW}⚠️  Issues Found (non-blocking):${NC}"
+
+    if [ "${WARNING_COUNT:-0}" -gt 0 ]; then
+        echo -e "   ${YELLOW}• ${WARNING_COUNT} component similarity warning(s)${NC}"
+        echo -e "     Check: .projexlight/reports/pre-commit/ for details"
+    fi
+
+    if [ "${API_TODO_COUNT:-0}" -gt 0 ]; then
+        echo -e "   ${RED}• ${API_TODO_COUNT} API/Mock TODO(s) - may indicate missing APIs${NC}"
+        echo -e "     These should be resolved before sprint end"
+    fi
+
+    if [ "${TODO_COUNT:-0}" -gt 0 ]; then
+        echo -e "   ${YELLOW}• ${TODO_COUNT} general TODO(s)${NC}"
+    fi
+fi
+
+# Show report locations if any were generated
+if [ "$HAS_TODOS" = true ]; then
+    echo -e "\n${BLUE}📋 Reports generated:${NC}"
+    echo -e "   ${YELLOW}TODOs (end-of-sprint):${NC} ${TODOS_LATEST}"
+fi
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# NEXT STEPS - USER INSTRUCTIONS
+# ═══════════════════════════════════════════════════════════════════════════════
+echo -e "\n${BLUE}📖 Next Steps:${NC}"
+echo -e ""
+echo -e "${YELLOW}1. Review Reports & MCP Logs:${NC}"
+echo -e "   ${BLUE}Reports:${NC}     .projexlight/reports/pre-commit/"
+echo -e "   ${BLUE}TODOs:${NC}       .projexlight/reports/todos/"
+echo -e "   ${BLUE}MCP Logs:${NC}    docker logs projexlight-mcp"
+echo -e "   ${BLUE}Feedback:${NC}    .projexlight/feedback/"
+echo -e ""
+echo -e "${YELLOW}2. If Violations Found, Ask LLM to Fix:${NC}"
+echo -e "   ${GREEN}For pre-commit violations:${NC}"
+echo -e "   \"Read .projexlight/reports/pre-commit/latest.json and fix the violations\""
+echo -e ""
+echo -e "   ${GREEN}For TODO items (end of sprint):${NC}"
+echo -e "   \"Read .projexlight/reports/todos/latest.json and fix the TODO items\""
+echo -e ""
+echo -e "   ${GREEN}For MCP issues, share logs with LLM:${NC}"
+echo -e "   \"Analyze these MCP logs and fix any errors: docker logs projexlight-mcp\""
+echo -e ""
+echo -e "${YELLOW}3. Check MCP Dashboard:${NC}"
+echo -e "   ${BLUE}http://localhost:8766${NC} - API status, test results, code quality"
 echo -e ""
 
 exit 0

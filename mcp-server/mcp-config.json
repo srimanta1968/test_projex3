@@ -1,16 +1,17 @@
 {
-  "projectId": "69965559-eb97-4b57-82ef-d497220e7ef5",
-  "sprintId": "c700990b-2399-4e6c-b1a0-db98628d4dea",
-  "encryptedPlatformApiKey": "xGaObRoTvgLYWtfcj+FAghGkYXwj5mP/GnZVdBPberx7So7oM0FLbgVDAp+SKuZUqC+fwG+Ij2DA1m3zbBZw1M1p5tI86U1hqqn6vkm6rdQNeurtFehn3osJ3PZAJrEi93KWWTT8zgZzocgfX2okM23yM/qQkjjm8vNDuMr1hhotAP9fTU8feBM4czx1MWfYkuqGGtAOd9dODNo=",
-  "encryptedLLMConfig": "6nlw++qWmiVLyLov/1095G+ltXNMTBRkDHfEj8hsbLnoSgACwAWfAoBKqDKrqOp1JMHtrLFB+aMXE7zxHtgrYcVi2ttKZOQFUPyoho3H0mHP2kdg2lbVd7klza7fxSUms7KaBE/iiZXb/SDpZahicB3/Up6u6bQb6E3P6JYq0yJuvuV0LC8BVCBSJtyYO75p5MfLAXX1WzRZl7Zs/ChxBQl/opAkyNBdO0CQuJAq/CIF8BSA2o0obYSxNJ0UONX8wpZTrsRHep82NssD0STiz5PlrqHkOyB5aTSjjFnbki9rJ2xL6sGt0t8Sb6HEanBiPgQzAsoDDg/15EEBPvfoO+ARuGH4DKuvnEqDxYaNfAinWBsL0Zi05Wtc5Zk41hdkQ2NZgo0FeFF6iuU1c7pzZhcnTOr1dnYHfFHgHagecCa706eaYpzX2a+1cly4xCWTONsuDHY1Ni2GI5Yx+nPMtzTFdmFFxki4ci+gC+g68hFQ/bHRJ3ZiuybNbH4+0JlPp3cX9hQQoqAA0d8Xl7Ns9MiBPVxpK10g6nOpH4u78O+690juw1+APMPQ1mTrya4fRfsJgFUfDFjOx1PGQisIEeqNV151R7vQzwLktoiiJvs8Hcl9r+oH2V04Ss8J2DJzyYwn",
+  "projectId": "3646b747-1894-4422-9d00-f6944cef87f1",
+  "sprintId": "7c2e0bff-17ab-4295-8aac-4ba17ca075b7",
+  "poolIndex": 1,
+  "encryptedPlatformApiKey": "ikD/B46HAYcxEqwGKCBViJ7O1yJq+UTj5RXXx9AucaT+8P3rUQopsT16jeejMk6niAJq60yZo33IEt/P9YHEOqVBq2KQJlAqpLcOXplAZiHVESk0KQ6vpH+LL0/JLl6b+6rBI7j/bkGLXbLJcqLOpHYO8gHHZoVuHRtuRTax196tS0+jeAxIWYi2j6m5dLU1b0VDlq+oMJyh7g+X4Q==",
+  "encryptedLLMConfig": "TtjnmCKJQF8eolxFCO2zpHPIMLSZHH5tQjOOanO10iBwGXsCXGXOGKpvGii3nYg+9JK/AAFmvJIewo3zJ4lCrmLx7+4JA43Ta15ID6vPLYOWuH+Akz2qWquE25AOKGSkEhSJUbkG5LakCRA+rqo/Gn8OuePq8N7eIud2suZLQt+l8R3Iif6g0Alk7IIAZvXAd3HR3tSnZgSzY4yx5SEj9lOcvx9xdF8dbOq2Ag5aSqMRNPnJQrA/gXn97wQC8xsKRQCyBbxhDquPKOII1kts8vS/z/AY658BYcaCLny9iz3CgIvUTVmAgvCvR0P8q1NgRb056g2ZGdmXEbffG+Nn2p7E1ValytORT6tI8qSsfrqb1EL5Opmv7bGGko5fGfsEDSN28+KJFG+fLvsE9flNySycRvk+pF+7/3Qw4SykM6mCHaJ/HJDoPIXrwO82JFWXttQPfCS8lN+/XQH/h0VrrbbBUAgagbzvhlBoRcoU8b3PT6LQHB1ZAPmlDZKFTVpDt+cFHi3GSHTuPstjj1V67WAxybBb/8znurbWhJDwmkEtH8AgzYyEUHAxUOV3dnSVwhIM4TsZqkfS/9Q2ldShiT4KWs6YdBxKLejiPotVSUMkh4Bm5hWP5EJaD8TrdrW4A/zuFGhnbeqV0hTg+uPD6bqrK4sM51H5PfuMrUcrFAsDH1BirLJXTYgvn/ZUKB+oNFh65SNM+Qx/+RUKsHC/kIiqSEGkro+mA8SK+UZ5jBVfVz8IYcFmw2jJKd+EumMv+CFtZF7qZF65SGjecUt1qwxCX4BlZmGLq1GoEk5LT9OjglWRMNp+oNsHW2Gi1y0GOpJOEA8n4PAlG6pvXjG/3eYIqzedqOS+NotUKKvZblhW",
   "configVersion": "1.0.0",
-  "expiresAt": "2026-01-10T04:27:28.043Z",
+  "expiresAt": "2026-02-05T17:57:18.872Z",
   "databaseConfig": {
     "enabled": true,
     "type": "postgresql",
     "host": "host.docker.internal",
     "port": 5432,
-    "database": "quick_ride_db",
+    "database": "log_analysis_db",
     "username": "postgres",
     "password": "postgres"
   }

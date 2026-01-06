@@ -1,0 +1,31 @@
+{
+  "tool": "cline",
+  "version": "1.0",
+  "exportMode": "new_repository",
+  "selectedPurposes": [
+    "api_development",
+    "ui_development",
+    "unit_tests",
+    "db_schema_design"
+  ],
+  "frameworkConfig": {
+    "backend": {
+      "framework": "express",
+      "language": "typescript"
+    },
+    "frontend": {
+      "framework": "react",
+      "language": "typescript",
+      "styling": "tailwind"
+    },
+    "database": {
+      "type": "postgresql"
+    },
+    "testing": {
+      "unitFramework": "jest",
+      "e2eFramework": "playwright"
+    }
+  },
+  "mcpEnabled": true,
+  "planModeDefault": true
+}

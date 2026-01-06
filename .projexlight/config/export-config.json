@@ -1,5 +1,5 @@
 {
-  "cliTool": "claude",
+  "cliTool": "cline",
   "exportMode": "new_repository",
   "exportScope": "full_sprint",
   "selectedPurposes": [
