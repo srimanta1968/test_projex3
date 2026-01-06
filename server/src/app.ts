@@ -23,8 +23,11 @@ app.get('/health', (req, res) => {
 
 // API routes
 import authRoutes from './routes/authRoutes';
+import uiRoutes from './routes/uiRoutes';
+import { authenticateToken } from './middleware/authMiddleware';
 
 app.use('/api/auth', authRoutes);
+app.use('/api/ui', authenticateToken, uiRoutes);
 
 // Error handling
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

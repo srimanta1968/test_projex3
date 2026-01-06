@@ -1,0 +1,315 @@
+{
+  "last_scan": "2026-01-06T18:14:05.097459Z",
+  "scanned_files": {
+    ".cline/config/cline-config.json": {
+      "hash": "448d403cf6720fd53e747173083e4f3a57b4c99416532b883536904bbe9e59bb",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-06T18:14:01.063499Z",
+      "linesOfCode": 31
+    },
+    ".cline/config/cline_mcp_settings.json": {
+      "hash": "2412bc59ff0231f5885ba367393fea4d57fedf764d5bb1787d28e79d487f6255",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-06T18:14:01.077730Z",
+      "linesOfCode": 27
+    },
+    "client/package.json": {
+      "hash": "140360eb9e7f6ea0adfb9b0e9df567bbcab898c241ab2c835c544c7f86d73ac4",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-06T18:14:01.147370Z",
+      "linesOfCode": 26
+    },
+    "client/src/App.tsx": {
+      "hash": "7a0f26d319d600ffe5b897f7cfc9e8648c9ca3d9fd607105030991648d32535a",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-06T18:14:01.167940Z",
+      "linesOfCode": 9
+    },
+    "client/src/main.tsx": {
+      "hash": "9253237bf46cc3e63e8f41eeb1dcede2a0620730105f643849ef31a2d2bb113b",
+      "compliance": 95,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "client/src/main.tsx"
+        }
+      ],
+      "timestamp": "2026-01-06T18:14:01.696254Z",
+      "linesOfCode": 9
+    },
+    "client/tsconfig.json": {
+      "hash": "63a85d1d826a750adf97d8b069f1331cf3c978afc7573d0a15a36929f2fa09b1",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-06T18:14:02.138025Z",
+      "linesOfCode": 26
+    },
+    "client/vite.config.ts": {
+      "hash": "825bba7f68f5cfa0b48d71b97bea4f5c662868cfb3916e5e4db7323837bc0671",
+      "compliance": 95,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "client/vite.config.ts"
+        }
+      ],
+      "timestamp": "2026-01-06T18:14:02.208183Z",
+      "linesOfCode": 14
+    },
+    "mcp-server/mcp-bridge.js": {
+      "hash": "d67315630683033a3041e38a4d0e580818c8f2042e7356eba09e7375045227cb",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-06T18:14:02.286519Z",
+      "linesOfCode": 420
+    },
+    "mcp-server/mcp-config.json": {
+      "hash": "798c4cc9a140e4dce1ebe5f5ec7504a7d67a410e4bd5085e07b56c674ccef51d",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-06T18:14:02.313737Z",
+      "linesOfCode": 18
+    },
+    "server/package-lock.json": {
+      "hash": "fd7f19634d922f6cd33c3f30df19371fb4a1293797130646ffb7c9f2f1c0a2c4",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-06T18:14:02.486838Z",
+      "linesOfCode": 1954
+    },
+    "server/package.json": {
+      "hash": "e76655a8cf81678d5894db9b138d7cb0ed7c76b6bc303954dc37042578eefd49",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-06T18:14:02.515788Z",
+      "linesOfCode": 33
+    },
+    "server/src/app.ts": {
+      "hash": "137db0f907411afff3d6012ffd7d96f5e8bb0294bf344650e92684fe8d3cabed",
+      "compliance": 95,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/app.ts"
+        }
+      ],
+      "timestamp": "2026-01-06T18:14:02.593056Z",
+      "linesOfCode": 28
+    },
+    "server/src/config/database.ts": {
+      "hash": "644b3f6711886fe65e6a70372ddaa4d52fd0f0ee38cd365a0d4cc0c43c88c59d",
+      "compliance": 95,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/config/database.ts"
+        }
+      ],
+      "timestamp": "2026-01-06T18:14:02.640974Z",
+      "linesOfCode": 13
+    },
+    "server/src/config/env.ts": {
+      "hash": "9047146a0ee18763cd1c623ec42ceaae900e7c163ea03bee06330ffa0ef7e123",
+      "compliance": 95,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/config/env.ts"
+        }
+      ],
+      "timestamp": "2026-01-06T18:14:02.678295Z",
+      "linesOfCode": 30
+    },
+    "server/src/controllers/authController.ts": {
+      "hash": "c5bbed2f21edc56694492f708a3e69b6e4fb334e2268a69ce8cf61e21040fb50",
+      "compliance": 80,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/controllers/authController.ts"
+        },
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/controllers/authController.ts"
+        }
+      ],
+      "timestamp": "2026-01-06T18:14:02.762259Z",
+      "linesOfCode": 70
+    },
+    "server/src/routes/authRoutes.ts": {
+      "hash": "fa4f0c3a6c1e305b6b200378a2f67dd3b88b89136eb8aabe2951e42684358d17",
+      "compliance": 80,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/authRoutes.ts"
+        },
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/authRoutes.ts"
+        }
+      ],
+      "timestamp": "2026-01-06T18:14:02.873048Z",
+      "linesOfCode": 6
+    },
+    "server/src/services/authService.ts": {
+      "hash": "a1d7d76a4df92f6ac0bc8b4d7dacbf50e41ab696f6e0cad511d071a775886dd2",
+      "compliance": 75,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-11",
+          "description": "Direct database access - use DataService/ORM instead",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/services/authService.ts"
+        }
+      ],
+      "timestamp": "2026-01-06T18:14:03.686955Z",
+      "linesOfCode": 123
+    },
+    "server/src/services/dataService.ts": {
+      "hash": "d063f1f6f5f76e45659fbad029e62a46e71cbe6432f8ae533dcd562196d7e16b",
+      "compliance": 65,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-06",
+          "description": "Missing try/catch error handling",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/services/dataService.ts"
+        },
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-11",
+          "description": "Direct database access - use DataService/ORM instead",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/services/dataService.ts"
+        }
+      ],
+      "timestamp": "2026-01-06T18:14:03.740074Z",
+      "linesOfCode": 47
+    },
+    "server/tsconfig.json": {
+      "hash": "765afafbbf99852bcb6f72157891946e8e1b0c61e4655c8001b3d573e3b4e1c9",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-06T18:14:03.799779Z",
+      "linesOfCode": 29
+    },
+    "tests/api_definitions/auth/login.json": {
+      "hash": "5724a3d3ed559499b5a2d43e98feaa27c6c4a47450ec6dfa4debe177dc8d1fb5",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-06T18:14:03.842926Z",
+      "linesOfCode": 17
+    },
+    "tests/api_definitions/auth/register.json": {
+      "hash": "2c28f23173bcc1d3e75b9c33f4a83b916d59846376ece4ec465cdb2b9fa9449b",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-06T18:14:03.887876Z",
+      "linesOfCode": 22
+    }
+  },
+  "registered_apis": {
+    "POST:/register": {
+      "filePath": "server/src/routes/authRoutes.ts",
+      "timestamp": "2026-01-06T18:14:05.097468Z"
+    },
+    "POST:/login": {
+      "filePath": "server/src/routes/authRoutes.ts",
+      "timestamp": "2026-01-06T18:14:05.097470Z"
+    }
+  }
+}

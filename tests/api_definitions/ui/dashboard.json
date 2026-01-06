@@ -1,0 +1,22 @@
+{
+  "endpoint": "/api/ui/dashboard",
+  "method": "GET",
+  "requiresAuth": true,
+  "description": "Get dashboard data with log statistics and recent activity",
+  "testCases": [{
+    "name": "Get dashboard data",
+    "headers": {
+      "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+    },
+    "expectedStatus": 200,
+    "expectedResponse": {
+      "success": true,
+      "data": {
+        "totalLogs": 1500,
+        "errorRate": 0.05,
+        "activeSources": 3,
+        "recentLogs": []
+      }
+    }
+  }]
+}
