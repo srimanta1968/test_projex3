@@ -114,8 +114,8 @@ export class AuthService {
           email: user.email,
           role: user.role
         },
-        config.jwt.secret,
-        { expiresIn: config.jwt.expiresIn }
+        config.jwt.secret as jwt.Secret,
+        { expiresIn: config.jwt.expiresIn as any }
       ) as string;
 
       // Remove password_hash from response

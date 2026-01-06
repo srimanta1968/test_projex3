@@ -1,4 +1,4 @@
-import { Pool, QueryResult } from 'pg';
+import { Pool, QueryResult, QueryResultRow } from 'pg';
 import { databaseConfig } from '../config/database';
 
 export interface QueryOptions {
@@ -13,7 +13,7 @@ export class DataService {
     this.pool = new Pool(databaseConfig);
 
     // Handle connection errors
-    this.pool.on('error', (err) => {
+    this.pool.on('error', (err: Error) => {
       console.error('Unexpected error on idle client', err);
       process.exit(-1);
     });
@@ -22,7 +22,7 @@ export class DataService {
   /**
    * Execute a query with optional parameters
    */
-  async query<T = any>(text: string, values?: any[]): Promise<QueryResult<T>> {
+  async query(text: string, values?: any[]): Promise<QueryResult<any>> {
     const client = await this.pool.connect();
     try {
       return await client.query(text, values);
@@ -35,7 +35,7 @@ export class DataService {
    * Execute a query with tenant context
    * Note: This project doesn't seem to have multi-tenant setup yet
    */
-  async queryTenant<T = any>(text: string, values?: any[], context?: any): Promise<QueryResult<T>> {
+  async queryTenant(text: string, values?: any[], context?: any): Promise<QueryResult<any>> {
     // For now, just execute the query
     // In a multi-tenant setup, you'd add tenant filtering here
     return this.query(text, values);
