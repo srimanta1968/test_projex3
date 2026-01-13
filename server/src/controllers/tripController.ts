@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../middleware/authMiddleware';
-import { tripService, CreateTripInput } from '../services/tripService';
+import { tripService, CreateTripInput, UpdateTripInput } from '../services/tripService';
 
 export const tripController = {
   /**
@@ -92,6 +92,67 @@ export const tripController = {
       res.status(500).json({
         success: false,
         error: 'Failed to retrieve trips',
+      });
+    }
+  },
+
+  /**
+   * Update a trip (reschedule)
+   */
+  async updateTrip(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          success: false,
+          error: 'Authentication required',
+        });
+        return;
+      }
+
+      const { id } = req.params;
+      const { destination, departure_time } = req.body as UpdateTripInput;
+
+      if (!id) {
+        res.status(400).json({
+          success: false,
+          error: 'Trip ID is required',
+        });
+        return;
+      }
+
+      if (departure_time) {
+        const departureDate = new Date(departure_time);
+        if (isNaN(departureDate.getTime())) {
+          res.status(400).json({
+            success: false,
+            error: 'Invalid departure time format',
+          });
+          return;
+        }
+      }
+
+      const result = await tripService.updateTrip(id, req.user.userId, {
+        destination: destination?.trim(),
+        departure_time,
+      });
+
+      if (!result) {
+        res.status(404).json({
+          success: false,
+          error: 'Trip not found',
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      console.error('Update trip error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to update trip',
       });
     }
   },

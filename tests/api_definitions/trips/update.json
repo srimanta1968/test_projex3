@@ -1,0 +1,39 @@
+{
+  "endpoint": "/api/trips/:id",
+  "method": "PUT",
+  "taskId": "5a3725ac-90dc-448d-97c9-eb48e1f18f31",
+  "requiresAuth": true,
+  "priority": 45,
+  "dependsOn": ["POST /api/auth/register", "POST /api/trips"],
+  "captureResponse": {
+    "trips.update.response.data.trip.id": "data.trip.id"
+  },
+  "testCases": [
+    {
+      "name": "Update trip schedule",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "pathParams": {
+        "id": "{{cache:trips.create.response.data.trip.id}}"
+      },
+      "payload": {
+        "destination": "{{dynamic:city}}",
+        "departure_time": "{{dynamic:futureDate}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "trip": {
+            "id": "string",
+            "user_id": "string",
+            "destination": "string",
+            "departure_time": "string"
+          }
+        }
+      }
+    }
+  ]
+}

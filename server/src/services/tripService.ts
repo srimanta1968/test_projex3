@@ -16,6 +16,11 @@ export interface CreateTripInput {
   departure_time: string;
 }
 
+export interface UpdateTripInput {
+  destination?: string;
+  departure_time?: string;
+}
+
 export interface TripResponse {
   trip: {
     id: string;
@@ -79,6 +84,42 @@ export const tripService = {
     );
 
     return trip;
+  },
+
+  /**
+   * Update a trip (reschedule)
+   */
+  async updateTrip(tripId: string, userId: string, input: UpdateTripInput): Promise<TripResponse | null> {
+    const existingTrip = await this.getTripById(tripId, userId);
+    if (!existingTrip) {
+      return null;
+    }
+
+    const now = new Date();
+    const destination = input.destination || existingTrip.destination;
+    const departureTime = input.departure_time || existingTrip.departure_time;
+
+    const result = await dataService.query<Trip>(
+      `UPDATE trips
+       SET destination = $1, departure_time = $2, updated_at = $3
+       WHERE id = $4 AND user_id = $5
+       RETURNING id, user_id, destination, departure_time`,
+      [destination, departureTime, now, tripId, userId]
+    );
+
+    const trip = result[0];
+    if (!trip) {
+      return null;
+    }
+
+    return {
+      trip: {
+        id: trip.id,
+        user_id: trip.user_id,
+        destination: trip.destination,
+        departure_time: trip.departure_time.toISOString(),
+      },
+    };
   },
 };
 

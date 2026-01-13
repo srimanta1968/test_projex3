@@ -26,4 +26,15 @@ router.get(
   tripController.getUserTrips as RequestHandler
 );
 
+/**
+ * @route PUT /api/trips/:id
+ * @desc Update a trip (reschedule)
+ * @access Private
+ */
+router.put(
+  '/:id',
+  authenticateToken as RequestHandler,
+  tripController.updateTrip as RequestHandler
+);
+
 export default router;
