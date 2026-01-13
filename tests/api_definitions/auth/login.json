@@ -5,8 +5,6 @@
   "requiresAuth": false,
   "priority": 15,
   "dependsOn": ["POST /api/auth/register"],
-  "testability": "manual",
-  "manualReason": "Test depends on register cache state which requires sequential execution - verify manually with curl",
   "captureResponse": {
     "auth.login.response.data.user.id": "data.user.id",
     "auth.login.response.data.token": "data.token"
@@ -18,7 +16,7 @@
         "Content-Type": "application/json"
       },
       "payload": {
-        "email": "{{cache:auth.register.response.data.user.email}}",
+        "email": "{{cache:auth.email}}",
         "password": "{{static:TestPass123!}}"
       },
       "expectedStatus": 200,
