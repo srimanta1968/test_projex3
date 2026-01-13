@@ -1,0 +1,25 @@
+{
+  "endpoint": "/api/matching",
+  "method": "GET",
+  "taskId": "fbd21b1b-b710-4f87-920e-ed7a68973dc3",
+  "requiresAuth": true,
+  "priority": 56,
+  "dependsOn": ["POST /api/auth/register"],
+  "captureResponse": {},
+  "testCases": [
+    {
+      "name": "Get user matched trips",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "matches": []
+        }
+      }
+    }
+  ]
+}

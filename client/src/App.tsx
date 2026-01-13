@@ -6,6 +6,7 @@ import Profile from './pages/Profile';
 import TripHistory from './pages/TripHistory';
 import Feedback from './pages/Feedback';
 import TripCreation from './pages/TripCreation';
+import MatchedTrips from './pages/MatchedTrips';
 
 interface User {
   id: string;
@@ -39,6 +40,7 @@ function Navigation() {
             <>
               <Link to="/profile" className="hover:underline">Profile</Link>
               <Link to="/create-trip" className="hover:underline">New Trip</Link>
+              <Link to="/matched-trips" className="hover:underline">Matches</Link>
               <Link to="/trip-history" className="hover:underline">Trips</Link>
               <Link to="/feedback" className="hover:underline">Feedback</Link>
               <span className="text-sm">{user.email}</span>
@@ -98,6 +100,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/trip-history" element={<TripHistory />} />
           <Route path="/create-trip" element={<TripCreation />} />
+          <Route path="/matched-trips" element={<MatchedTrips />} />
           <Route path="/feedback" element={<Feedback />} />
         </Routes>
       </div>
