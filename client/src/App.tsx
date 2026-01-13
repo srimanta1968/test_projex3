@@ -4,6 +4,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import TripHistory from './pages/TripHistory';
+import Feedback from './pages/Feedback';
 
 interface User {
   id: string;
@@ -37,6 +38,7 @@ function Navigation() {
             <>
               <Link to="/profile" className="hover:underline">Profile</Link>
               <Link to="/trip-history" className="hover:underline">Trips</Link>
+              <Link to="/feedback" className="hover:underline">Feedback</Link>
               <span className="text-sm">{user.email}</span>
               <button
                 onClick={handleLogout}
@@ -93,6 +95,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/trip-history" element={<TripHistory />} />
+          <Route path="/feedback" element={<Feedback />} />
         </Routes>
       </div>
     </BrowserRouter>
