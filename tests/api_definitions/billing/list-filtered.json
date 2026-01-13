@@ -1,0 +1,54 @@
+{
+  "endpoint": "/api/billing",
+  "method": "GET",
+  "taskId": "927c61fd-a77e-4756-b8d4-b0c879b28d99",
+  "requiresAuth": true,
+  "priority": 67,
+  "dependsOn": ["POST /api/auth/register"],
+  "testCases": [
+    {
+      "name": "Get filtered billing history by date range",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "queryParams": {
+        "startDate": "2024-01-01",
+        "endDate": "2024-12-31"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "records": [],
+          "summary": {
+            "totalSpent": 0,
+            "recordCount": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "Get filtered billing history by amount range",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "queryParams": {
+        "minAmount": "10",
+        "maxAmount": "100"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "records": [],
+          "summary": {
+            "totalSpent": 0,
+            "recordCount": 0
+          }
+        }
+      }
+    }
+  ]
+}

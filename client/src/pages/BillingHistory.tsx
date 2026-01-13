@@ -17,6 +17,14 @@ interface BillingSummary {
   lastBillingDate: string | null;
 }
 
+interface BillingFilters {
+  startDate: string;
+  endDate: string;
+  minAmount: string;
+  maxAmount: string;
+  type: string;
+}
+
 /**
  * BillingHistory component for displaying user's billing records
  */
@@ -26,6 +34,15 @@ export default function BillingHistory() {
   const [summary, setSummary] = useState<BillingSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Filter state
+  const [filters, setFilters] = useState<BillingFilters>({
+    startDate: '',
+    endDate: '',
+    minAmount: '',
+    maxAmount: '',
+    type: 'all',
+  });
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -38,12 +55,37 @@ export default function BillingHistory() {
   }, [navigate]);
 
   /**
-   * Fetch billing history from API
+   * Fetch billing history from API with filters
    */
-  const fetchBillingHistory = async () => {
+  const fetchBillingHistory = async (appliedFilters?: BillingFilters) => {
     try {
+      setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/billing', {
+
+      // Build query string from filters
+      const params = new URLSearchParams();
+      const filterValues = appliedFilters || filters;
+
+      if (filterValues.startDate) {
+        params.append('startDate', filterValues.startDate);
+      }
+      if (filterValues.endDate) {
+        params.append('endDate', filterValues.endDate);
+      }
+      if (filterValues.minAmount) {
+        params.append('minAmount', filterValues.minAmount);
+      }
+      if (filterValues.maxAmount) {
+        params.append('maxAmount', filterValues.maxAmount);
+      }
+      if (filterValues.type && filterValues.type !== 'all') {
+        params.append('type', filterValues.type);
+      }
+
+      const queryString = params.toString();
+      const url = queryString ? `/api/billing?${queryString}` : '/api/billing';
+
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -63,6 +105,35 @@ export default function BillingHistory() {
     } finally {
       setLoading(false);
     }
+  };
+
+  /**
+   * Handle filter changes
+   */
+  const handleFilterChange = (field: keyof BillingFilters, value: string) => {
+    setFilters((prev) => ({ ...prev, [field]: value }));
+  };
+
+  /**
+   * Apply filters
+   */
+  const handleApplyFilters = () => {
+    fetchBillingHistory(filters);
+  };
+
+  /**
+   * Clear all filters
+   */
+  const handleClearFilters = () => {
+    const clearedFilters: BillingFilters = {
+      startDate: '',
+      endDate: '',
+      minAmount: '',
+      maxAmount: '',
+      type: 'all',
+    };
+    setFilters(clearedFilters);
+    fetchBillingHistory(clearedFilters);
   };
 
   /**
@@ -137,6 +208,92 @@ export default function BillingHistory() {
           {error}
         </div>
       )}
+
+      {/* Filter Section */}
+      <div className="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 className="text-xl font-semibold mb-4">Filters</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">
+              Start Date
+            </label>
+            <input
+              type="date"
+              value={filters.startDate}
+              onChange={(e) => handleFilterChange('startDate', e.target.value)}
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">
+              End Date
+            </label>
+            <input
+              type="date"
+              value={filters.endDate}
+              onChange={(e) => handleFilterChange('endDate', e.target.value)}
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">
+              Type
+            </label>
+            <select
+              value={filters.type}
+              onChange={(e) => handleFilterChange('type', e.target.value)}
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">All Types</option>
+              <option value="payment">Payment</option>
+              <option value="trip_charge">Trip Charge</option>
+              <option value="refund">Refund</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">
+              Min Amount ($)
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={filters.minAmount}
+              onChange={(e) => handleFilterChange('minAmount', e.target.value)}
+              placeholder="0.00"
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">
+              Max Amount ($)
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={filters.maxAmount}
+              onChange={(e) => handleFilterChange('maxAmount', e.target.value)}
+              placeholder="1000.00"
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="flex items-end gap-2">
+            <button
+              onClick={handleApplyFilters}
+              className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Apply Filters
+            </button>
+            <button
+              onClick={handleClearFilters}
+              className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* Summary Card */}
       {summary && (
