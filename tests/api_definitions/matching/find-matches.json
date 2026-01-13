@@ -1,0 +1,28 @@
+{
+  "endpoint": "/api/matching/find",
+  "method": "POST",
+  "taskId": "f8f1a25a-5efc-4248-b5c8-b490cc49a324",
+  "requiresAuth": true,
+  "priority": 55,
+  "dependsOn": ["POST /api/auth/register", "POST /api/trips"],
+  "captureResponse": {},
+  "testCases": [
+    {
+      "name": "Find matching trips",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "payload": {
+        "trip_id": "{{cache:trips.create.response.data.trip.id}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "matches": []
+        }
+      }
+    }
+  ]
+}
