@@ -1,5 +1,5 @@
 {
-  "last_scan": "2026-01-13T20:54:00.438091Z",
+  "last_scan": "2026-01-13T22:08:42.305857Z",
   "scanned_files": {
     ".claude/settings.local.json": {
       "hash": "39d887b17be540d93dac46fe25a9dcbe81330cc732302e17d6ac3d4f5974d57d",
@@ -16,11 +16,11 @@
       "linesOfCode": 26
     },
     "client/src/App.tsx": {
-      "hash": "723e37acf26eb6549c1ca5f662503bea64199989ffc33aa570dda1b6d218b51b",
+      "hash": "7d41ff10a76b80be18761c6267d58c8456fb150ae3b7b63d1c67250159478b8d",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-13T19:13:45.528715Z",
-      "linesOfCode": 95
+      "timestamp": "2026-01-13T21:57:27.403393Z",
+      "linesOfCode": 143
     },
     "client/src/pages/Register.tsx": {
       "hash": "5d8a329c323bd0efd3d5a30cda134743e3369719e3f99ac57cd507e7d88868ad",
@@ -64,7 +64,7 @@
       "linesOfCode": 34
     },
     "server/src/app.ts": {
-      "hash": "ed30051d77368a45aa2c5bb3336d3dea39e98a63d5a613b75bfa91cee1545fcd",
+      "hash": "6b9590eb9fbaf0cc0d64cd9a54b0b2babe3670a6592a00bde70b1c17cce76c52",
       "compliance": 95,
       "violations": [
         {
@@ -80,8 +80,8 @@
           "filePath": "server/src/app.ts"
         }
       ],
-      "timestamp": "2026-01-13T19:13:46.437237Z",
-      "linesOfCode": 34
+      "timestamp": "2026-01-13T21:57:28.152627Z",
+      "linesOfCode": 46
     },
     "server/src/config/env.ts": {
       "hash": "7d08848372d03fa2e02cf5eb22dc3dba82a8e83ce90a89ab8a3e6b152cf0c949",
@@ -124,7 +124,7 @@
       "linesOfCode": 87
     },
     "server/src/routes/authRoutes.ts": {
-      "hash": "4ec56fc624651be98ace74225e90e6e7e4f460a12c3a2c17a1baabeccd71e39f",
+      "hash": "d59b33f1338e0a6ef83661567369bdbcabd539393085aa707313fea5ee9dc111",
       "compliance": 80,
       "violations": [
         {
@@ -152,7 +152,7 @@
           "filePath": "server/src/routes/authRoutes.ts"
         }
       ],
-      "timestamp": "2026-01-13T20:53:56.572729Z",
+      "timestamp": "2026-01-13T21:13:08.580491Z",
       "linesOfCode": 21
     },
     "server/src/services/authService.ts": {
@@ -190,17 +190,17 @@
       "linesOfCode": 36
     },
     ".mcp-cache/pre_commit_cache.json": {
-      "hash": "3377d742157987e88b52132f2f51c3b356a06054a840ebb7df66025d8617d4b3",
+      "hash": "7fb6a2860f7f2cf8edb3ab02db158f2cf1d93d5dcd88b7a03a5e541cc291edd6",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-13T20:53:56.454643Z",
-      "linesOfCode": 615
+      "timestamp": "2026-01-13T21:13:08.444149Z",
+      "linesOfCode": 629
     },
     ".mcp-cache/violations_latest.json": {
-      "hash": "80b8ff019fa90b16de5016340c4c815f14ac251ea707cfe01e081f4e5f7332c8",
+      "hash": "6be8ddccee51345df0f483b62130ba00d3eaa56d825009bab3edb3641e58af7b",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-13T20:53:56.492574Z",
+      "timestamp": "2026-01-13T21:13:08.494144Z",
       "linesOfCode": 33
     },
     ".mcp-cache/violations_report_20260113_052445.json": {
@@ -339,14 +339,14 @@
       "linesOfCode": 35
     },
     "client/src/pages/TripHistory.tsx": {
-      "hash": "156644ed3e9b05a9589b07e002b2cdad54e8ff131d78903c43e281a62d6edd63",
+      "hash": "fda2ac52ad6fb4b8e31b8532e7f894fd9ea7d2fc453dae958f37243a14395637",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-13T05:55:20.578437Z",
-      "linesOfCode": 140
+      "timestamp": "2026-01-13T21:40:44.830285Z",
+      "linesOfCode": 216
     },
     "server/src/controllers/tripHistoryController.ts": {
-      "hash": "eabbc23956d2e002f1b8d65d43f0efdfe50f3aff934535730fdb6b5901b13da2",
+      "hash": "b0643229c09f22c2b47030ce0543c427be7c66088cf9636b5536dc5f5749b3a6",
       "compliance": 85,
       "violations": [
         {
@@ -362,8 +362,8 @@
           "filePath": "server/src/controllers/tripHistoryController.ts"
         }
       ],
-      "timestamp": "2026-01-13T05:55:20.945399Z",
-      "linesOfCode": 31
+      "timestamp": "2026-01-13T21:40:45.250827Z",
+      "linesOfCode": 41
     },
     "server/src/routes/tripHistoryRoutes.ts": {
       "hash": "c567693776d43d1b1fc097295f010b004bd05c67a5a65b03a7ffd6b80e3954a2",
@@ -398,7 +398,7 @@
       "linesOfCode": 15
     },
     "server/src/services/tripHistoryService.ts": {
-      "hash": "43bf1eb29384db955565ab17c1e71b20f594db332a0568fb67dd85a3a2d1d1ba",
+      "hash": "e6086379b02a8db288fbbe4098126f2f9df79030509d0549ce73410a4013e616",
       "compliance": 90,
       "violations": [
         {
@@ -414,14 +414,14 @@
           "filePath": "server/src/services/tripHistoryService.ts"
         }
       ],
-      "timestamp": "2026-01-13T05:55:21.315569Z",
-      "linesOfCode": 44
+      "timestamp": "2026-01-13T21:40:45.280078Z",
+      "linesOfCode": 66
     },
     "tests/api_definitions/trip-history/list.json": {
-      "hash": "d188edcd1996a2127b6788ec343d6d5673b00ce38fc22ef40863e69e347cc142",
+      "hash": "a9f969ec175fa124405d8ac0dc6d459f70066603e1aa2a630271182ba6b07f64",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-13T05:55:21.334713Z",
+      "timestamp": "2026-01-13T21:39:02.402161Z",
       "linesOfCode": 25
     },
     "client/src/pages/Feedback.tsx": {
@@ -511,10 +511,10 @@
       "linesOfCode": 30
     },
     ".mcp-cache/api_test_cache.json": {
-      "hash": "6e3ce814931160417326a8cb78bfbae4b0f2798a7ab2af575fd4377efbdaf112",
+      "hash": "66a80045590d08fcb714e01931048749cd3516b266619b86b92bcc73bac9a836",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-13T20:53:56.414380Z",
+      "timestamp": "2026-01-13T21:13:08.405444Z",
       "linesOfCode": 33
     },
     ".mcp-cache/component_scan_cache.json": {
@@ -574,10 +574,10 @@
       "linesOfCode": 1942
     },
     ".mcp-cache/test_failures_latest.json": {
-      "hash": "6f98bcaa93ea8a6b7c6b61ba93d2bcee352d0db33d5335fc314cad179285fa71",
+      "hash": "d6b79f0e90d47869282832843c6c33e054c9508a997bcdf0dff4bd67d7fbfed1",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-13T20:53:56.475076Z",
+      "timestamp": "2026-01-13T21:13:08.463824Z",
       "linesOfCode": 96
     },
     ".mcp-cache/violations_report_20260113_203345.json": {
@@ -586,6 +586,627 @@
       "violations": [],
       "timestamp": "2026-01-13T20:53:56.518051Z",
       "linesOfCode": 33
+    },
+    ".mcp-cache/violations_report_20260113_205400.json": {
+      "hash": "6be8ddccee51345df0f483b62130ba00d3eaa56d825009bab3edb3641e58af7b",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:13:08.520830Z",
+      "linesOfCode": 33
+    },
+    "client/src/pages/TripCreation.tsx": {
+      "hash": "cd14abc18819febbc40dc5b67138d7a004116ef954be08765eb0f2688f202845",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:28:31.408898Z",
+      "linesOfCode": 206
+    },
+    "server/src/controllers/tripController.ts": {
+      "hash": "1b1c710c2d8ed36234f255f45fa919c8a137fbab3bd4b4f88cb5c85c912c4e55",
+      "compliance": 85,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/controllers/tripController.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T21:29:44.213098Z",
+      "linesOfCode": 170
+    },
+    "server/src/routes/tripRoutes.ts": {
+      "hash": "035a610264deb6525f546d57327f37f56cf112996f25814cd76b6da9125e63cb",
+      "compliance": 80,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/tripRoutes.ts"
+        },
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/tripRoutes.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T21:29:44.238536Z",
+      "linesOfCode": 45
+    },
+    "server/src/services/tripService.ts": {
+      "hash": "aea5b071e820a4581375552d5ec7206346beebc7afc2ec7dd2ccac5bf832bb96",
+      "compliance": 90,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-06",
+          "description": "Missing try/catch error handling",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/services/tripService.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T21:29:45.639297Z",
+      "linesOfCode": 122
+    },
+    "tests/api_definitions/trips/create.json": {
+      "hash": "d88bd4bc63cd1439259aff8eb415d61e6a6a326318f51d313b0989786c36f402",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:24:21.847015Z",
+      "linesOfCode": 36
+    },
+    "tests/api_definitions/trips/update.json": {
+      "hash": "a97927b7f78b502f02cb4f76cebcc614d68e25da54bf76a8b2a8fd37b394da3e",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:26:31.826649Z",
+      "linesOfCode": 39
+    },
+    "server/src/utils/tripValidation.ts": {
+      "hash": "aebf5f17a3ccbe7ef36580ea1715df9fdff9fa02be3e54c42aa4fd0f259a319e",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:28:31.835602Z",
+      "linesOfCode": 66
+    },
+    "tests/api_definitions/trips/delete.json": {
+      "hash": "739e492f91907931a7b02e099b8430fe024389b8354c4bcf2ad2a90c8ee81239",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:29:45.664127Z",
+      "linesOfCode": 26
+    },
+    "server/src/controllers/matchingController.ts": {
+      "hash": "cca7c68d0754c7666077449652a5cb940869029a6ae593ca45ee054119dfb642",
+      "compliance": 85,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/controllers/matchingController.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T21:32:37.828408Z",
+      "linesOfCode": 108
+    },
+    "server/src/routes/matchingRoutes.ts": {
+      "hash": "dd04e6672379cfccc10f9d67a424ce9b9b569ed9805be5d649709b027d447005",
+      "compliance": 80,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/matchingRoutes.ts"
+        },
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/matchingRoutes.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T21:32:37.854999Z",
+      "linesOfCode": 35
+    },
+    "server/src/services/matchingService.ts": {
+      "hash": "46f35e6da93c8ae86e0babb87cde1bdca029ec78e1936c19ff93a236be868119",
+      "compliance": 90,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-06",
+          "description": "Missing try/catch error handling",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/services/matchingService.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T21:32:38.908975Z",
+      "linesOfCode": 95
+    },
+    "tests/api_definitions/matching/find-matches.json": {
+      "hash": "ab542c37753d9608c6bcf742c65689b818ba9639032cd447549ac6b750993b4b",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:32:38.933470Z",
+      "linesOfCode": 28
+    },
+    "client/src/pages/MatchedTrips.tsx": {
+      "hash": "ac60bab6bbc169b5b656ec8045c0ceb040435bdbd9c3cf23e119665991eb2c29",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:34:48.483327Z",
+      "linesOfCode": 294
+    },
+    "tests/api_definitions/matching/get-user-matches.json": {
+      "hash": "31055b6b03633c713771569fb6b10c78f0db8467f443ad47245fc030ad49f290",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:34:48.833093Z",
+      "linesOfCode": 25
+    },
+    "server/src/controllers/notificationController.ts": {
+      "hash": "f73cbf261b612e704d273898dabdbb3e6371978f4a74cb2ae23f18cbd289efaa",
+      "compliance": 85,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/controllers/notificationController.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T21:37:52.204733Z",
+      "linesOfCode": 96
+    },
+    "server/src/routes/notificationRoutes.ts": {
+      "hash": "ce40e992253bca4b8d4ed076bea354a89840d404d105ab52cead47bb75e38863",
+      "compliance": 80,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/notificationRoutes.ts"
+        },
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/notificationRoutes.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T21:37:52.232918Z",
+      "linesOfCode": 35
+    },
+    "server/src/services/notificationService.ts": {
+      "hash": "8e4a3c2d98afdb9dcf828c2a8d6c86b5df620c129e8d0ca37688f4a243739279",
+      "compliance": 90,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-06",
+          "description": "Missing try/catch error handling",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/services/notificationService.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T22:08:32.203974Z",
+      "linesOfCode": 149
+    },
+    "tests/api_definitions/notifications/get-notifications.json": {
+      "hash": "ec202ada7ca6959282315b3c15b79e22d120683d2e96209054b7bff322dd34e1",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:37:53.258673Z",
+      "linesOfCode": 26
+    },
+    "tests/api_definitions/trip-history/list-filtered.json": {
+      "hash": "f5896a1ec67d992b93ba8717ac548ca742a1a8fd890713bc90c829922ef10c28",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:40:45.306745Z",
+      "linesOfCode": 30
+    },
+    "server/src/controllers/paymentController.ts": {
+      "hash": "eec42d875c83c8696ba1a473e3fb00c974c931b61084ceee55cfcc41b31ecb01",
+      "compliance": 85,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/controllers/paymentController.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T21:42:25.723894Z",
+      "linesOfCode": 158
+    },
+    "server/src/routes/paymentRoutes.ts": {
+      "hash": "be3b081537f9198efd5096aec33e1ab0b08df8d5f7804e3ade097c4277d2a323",
+      "compliance": 80,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/paymentRoutes.ts"
+        },
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/paymentRoutes.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T21:42:25.749237Z",
+      "linesOfCode": 45
+    },
+    "server/src/services/paymentService.ts": {
+      "hash": "88c4fce7de4d5234c8d9451aa4b549521ddd5280973790b41bcfb656692bd968",
+      "compliance": 90,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-06",
+          "description": "Missing try/catch error handling",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/services/paymentService.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T21:42:27.197947Z",
+      "linesOfCode": 116
+    },
+    "tests/api_definitions/payments/create.json": {
+      "hash": "f7d868411c44c9cddbe78b89ad628f30161707c31041ed61257ac40605a9ce56",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:42:27.226180Z",
+      "linesOfCode": 37
+    },
+    "client/src/pages/Payments.tsx": {
+      "hash": "e3fa8b9472d7bbf19172ce93471f1c76f665f582f473c93ca0b218a13868dbb8",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:44:05.061635Z",
+      "linesOfCode": 264
+    },
+    "tests/api_definitions/payments/list.json": {
+      "hash": "0ec42e43239f43e499217c19ce8b78360f30ebc588b8abc5608a6c304e6fec34",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:44:05.419163Z",
+      "linesOfCode": 25
+    },
+    "tests/api_definitions/payments/complete.json": {
+      "hash": "218dc00766676cd3cd267f75b1551c6b92221ee2824be95b250a5336246e104b",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:47:30.887695Z",
+      "linesOfCode": 40
+    },
+    "tests/api_definitions/payments/get-by-id.json": {
+      "hash": "21cb926549aad5e2de8b74d74c48f958405dc41af873fef0b91558a96cb6175e",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:47:30.909505Z",
+      "linesOfCode": 44
+    },
+    "tests/api_definitions/payments/process-scenarios.json": {
+      "hash": "bc08cc07fede3bfee8c62835626d20129041677c4d7a6631185cc6c5cbad693e",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:47:30.940359Z",
+      "linesOfCode": 143
+    },
+    "client/src/pages/BillingHistory.tsx": {
+      "hash": "c95f9f787b1b4f37b4b7ab60efd058b2e43256b11af7f57d3b304ead1b25577a",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:53:47.629039Z",
+      "linesOfCode": 366
+    },
+    "server/src/controllers/billingController.ts": {
+      "hash": "8b9e9a9778a81d28ad2437c36fd879c078d5fbacbaeedba6a85bfb97db069383",
+      "compliance": 85,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/controllers/billingController.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T21:50:56.866181Z",
+      "linesOfCode": 96
+    },
+    "server/src/routes/billingRoutes.ts": {
+      "hash": "8a1e997256377c149e45c8d888a1192c7e1e8b79db3af321f98d7eed411dfc8c",
+      "compliance": 80,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/billingRoutes.ts"
+        },
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/billingRoutes.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T21:50:56.899641Z",
+      "linesOfCode": 25
+    },
+    "server/src/services/billingService.ts": {
+      "hash": "621bf7cc5c5df43b54e70a4495e0573172880a2061d2202dfb3e73cfbe04225a",
+      "compliance": 90,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-06",
+          "description": "Missing try/catch error handling",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/services/billingService.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T21:50:57.580463Z",
+      "linesOfCode": 118
+    },
+    "tests/api_definitions/billing/list.json": {
+      "hash": "fa554e0c2d1464b275be28b01d70608e2fa8b160ce7cce07b38495b2de1c1c1f",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:50:57.607278Z",
+      "linesOfCode": 28
+    },
+    "tests/api_definitions/billing/get-by-id.json": {
+      "hash": "7cfb898af77f7a47223626520ea66d4b45f3b401b9d908986cb3b6ee4dd2eedc",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:51:48.855561Z",
+      "linesOfCode": 44
+    },
+    "tests/api_definitions/billing/list-filtered.json": {
+      "hash": "ba3ed806432e95a4ad37bea221c6a92d4e8295f52fc21c5652481763e55113e6",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:53:48.021767Z",
+      "linesOfCode": 54
+    },
+    "client/src/pages/Refunds.tsx": {
+      "hash": "c4a669748939cf535d6151b7def03fb9f8b6c833ca318c71426ff41faefa4afc",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:57:27.804677Z",
+      "linesOfCode": 297
+    },
+    "server/src/controllers/refundController.ts": {
+      "hash": "a5568d7857b88f3e62baab835c539e211924f71b31d13fb22004d0a020016b23",
+      "compliance": 85,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/controllers/refundController.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T22:08:30.114564Z",
+      "linesOfCode": 259
+    },
+    "server/src/routes/refundRoutes.ts": {
+      "hash": "3d7cb389b35732ac65cb843c73285b9a1dd87baeb9fcb4547360010592ba5601",
+      "compliance": 80,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/refundRoutes.ts"
+        },
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/refundRoutes.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T22:08:30.149682Z",
+      "linesOfCode": 65
+    },
+    "server/src/services/refundService.ts": {
+      "hash": "65a2be88287410b3d6e5dbecd1a72d23dcdfbc22abd888e4218b7055812224c0",
+      "compliance": 90,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-06",
+          "description": "Missing try/catch error handling",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/services/refundService.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T21:57:29.622956Z",
+      "linesOfCode": 103
+    },
+    "tests/api_definitions/refunds/create.json": {
+      "hash": "77e9fb9a3e7f065c7280bdddeadfcf66482296aa547ad728183fd5cf322fad8a",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:57:29.645715Z",
+      "linesOfCode": 34
+    },
+    "tests/api_definitions/refunds/list.json": {
+      "hash": "a801bdc9286698e5e91ab0a9d6b18518f5e5dbd85d1f0b501ae140cc32bd657b",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T21:57:29.670570Z",
+      "linesOfCode": 24
+    },
+    "tests/api_definitions/refunds/process.json": {
+      "hash": "912b5d5a320b9049ff615afa7ec85027feefa33c0591d88e8f749c40c7ea2458",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T22:01:02.422859Z",
+      "linesOfCode": 94
+    },
+    "tests/api_definitions/refunds/update-status.json": {
+      "hash": "63bcbcd9e0eebd06ff7ef9af850d0c56c7860f7d4e1cfa33777064328e330264",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T22:01:02.451659Z",
+      "linesOfCode": 132
+    },
+    "tests/api_definitions/refunds/notifications.json": {
+      "hash": "6716bc982f41709c143c2551f3181026d2a77d11bb3f383411d9c052fa6ef69d",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T22:08:32.229941Z",
+      "linesOfCode": 45
     }
   },
   "registered_apis": {
@@ -598,8 +1219,8 @@
       "timestamp": "2026-01-13T05:32:30.936707Z"
     },
     "GET:/": {
-      "filePath": "server/src/routes/tripHistoryRoutes.ts",
-      "timestamp": "2026-01-13T05:55:23.477094Z"
+      "filePath": "server/src/routes/refundRoutes.ts",
+      "timestamp": "2026-01-13T22:08:42.305885Z"
     },
     "PUT:/": {
       "filePath": "server/src/routes/profileRoutes.ts",
@@ -619,11 +1240,63 @@
     },
     "POST:/api/auth/register": {
       "filePath": "server/src/routes/authRoutes.ts",
-      "timestamp": "2026-01-13T20:54:00.438104Z"
+      "timestamp": "2026-01-13T21:13:12.404427Z"
     },
     "POST:/api/auth/login": {
       "filePath": "server/src/routes/authRoutes.ts",
-      "timestamp": "2026-01-13T20:54:00.438108Z"
+      "timestamp": "2026-01-13T21:13:12.404432Z"
+    },
+    "POST:/": {
+      "filePath": "server/src/routes/refundRoutes.ts",
+      "timestamp": "2026-01-13T22:08:42.305877Z"
+    },
+    "PUT:/:id": {
+      "filePath": "server/src/routes/tripRoutes.ts",
+      "timestamp": "2026-01-13T21:29:49.667256Z"
+    },
+    "DELETE:/:id": {
+      "filePath": "server/src/routes/tripRoutes.ts",
+      "timestamp": "2026-01-13T21:29:49.667258Z"
+    },
+    "POST:/find": {
+      "filePath": "server/src/routes/matchingRoutes.ts",
+      "timestamp": "2026-01-13T21:32:43.231906Z"
+    },
+    "PUT:/:notification_id/read": {
+      "filePath": "server/src/routes/notificationRoutes.ts",
+      "timestamp": "2026-01-13T21:37:58.165791Z"
+    },
+    "PUT:/read-all": {
+      "filePath": "server/src/routes/notificationRoutes.ts",
+      "timestamp": "2026-01-13T21:37:58.165793Z"
+    },
+    "GET:/:payment_id": {
+      "filePath": "server/src/routes/paymentRoutes.ts",
+      "timestamp": "2026-01-13T21:42:32.868752Z"
+    },
+    "PUT:/:payment_id/complete": {
+      "filePath": "server/src/routes/paymentRoutes.ts",
+      "timestamp": "2026-01-13T21:42:32.868754Z"
+    },
+    "GET:/:record_id": {
+      "filePath": "server/src/routes/billingRoutes.ts",
+      "timestamp": "2026-01-13T21:51:04.963285Z"
+    },
+    "GET:/:refund_id": {
+      "filePath": "server/src/routes/refundRoutes.ts",
+      "timestamp": "2026-01-13T22:08:42.305895Z"
+    },
+    "PUT:/:refund_id/process": {
+      "filePath": "server/src/routes/refundRoutes.ts",
+      "timestamp": "2026-01-13T22:08:42.305903Z"
+    },
+    "PUT:/:refund_id/status": {
+      "filePath": "server/src/routes/refundRoutes.ts",
+      "timestamp": "2026-01-13T22:08:42.305899Z"
+    },
+    "GET:/notifications": {
+      "filePath": "server/src/routes/refundRoutes.ts",
+      "timestamp": "2026-01-13T22:08:42.305889Z"
     }
   }
 }

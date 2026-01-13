@@ -1,26 +1,32 @@
 # Coding Standards Violations Report
-Generated: 2026-01-13 22:08:42 UTC
+Generated: 2026-01-13 21:51:04 UTC
 
 ## Summary
 | Metric | Value |
 |--------|-------|
-| Total Violations | 4 |
+| Total Violations | 5 |
 | 🔴 Critical | 0 |
 | 🟠 Major | 0 |
-| 🟡 Minor | 4 |
-| Files Affected | 3 |
-| Files Scanned | 4 |
-| Avg Compliance | 88.75% |
+| 🟡 Minor | 5 |
+| Files Affected | 4 |
+| Files Scanned | 7 |
+| Avg Compliance | 92.86% |
 
 ## Violations by File
 
-### 📁 server/src/controllers/refundController.ts
+### 📁 server/src/app.ts
+
+#### 🟡 [MINOR] SC-05
+- **Line:** 0
+- **Issue:** 
+
+### 📁 server/src/controllers/billingController.ts
 
 #### 🟡 [MINOR] SC-02
 - **Line:** 0
 - **Issue:** 
 
-### 📁 server/src/routes/refundRoutes.ts
+### 📁 server/src/routes/billingRoutes.ts
 
 #### 🟡 [MINOR] SC-05
 - **Line:** 0
@@ -30,7 +36,7 @@ Generated: 2026-01-13 22:08:42 UTC
 - **Line:** 0
 - **Issue:** 
 
-### 📁 server/src/services/notificationService.ts
+### 📁 server/src/services/billingService.ts
 
 #### 🟡 [MINOR] SC-06
 - **Line:** 0
@@ -41,17 +47,20 @@ Generated: 2026-01-13 22:08:42 UTC
 ## LLM Fix Instructions
 
 
-Please fix the following 4 coding standard violation(s) in my codebase:
+Please fix the following 5 coding standard violation(s) in my codebase:
 
 
-📁 File: server/src/controllers/refundController.ts
+📁 File: server/src/app.ts
+   - Line 0: SC-05 - 
+
+📁 File: server/src/controllers/billingController.ts
    - Line 0: SC-02 - 
 
-📁 File: server/src/routes/refundRoutes.ts
+📁 File: server/src/routes/billingRoutes.ts
    - Line 0: SC-05 - 
    - Line 0: SC-02 - 
 
-📁 File: server/src/services/notificationService.ts
+📁 File: server/src/services/billingService.ts
    - Line 0: SC-06 - 
 
 Please:

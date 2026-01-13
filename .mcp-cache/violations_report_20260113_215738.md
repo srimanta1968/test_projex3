@@ -1,18 +1,24 @@
 # Coding Standards Violations Report
-Generated: 2026-01-13 22:08:42 UTC
+Generated: 2026-01-13 21:57:38 UTC
 
 ## Summary
 | Metric | Value |
 |--------|-------|
-| Total Violations | 4 |
+| Total Violations | 5 |
 | 🔴 Critical | 0 |
 | 🟠 Major | 0 |
-| 🟡 Minor | 4 |
-| Files Affected | 3 |
-| Files Scanned | 4 |
-| Avg Compliance | 88.75% |
+| 🟡 Minor | 5 |
+| Files Affected | 4 |
+| Files Scanned | 8 |
+| Avg Compliance | 93.75% |
 
 ## Violations by File
+
+### 📁 server/src/app.ts
+
+#### 🟡 [MINOR] SC-05
+- **Line:** 0
+- **Issue:** 
 
 ### 📁 server/src/controllers/refundController.ts
 
@@ -30,7 +36,7 @@ Generated: 2026-01-13 22:08:42 UTC
 - **Line:** 0
 - **Issue:** 
 
-### 📁 server/src/services/notificationService.ts
+### 📁 server/src/services/refundService.ts
 
 #### 🟡 [MINOR] SC-06
 - **Line:** 0
@@ -41,8 +47,11 @@ Generated: 2026-01-13 22:08:42 UTC
 ## LLM Fix Instructions
 
 
-Please fix the following 4 coding standard violation(s) in my codebase:
+Please fix the following 5 coding standard violation(s) in my codebase:
 
+
+📁 File: server/src/app.ts
+   - Line 0: SC-05 - 
 
 📁 File: server/src/controllers/refundController.ts
    - Line 0: SC-02 - 
@@ -51,7 +60,7 @@ Please fix the following 4 coding standard violation(s) in my codebase:
    - Line 0: SC-05 - 
    - Line 0: SC-02 - 
 
-📁 File: server/src/services/notificationService.ts
+📁 File: server/src/services/refundService.ts
    - Line 0: SC-06 - 
 
 Please:

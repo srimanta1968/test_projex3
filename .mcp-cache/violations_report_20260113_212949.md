@@ -1,5 +1,5 @@
 # Coding Standards Violations Report
-Generated: 2026-01-13 22:08:42 UTC
+Generated: 2026-01-13 21:29:49 UTC
 
 ## Summary
 | Metric | Value |
@@ -14,13 +14,13 @@ Generated: 2026-01-13 22:08:42 UTC
 
 ## Violations by File
 
-### 📁 server/src/controllers/refundController.ts
+### 📁 server/src/controllers/tripController.ts
 
 #### 🟡 [MINOR] SC-02
 - **Line:** 0
 - **Issue:** 
 
-### 📁 server/src/routes/refundRoutes.ts
+### 📁 server/src/routes/tripRoutes.ts
 
 #### 🟡 [MINOR] SC-05
 - **Line:** 0
@@ -30,7 +30,7 @@ Generated: 2026-01-13 22:08:42 UTC
 - **Line:** 0
 - **Issue:** 
 
-### 📁 server/src/services/notificationService.ts
+### 📁 server/src/services/tripService.ts
 
 #### 🟡 [MINOR] SC-06
 - **Line:** 0
@@ -44,14 +44,14 @@ Generated: 2026-01-13 22:08:42 UTC
 Please fix the following 4 coding standard violation(s) in my codebase:
 
 
-📁 File: server/src/controllers/refundController.ts
+📁 File: server/src/controllers/tripController.ts
    - Line 0: SC-02 - 
 
-📁 File: server/src/routes/refundRoutes.ts
+📁 File: server/src/routes/tripRoutes.ts
    - Line 0: SC-05 - 
    - Line 0: SC-02 - 
 
-📁 File: server/src/services/notificationService.ts
+📁 File: server/src/services/tripService.ts
    - Line 0: SC-06 - 
 
 Please:

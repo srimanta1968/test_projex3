@@ -1,26 +1,32 @@
 # Coding Standards Violations Report
-Generated: 2026-01-13 22:08:42 UTC
+Generated: 2026-01-13 21:37:58 UTC
 
 ## Summary
 | Metric | Value |
 |--------|-------|
-| Total Violations | 4 |
+| Total Violations | 5 |
 | 🔴 Critical | 0 |
 | 🟠 Major | 0 |
-| 🟡 Minor | 4 |
-| Files Affected | 3 |
-| Files Scanned | 4 |
-| Avg Compliance | 88.75% |
+| 🟡 Minor | 5 |
+| Files Affected | 4 |
+| Files Scanned | 6 |
+| Avg Compliance | 91.67% |
 
 ## Violations by File
 
-### 📁 server/src/controllers/refundController.ts
+### 📁 server/src/app.ts
+
+#### 🟡 [MINOR] SC-05
+- **Line:** 0
+- **Issue:** 
+
+### 📁 server/src/controllers/notificationController.ts
 
 #### 🟡 [MINOR] SC-02
 - **Line:** 0
 - **Issue:** 
 
-### 📁 server/src/routes/refundRoutes.ts
+### 📁 server/src/routes/notificationRoutes.ts
 
 #### 🟡 [MINOR] SC-05
 - **Line:** 0
@@ -41,13 +47,16 @@ Generated: 2026-01-13 22:08:42 UTC
 ## LLM Fix Instructions
 
 
-Please fix the following 4 coding standard violation(s) in my codebase:
+Please fix the following 5 coding standard violation(s) in my codebase:
 
 
-📁 File: server/src/controllers/refundController.ts
+📁 File: server/src/app.ts
+   - Line 0: SC-05 - 
+
+📁 File: server/src/controllers/notificationController.ts
    - Line 0: SC-02 - 
 
-📁 File: server/src/routes/refundRoutes.ts
+📁 File: server/src/routes/notificationRoutes.ts
    - Line 0: SC-05 - 
    - Line 0: SC-02 - 
 
