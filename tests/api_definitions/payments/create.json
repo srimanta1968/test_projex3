@@ -1,0 +1,37 @@
+{
+  "endpoint": "/api/payments",
+  "method": "POST",
+  "taskId": "825d8a5f-ea00-439e-8cfd-df3df24de328",
+  "requiresAuth": true,
+  "priority": 60,
+  "dependsOn": ["POST /api/auth/register"],
+  "captureResponse": {
+    "payments.create.response.data.payment.id": "data.payment.id",
+    "payments.create.response.data.payment.payment_id": "data.payment.payment_id"
+  },
+  "testCases": [
+    {
+      "name": "Create a payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "payload": {
+        "amount": 50.00,
+        "payment_method": "card"
+      },
+      "expectedStatus": 201,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "payment": {
+            "id": "string",
+            "payment_id": "string",
+            "amount": 50.00,
+            "payment_status": "pending"
+          }
+        }
+      }
+    }
+  ]
+}

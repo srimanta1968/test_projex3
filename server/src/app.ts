@@ -10,6 +10,7 @@ import feedbackRoutes from './routes/feedbackRoutes';
 import tripRoutes from './routes/tripRoutes';
 import matchingRoutes from './routes/matchingRoutes';
 import notificationRoutes from './routes/notificationRoutes';
+import paymentRoutes from './routes/paymentRoutes';
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use('/api/feedback', feedbackRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/matching', matchingRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Error handling
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
