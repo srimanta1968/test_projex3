@@ -292,6 +292,61 @@ export const refundController = {
       });
     }
   },
+
+  /**
+   * Cancel a pending refund request
+   */
+  async cancelRefund(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          success: false,
+          error: 'Authentication required',
+        });
+        return;
+      }
+
+      const { refund_id } = req.params;
+
+      if (!refund_id) {
+        res.status(400).json({
+          success: false,
+          error: 'Refund ID is required',
+        });
+        return;
+      }
+
+      const refund = await refundService.cancelRefund(refund_id, req.user.userId);
+
+      if (!refund) {
+        res.status(404).json({
+          success: false,
+          error: 'Refund not found or cannot be cancelled',
+        });
+        return;
+      }
+
+      // Create notification for cancelled refund
+      await notificationService.createRefundNotification(
+        req.user.userId,
+        refund.refund_id,
+        refund.amount,
+        'cancelled'
+      );
+
+      res.status(200).json({
+        success: true,
+        data: { refund },
+        message: 'Refund request cancelled successfully',
+      });
+    } catch (error) {
+      console.error('Cancel refund error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to cancel refund request',
+      });
+    }
+  },
 };
 
 export default refundController;

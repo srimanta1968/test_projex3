@@ -2,10 +2,11 @@ import { dataService } from './dataService';
 
 export interface Notification {
   id: string;
-  type: 'match_found' | 'match_confirmed' | 'refund_approved' | 'refund_rejected' | 'refund_processed';
+  type: 'match_found' | 'match_confirmed' | 'refund_approved' | 'refund_rejected' | 'refund_processed' | 'refund_cancelled' | 'dispute_filed';
   message: string;
   match_id?: string;
   refund_id?: string;
+  dispute_id?: string;
   amount?: number;
   status?: string;
   created_at: Date;
@@ -14,7 +15,7 @@ export interface Notification {
 
 export interface RefundNotification {
   id: string;
-  type: 'refund_approved' | 'refund_rejected' | 'refund_processed';
+  type: 'refund_approved' | 'refund_rejected' | 'refund_processed' | 'refund_cancelled';
   message: string;
   refund_id: string;
   amount: number;
@@ -100,7 +101,7 @@ export const notificationService = {
 
   /**
    * Get refund notifications for a user
-   * Returns refunds with status changes (approved, rejected, processed)
+   * Returns refunds with status changes (approved, rejected, processed, cancelled)
    */
   async getRefundNotifications(userId: string): Promise<{ notifications: RefundNotification[] }> {
     const refunds = await dataService.query<{
@@ -112,7 +113,7 @@ export const notificationService = {
     }>(
       `SELECT id, refund_id, amount, status, updated_at
        FROM refunds
-       WHERE user_id = $1 AND status IN ('approved', 'rejected', 'processed')
+       WHERE user_id = $1 AND status IN ('approved', 'rejected', 'processed', 'cancelled')
        ORDER BY updated_at DESC
        LIMIT 20`,
       [userId]
@@ -134,6 +135,10 @@ export const notificationService = {
         case 'processed':
           type = 'refund_processed';
           message = `Your refund of $${refund.amount.toFixed(2)} has been processed`;
+          break;
+        case 'cancelled':
+          type = 'refund_cancelled';
+          message = `Your refund request for $${refund.amount.toFixed(2)} has been cancelled`;
           break;
         default:
           type = 'refund_approved';

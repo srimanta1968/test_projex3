@@ -8,7 +8,7 @@ export interface Refund {
   payment_id: string;
   amount: number;
   reason: string;
-  status: 'pending' | 'approved' | 'rejected' | 'processed';
+  status: 'pending' | 'approved' | 'rejected' | 'processed' | 'cancelled';
   created_at: Date;
   updated_at: Date;
 }
@@ -117,6 +117,25 @@ export const refundService = {
 
     // Mark refund as processed
     return this.updateRefundStatus(refundId, userId, 'processed');
+  },
+
+  /**
+   * Cancel a pending refund request
+   * Only pending refunds can be cancelled
+   */
+  async cancelRefund(refundId: string, userId: string): Promise<Refund | null> {
+    const refund = await this.getRefundById(refundId, userId);
+
+    if (!refund) {
+      return null;
+    }
+
+    // Only pending refunds can be cancelled
+    if (refund.status !== 'pending') {
+      return null;
+    }
+
+    return this.updateRefundStatus(refundId, userId, 'cancelled');
   },
 };
 

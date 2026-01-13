@@ -1,0 +1,42 @@
+{
+  "endpoint": "/api/disputes",
+  "method": "GET",
+  "taskId": "c7dbb577-7993-452f-83d5-99054dd482af",
+  "description": "Get all disputes for the authenticated user",
+  "requiresAuth": true,
+  "priority": 81,
+  "dependsOn": ["POST /api/auth/register"],
+  "testCases": [
+    {
+      "name": "Get user disputes",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "disputes": []
+        }
+      }
+    }
+  ],
+  "responseSchema": {
+    "disputes": {
+      "type": "array",
+      "items": {
+        "id": "string",
+        "dispute_id": "string",
+        "payment_id": "string",
+        "reason": "string",
+        "status": "string",
+        "created_at": "timestamp"
+      }
+    }
+  },
+  "businessRules": [
+    "Returns only disputes belonging to the authenticated user",
+    "Ordered by creation date, most recent first"
+  ]
+}

@@ -70,4 +70,15 @@ router.put(
   refundController.processRefund as RequestHandler
 );
 
+/**
+ * @route PUT /api/refunds/:refund_id/cancel
+ * @desc Cancel a pending refund request
+ * @access Private
+ */
+router.put(
+  '/:refund_id/cancel',
+  authenticateToken as RequestHandler,
+  refundController.cancelRefund as RequestHandler
+);
+
 export default router;

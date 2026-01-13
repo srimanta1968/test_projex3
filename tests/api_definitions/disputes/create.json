@@ -1,0 +1,51 @@
+{
+  "endpoint": "/api/disputes",
+  "method": "POST",
+  "taskId": "c7dbb577-7993-452f-83d5-99054dd482af",
+  "description": "Create a new charge dispute for an uncompleted ride",
+  "requiresAuth": true,
+  "priority": 80,
+  "dependsOn": ["POST /api/auth/register"],
+  "captureResponse": {
+    "disputes.create.response.data.dispute.id": "data.dispute.id"
+  },
+  "testCases": [
+    {
+      "name": "Create dispute for charge",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "payload": {
+        "payment_id": "{{dynamic:uuid}}",
+        "reason": "{{dynamic:text}}",
+        "details": "{{dynamic:text}}"
+      },
+      "expectedStatus": 201,
+      "expectedResponse": {
+        "success": true,
+        "message": "Dispute has been filed successfully"
+      }
+    }
+  ],
+  "responseSchema": {
+    "dispute": {
+      "id": "string",
+      "dispute_id": "string",
+      "user_id": "string",
+      "payment_id": "string",
+      "reason": "string",
+      "details": "string",
+      "status": "pending",
+      "created_at": "timestamp"
+    }
+  },
+  "businessRules": [
+    "User must be authenticated",
+    "Payment ID is required",
+    "Reason for dispute is required",
+    "New disputes start with pending status"
+  ],
+  "testability": "manual",
+  "testabilityReason": "Requires valid payment_id from database"
+}

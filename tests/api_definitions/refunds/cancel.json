@@ -1,0 +1,40 @@
+{
+  "endpoint": "/api/refunds/:refund_id/cancel",
+  "method": "PUT",
+  "taskId": "c7dbb577-7993-452f-83d5-99054dd482af",
+  "description": "Cancel a pending refund request",
+  "requiresAuth": true,
+  "priority": 76,
+  "dependsOn": ["POST /api/auth/register", "POST /api/refunds"],
+  "testCases": [
+    {
+      "name": "Cancel pending refund",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "payload": {},
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "message": "Refund request cancelled successfully"
+      }
+    }
+  ],
+  "responseSchema": {
+    "refund": {
+      "id": "string",
+      "refund_id": "string",
+      "status": "cancelled",
+      "amount": "number",
+      "reason": "string"
+    }
+  },
+  "businessRules": [
+    "Only pending refunds can be cancelled",
+    "User can only cancel their own refunds",
+    "Cancelled refunds cannot be reactivated"
+  ],
+  "testability": "manual",
+  "testabilityReason": "Requires creating a refund first, then cancelling it - multi-step flow"
+}
