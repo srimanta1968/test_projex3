@@ -1,0 +1,40 @@
+{
+  "endpoint": "/api/payments/:payment_id/complete",
+  "method": "PUT",
+  "taskId": "ed5723fb-46e0-4feb-8b27-76bacb61ff2e",
+  "requiresAuth": true,
+  "priority": 64,
+  "dependsOn": ["POST /api/payments"],
+  "testCases": [
+    {
+      "name": "Complete a pending payment",
+      "description": "Tests completing a pending payment - requires a pending payment to exist",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "params": {
+        "payment_id": "{{cache:payments.scenario.response.data.payment.id}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true
+      }
+    },
+    {
+      "name": "Cannot complete non-existent payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "params": {
+        "payment_id": "00000000-0000-0000-0000-000000000000"
+      },
+      "expectedStatus": 404,
+      "expectedResponse": {
+        "success": false,
+        "error": "Payment not found"
+      }
+    }
+  ]
+}

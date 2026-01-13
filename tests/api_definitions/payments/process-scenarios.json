@@ -1,0 +1,143 @@
+{
+  "endpoint": "/api/payments",
+  "method": "POST",
+  "taskId": "ed5723fb-46e0-4feb-8b27-76bacb61ff2e",
+  "requiresAuth": true,
+  "priority": 62,
+  "dependsOn": ["POST /api/auth/register"],
+  "captureResponse": {
+    "payments.scenario.response.data.payment.id": "data.payment.id"
+  },
+  "testCases": [
+    {
+      "name": "Create successful card payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "body": {
+        "amount": 50.00,
+        "payment_method": "card"
+      },
+      "expectedStatus": 201,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "payment": {
+            "amount": 50.00,
+            "payment_status": "pending"
+          }
+        }
+      }
+    },
+    {
+      "name": "Create successful bank transfer payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "body": {
+        "amount": 100.00,
+        "payment_method": "bank"
+      },
+      "expectedStatus": 201,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "payment": {
+            "amount": 100.00,
+            "payment_status": "pending"
+          }
+        }
+      }
+    },
+    {
+      "name": "Create successful wallet payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "body": {
+        "amount": 25.50,
+        "payment_method": "wallet"
+      },
+      "expectedStatus": 201,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "payment": {
+            "amount": 25.50,
+            "payment_status": "pending"
+          }
+        }
+      }
+    },
+    {
+      "name": "Payment fails for high amount (simulated decline)",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "body": {
+        "amount": 1500.00,
+        "payment_method": "card"
+      },
+      "expectedStatus": 201,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "payment": {
+            "amount": 1500.00,
+            "payment_status": "failed"
+          }
+        }
+      }
+    },
+    {
+      "name": "Reject payment with missing amount",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "body": {
+        "payment_method": "card"
+      },
+      "expectedStatus": 400,
+      "expectedResponse": {
+        "success": false,
+        "error": "Valid amount is required"
+      }
+    },
+    {
+      "name": "Reject payment with invalid amount",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "body": {
+        "amount": -50.00,
+        "payment_method": "card"
+      },
+      "expectedStatus": 400,
+      "expectedResponse": {
+        "success": false,
+        "error": "Valid amount is required"
+      }
+    },
+    {
+      "name": "Reject payment without authentication",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "amount": 50.00,
+        "payment_method": "card"
+      },
+      "expectedStatus": 401,
+      "expectedResponse": {
+        "success": false,
+        "error": "No token provided"
+      }
+    }
+  ]
+}
