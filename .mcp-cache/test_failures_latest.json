@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-01-13T20:34:03.575337Z",
+  "timestamp": "2026-01-13T20:54:12.261628Z",
   "triggeredBy": "git_push",
   "summary": {
     "totalAPIs": 2,
@@ -11,7 +11,7 @@
     "duplicateAPIs": 0,
     "blockingConflicts": 0,
     "duplicateWarnings": 0,
-    "testDurationMs": 1183
+    "testDurationMs": 790
   },
   "failures": [
     {
@@ -20,9 +20,9 @@
       "method": "POST",
       "status": "failed",
       "statusCode": 401,
-      "responseTimeMs": 10,
+      "responseTimeMs": 11,
       "requestBody": {
-        "email": "testuser_444675@example.com",
+        "email": "testuser_652960@example.com",
         "password": "TestPass123!"
       },
       "responseBody": "{\n  \"success\": false,\n  \"error\": \"Invalid email or password\"\n}",
@@ -36,7 +36,7 @@
         "Content-Type": "application/json",
         "Accept": "application/json"
       },
-      "curlCommand": "curl \\\n  -X \\\n  POST \\\n  -H Content-Type: application/json \\\n  -H Accept: application/json \\\n  -d '{\n  \"email\": \"testuser_444675@example.com\",\n  \"password\": \"TestPass123!\"\n}' \\\n  \"http://localhost:3000/api/auth/login\"",
+      "curlCommand": "curl \\\n  -X \\\n  POST \\\n  -H Content-Type: application/json \\\n  -H Accept: application/json \\\n  -d '{\n  \"email\": \"testuser_652960@example.com\",\n  \"password\": \"TestPass123!\"\n}' \\\n  \"http://localhost:3000/api/auth/login\"",
       "constraintInfo": null,
       "testability": "auto",
       "setupScript": null,
@@ -62,7 +62,7 @@
       "requestBodyTemplate": null,
       "responseSchema": null,
       "sampleInput": {
-        "email": "testuser_444675@example.com",
+        "email": "testuser_652960@example.com",
         "password": "TestPass123!"
       },
       "sampleOutput": "{\n  \"success\": false,\n  \"error\": \"Invalid email or password\"\n}",
