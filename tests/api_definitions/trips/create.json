@@ -1,0 +1,36 @@
+{
+  "endpoint": "/api/trips",
+  "method": "POST",
+  "taskId": "da75ee5e-ef7b-4b3a-8e3e-97db57db7b2f",
+  "requiresAuth": true,
+  "priority": 40,
+  "dependsOn": ["POST /api/auth/register"],
+  "captureResponse": {
+    "trips.create.response.data.trip.id": "data.trip.id"
+  },
+  "testCases": [
+    {
+      "name": "Create a new trip",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "payload": {
+        "destination": "{{dynamic:city}}",
+        "departure_time": "{{dynamic:futureDate}}"
+      },
+      "expectedStatus": 201,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "trip": {
+            "id": "string",
+            "user_id": "string",
+            "destination": "string",
+            "departure_time": "string"
+          }
+        }
+      }
+    }
+  ]
+}

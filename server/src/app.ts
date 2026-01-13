@@ -7,6 +7,7 @@ import authRoutes from './routes/authRoutes';
 import profileRoutes from './routes/profileRoutes';
 import tripHistoryRoutes from './routes/tripHistoryRoutes';
 import feedbackRoutes from './routes/feedbackRoutes';
+import tripRoutes from './routes/tripRoutes';
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/trip-history', tripHistoryRoutes);
 app.use('/api/feedback', feedbackRoutes);
+app.use('/api/trips', tripRoutes);
 
 // Error handling
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
