@@ -1,0 +1,26 @@
+{
+  "endpoint": "/api/notifications",
+  "method": "GET",
+  "taskId": "43058e9b-14c5-4ca4-ac43-2c93a04ad0c4",
+  "requiresAuth": true,
+  "priority": 57,
+  "dependsOn": ["POST /api/auth/register"],
+  "captureResponse": {},
+  "testCases": [
+    {
+      "name": "Get user notifications",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "notifications": [],
+          "unreadCount": 0
+        }
+      }
+    }
+  ]
+}

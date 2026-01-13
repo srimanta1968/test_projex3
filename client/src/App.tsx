@@ -16,6 +16,7 @@ interface User {
 function Navigation() {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -23,6 +24,35 @@ function Navigation() {
       setUser(JSON.parse(storedUser));
     }
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchNotificationCount();
+      const interval = setInterval(fetchNotificationCount, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
+
+  const fetchNotificationCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await fetch('/api/notifications', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setNotificationCount(data.data.unreadCount || 0);
+      }
+    } catch (err) {
+      console.error('Failed to fetch notifications:', err);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -35,12 +65,19 @@ function Navigation() {
     <nav className="bg-blue-600 text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="text-xl font-bold">Ride Share</Link>
-        <div className="space-x-4">
+        <div className="space-x-4 flex items-center">
           {user ? (
             <>
               <Link to="/profile" className="hover:underline">Profile</Link>
               <Link to="/create-trip" className="hover:underline">New Trip</Link>
-              <Link to="/matched-trips" className="hover:underline">Matches</Link>
+              <Link to="/matched-trips" className="hover:underline relative">
+                Matches
+                {notificationCount > 0 && (
+                  <span className="absolute -top-2 -right-4 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {notificationCount > 9 ? '9+' : notificationCount}
+                  </span>
+                )}
+              </Link>
               <Link to="/trip-history" className="hover:underline">Trips</Link>
               <Link to="/feedback" className="hover:underline">Feedback</Link>
               <span className="text-sm">{user.email}</span>

@@ -9,6 +9,7 @@ import tripHistoryRoutes from './routes/tripHistoryRoutes';
 import feedbackRoutes from './routes/feedbackRoutes';
 import tripRoutes from './routes/tripRoutes';
 import matchingRoutes from './routes/matchingRoutes';
+import notificationRoutes from './routes/notificationRoutes';
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use('/api/trip-history', tripHistoryRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/matching', matchingRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Error handling
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
