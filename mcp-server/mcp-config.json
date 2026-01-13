@@ -1,18 +1,19 @@
 {
-  "projectId": "3646b747-1894-4422-9d00-f6944cef87f1",
-  "sprintId": "7c2e0bff-17ab-4295-8aac-4ba17ca075b7",
+  "projectId": "7c131623-3508-4cda-8e8c-e59918ba9411",
+  "sprintId": "37698c8a-5514-4418-a7d1-ea326e259a0b",
   "poolIndex": 1,
-  "encryptedPlatformApiKey": "ikD/B46HAYcxEqwGKCBViJ7O1yJq+UTj5RXXx9AucaT+8P3rUQopsT16jeejMk6niAJq60yZo33IEt/P9YHEOqVBq2KQJlAqpLcOXplAZiHVESk0KQ6vpH+LL0/JLl6b+6rBI7j/bkGLXbLJcqLOpHYO8gHHZoVuHRtuRTax196tS0+jeAxIWYi2j6m5dLU1b0VDlq+oMJyh7g+X4Q==",
-  "encryptedLLMConfig": "TtjnmCKJQF8eolxFCO2zpHPIMLSZHH5tQjOOanO10iBwGXsCXGXOGKpvGii3nYg+9JK/AAFmvJIewo3zJ4lCrmLx7+4JA43Ta15ID6vPLYOWuH+Akz2qWquE25AOKGSkEhSJUbkG5LakCRA+rqo/Gn8OuePq8N7eIud2suZLQt+l8R3Iif6g0Alk7IIAZvXAd3HR3tSnZgSzY4yx5SEj9lOcvx9xdF8dbOq2Ag5aSqMRNPnJQrA/gXn97wQC8xsKRQCyBbxhDquPKOII1kts8vS/z/AY658BYcaCLny9iz3CgIvUTVmAgvCvR0P8q1NgRb056g2ZGdmXEbffG+Nn2p7E1ValytORT6tI8qSsfrqb1EL5Opmv7bGGko5fGfsEDSN28+KJFG+fLvsE9flNySycRvk+pF+7/3Qw4SykM6mCHaJ/HJDoPIXrwO82JFWXttQPfCS8lN+/XQH/h0VrrbbBUAgagbzvhlBoRcoU8b3PT6LQHB1ZAPmlDZKFTVpDt+cFHi3GSHTuPstjj1V67WAxybBb/8znurbWhJDwmkEtH8AgzYyEUHAxUOV3dnSVwhIM4TsZqkfS/9Q2ldShiT4KWs6YdBxKLejiPotVSUMkh4Bm5hWP5EJaD8TrdrW4A/zuFGhnbeqV0hTg+uPD6bqrK4sM51H5PfuMrUcrFAsDH1BirLJXTYgvn/ZUKB+oNFh65SNM+Qx/+RUKsHC/kIiqSEGkro+mA8SK+UZ5jBVfVz8IYcFmw2jJKd+EumMv+CFtZF7qZF65SGjecUt1qwxCX4BlZmGLq1GoEk5LT9OjglWRMNp+oNsHW2Gi1y0GOpJOEA8n4PAlG6pvXjG/3eYIqzedqOS+NotUKKvZblhW",
+  "encryptedPlatformApiKey": "eHDoNEt+jOWgBiIcesFzd8FL/IrxNRkTvyek40pzjb7HdLTyrSPfnTPyMjINHAecvaUs8A1wAO+NMvKUGOqaCDcHpFDvyc3WuIepVjRQIMVQOAlEH1PbIqBxWeDlYrpWoU1l5HL8gICmZNdsjQk/PfLzK/3aLc3AAoI9pWB5M1lg1VV1cwAudkHBfbcMlhvm9pMyppxozcHBW+FLTw==",
+  "encryptedLLMConfig": "1wylAmuOw9H46AiOZk/oGgBs8hVjZ5nvUtmOlYzoavFAesFysVVs5U4JLZTZSpGR3Ab7jcEJB8oNlcpkgPg4PZY5heB2ROaK5eDgZ/AvvnCj3ew2YTB+n4JQ2SQCwUb8OTvrdX/CdNY8IwT6VKgagKeTBvStHLNsNOqoj1hs2vg4H4LH+sBbhEklQY/ReCSUdyd50JFXUgkqfAJVDx9u5Zkj2BN3KQdQaiXPeg5JOlzUfURMPkk7BzRf9U6IakZ/dsSJmi7UmgkWP3721W5trfI8pDeWDqgP+wXQVYzrYbrYwlDMHPbapJh4qIA1roN0IQgQoCXkD9vpGD8ttN/G49jVV7OOzj6quK7txKh4E/6nOJi75K7R3WW8wski4XwDbC754ghr5fcdlT2MIP2YIabmVH7OLE/sBbnfPcZ2sw/mKlZ62wG5YJ6LU59/xAceomIkgKkHtr2GkyV+m/1l7tbXOV0p07poyn9cdSrdMFqINY5BVnpXjrUOkjoBvQIGnohEaD1llmYEdnMY+vNEVrgsnLuenbx8OSuAPLapRe+6X9zIIDG/1s8DdAIO1tRoeuke/M7moTeYhKBVStcQubBWN5zs5nx6ZFRZF5QZeG+06dUh6yqv16ydlPoEGM64VWce8jlq39GJsibkTvhNt+6QUgh3v1KYvWTpvAuEk/eIyGLhoYbLoiQB77RAWqWMs7p7N79Z5NNNPDaI2A0e1jr9zoRk26+bnfFjmBb2/aMkD80filIGxZAoIKEEfcgNzH64+Vm0SQLkxAY9ZnM8ohAC39A0z1U9f4/34RUNK8xXSd4/xrrYTb7nTDn1tFvuslHOKpSdcIKnbAw1gGCeHL8RQ+Oq1++SBlTysCNrYkAr",
   "configVersion": "1.0.0",
-  "expiresAt": "2026-02-05T17:57:18.872Z",
+  "expiresAt": "2026-02-12T05:09:21.435Z",
   "databaseConfig": {
     "enabled": true,
     "type": "postgresql",
     "host": "host.docker.internal",
     "port": 5432,
-    "database": "log_analysis_db",
+    "database": "ride_share_db",
     "username": "postgres",
     "password": "postgres"
-  }
+  },
+  "enforceCustomStandards": true
 }

@@ -1,5 +1,5 @@
 # Docker Compose Configuration
-# Generated for Log Analysis
+# Generated for Ride Share
 # Database: postgresql
 
 version: '3.8'
@@ -7,11 +7,11 @@ version: '3.8'
 services:
   postgres:
     image: postgres:alpine  # Always pulls latest stable PostgreSQL version
-    container_name: log_analysis_postgres
+    container_name: ride_share_postgres
     environment:
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-      POSTGRES_DB: ${DB_NAME:-log_analysis_db}
+      POSTGRES_DB: ${DB_NAME:-ride_share_db}
       POSTGRES_INITDB_ARGS: "-E UTF8"
     ports:
       - "${DB_PORT:-5432}:5432"
@@ -33,7 +33,7 @@ services:
   mcp-server:
     image: projexlight/projex-dev-mcp:latest
     pull_policy: always  # Always check for latest image on docker-compose up
-    container_name: log_analysis_mcp_server
+    container_name: ride_share_mcp_server
     user: root  # Required for git hooks installation on Windows
     ports:
       - "${MCP_SERVER_PORT:-8766}:8766"  # MCP Server API

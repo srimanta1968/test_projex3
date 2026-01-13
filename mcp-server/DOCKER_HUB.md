@@ -325,13 +325,13 @@ Expected response for QA (using env vars):
 
 ```bash
 # Run UI tests
-./run-ui-tests.sh
+./run-all-tests.sh ui
 
 # Run API tests
-./run-api-tests.sh
+./run-all-tests.sh api
 
 # Run with dataset filter
-./run-api-tests.sh --dataset positive
+./run-all-tests.sh api --dataset positive
 ```
 
 See **[TEST_EXECUTION.md](TEST_EXECUTION.md)** for complete testing options.

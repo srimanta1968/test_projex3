@@ -445,15 +445,56 @@ get_container_name() {
     esac
 }
 
+# Check if container is running
+container_running() {
+    local container=$1
+    docker ps --format '{{.Names}}' | grep -q "^${container}$"
+}
+
+# Check if container exists (running or stopped)
+container_exists() {
+    local container=$1
+    docker ps -a --format '{{.Names}}' | grep -q "^${container}$"
+}
+
+# Create project-specific database in existing container
+create_project_database() {
+    local container=$1
+
+    log "Ensuring database '$DB_NAME' exists in $DB_TYPE container..."
+
+    case "$DB_TYPE" in
+        postgresql|postgres)
+            # Check if database exists, create if not
+            if docker exec "$container" psql -U "$DB_USER" -lqt 2>/dev/null | cut -d \| -f 1 | grep -qw "$DB_NAME"; then
+                log "Database '$DB_NAME' already exists"
+            else
+                log "Creating database '$DB_NAME'..."
+                docker exec "$container" psql -U "$DB_USER" -c "CREATE DATABASE \"$DB_NAME\"" 2>/dev/null || true
+            fi
+            ;;
+        mysql|mariadb)
+            docker exec "$container" mysql -u"$DB_USER" -p"$DB_PASS" -e "CREATE DATABASE IF NOT EXISTS \`$DB_NAME\`" 2>/dev/null || true
+            ;;
+        mongodb|mongo)
+            # MongoDB creates databases automatically on first use
+            log "MongoDB will create database '$DB_NAME' on first use"
+            ;;
+        redis)
+            log "Redis is ready for use"
+            ;;
+        cassandra)
+            docker exec "$container" cqlsh -e "CREATE KEYSPACE IF NOT EXISTS $DB_NAME WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}" 2>/dev/null || true
+            ;;
+        dynamodb)
+            log "DynamoDB Local is ready for use"
+            ;;
+    esac
+}
+
 # Start database
 start_db() {
     validate_setup
-
-    # Generate compose file if it doesn't exist or regenerate
-    if [ ! -f "$COMPOSE_FILE" ]; then
-        generate_compose
-    fi
-
     read_db_config
 
     if [ "$DB_TYPE" = "sqlite" ]; then
@@ -462,7 +503,45 @@ start_db() {
         return 0
     fi
 
-    log "Starting $DB_TYPE database..."
+    CONTAINER=$(get_container_name)
+
+    # Check if container is already running
+    if container_running "$CONTAINER"; then
+        log "$DB_TYPE container is already running"
+        log "Skipping creation - reusing existing container"
+
+        # Create project-specific database in existing container
+        create_project_database "$CONTAINER"
+
+        echo ""
+        show_status
+        return 0
+    fi
+
+    # Check if container exists but stopped
+    if container_exists "$CONTAINER"; then
+        log "Starting existing $DB_TYPE container..."
+        docker start "$CONTAINER"
+
+        # Wait for database to be ready
+        log "Waiting for database to be ready..."
+        sleep 5
+        wait_for_health "$DB_TYPE" "$CONTAINER"
+
+        # Create project-specific database
+        create_project_database "$CONTAINER"
+
+        echo ""
+        show_status
+        return 0
+    fi
+
+    # Generate compose file if it doesn't exist
+    if [ ! -f "$COMPOSE_FILE" ]; then
+        generate_compose
+    fi
+
+    log "Creating new $DB_TYPE container..."
 
     # Create init-scripts directory
     mkdir -p "$MCP_DIR/init-scripts" 2>/dev/null || true
@@ -474,7 +553,6 @@ start_db() {
     log "Waiting for database to be ready..."
     sleep 5
 
-    CONTAINER=$(get_container_name)
     wait_for_health "$DB_TYPE" "$CONTAINER"
 
     echo ""

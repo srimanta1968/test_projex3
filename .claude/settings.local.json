@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl:*)",
+      "mcp__projexlight__projexlight_get_rules",
+      "mcp__projexlight__projexlight_init_session",
+      "mcp__projexlight__projexlight_self_check",
+      "mcp__projexlight__projexlight_get_instruction",
+      "mcp__projexlight__projexlight_validate",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "projexlight"
+  ]
+}

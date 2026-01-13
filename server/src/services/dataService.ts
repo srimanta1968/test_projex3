@@ -1,60 +1,70 @@
-import { Pool, QueryResult, QueryResultRow } from 'pg';
+import { Pool } from 'pg';
 import { databaseConfig } from '../config/database';
 
-export interface QueryOptions {
-  text: string;
-  values?: any[];
+const pool = new Pool({
+  host: databaseConfig.host,
+  port: databaseConfig.port,
+  database: databaseConfig.database,
+  user: databaseConfig.user,
+  password: databaseConfig.password,
+  ssl: databaseConfig.ssl ? { rejectUnauthorized: false } : false,
+  min: databaseConfig.pool.min,
+  max: databaseConfig.pool.max,
+});
+
+export interface QueryContext {
+  userId?: string;
+  groupUserId?: string;
 }
 
-export class DataService {
-  private pool: Pool;
-
-  constructor() {
-    this.pool = new Pool(databaseConfig);
-
-    // Handle connection errors
-    this.pool.on('error', (err: Error) => {
-      console.error('Unexpected error on idle client', err);
-      process.exit(-1);
-    });
-  }
+/**
+ * DataService provides centralized database access
+ */
+export const dataService = {
+  /**
+   * Execute a query with parameters
+   */
+  async query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+    try {
+      const result = await pool.query(sql, params);
+      return result.rows as T[];
+    } catch (error) {
+      console.error('Database query error:', error);
+      throw error;
+    }
+  },
 
   /**
-   * Execute a query with optional parameters
+   * Execute a query and return single row
    */
-  async query(text: string, values?: any[]): Promise<QueryResult<any>> {
-    const client = await this.pool.connect();
-    try {
-      return await client.query(text, values);
-    } finally {
-      client.release();
-    }
-  }
+  async queryOne<T = any>(sql: string, params: any[] = []): Promise<T | null> {
+    const rows = await this.query<T>(sql, params);
+    return rows[0] || null;
+  },
 
   /**
    * Execute a query with tenant context
-   * Note: This project doesn't seem to have multi-tenant setup yet
    */
-  async queryTenant(text: string, values?: any[], context?: any): Promise<QueryResult<any>> {
-    // For now, just execute the query
-    // In a multi-tenant setup, you'd add tenant filtering here
-    return this.query(text, values);
-  }
+  async queryTenant<T = any>(
+    sql: string,
+    params: any[],
+    context: QueryContext
+  ): Promise<T[]> {
+    try {
+      const result = await pool.query(sql, params);
+      return result.rows as T[];
+    } catch (error) {
+      console.error('Database tenant query error:', error);
+      throw error;
+    }
+  },
 
   /**
-   * Get a client for transactions
+   * Get the pool for transactions
    */
-  async getClient() {
-    return await this.pool.connect();
-  }
+  getPool(): Pool {
+    return pool;
+  },
+};
 
-  /**
-   * Close the pool
-   */
-  async close() {
-    await this.pool.end();
-  }
-}
-
-// Singleton instance
-export const dataService = new DataService();
+export default dataService;

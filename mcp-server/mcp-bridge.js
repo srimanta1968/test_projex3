@@ -29,6 +29,30 @@ const DEBUG = process.env.MCP_DEBUG === 'true';
 let SESSION_TOKEN = process.env.SESSION_TOKEN || '';
 let PROJECT_ID = process.env.PROJECT_ID || '';
 
+// Project path for multi-project support
+// Converts Windows paths to Unix format for Docker compatibility
+let PROJECT_PATH = '';
+
+function getProjectPath() {
+  if (PROJECT_PATH) return PROJECT_PATH;
+
+  // Get current working directory
+  let cwd = process.cwd();
+
+  // Convert Windows path to Unix format (C:\Users\name -> /c/Users/name)
+  cwd = cwd.replace(/\\/g, '/');
+  if (cwd.length >= 2 && cwd[1] === ':') {
+    const drive = cwd[0].toLowerCase();
+    cwd = '/' + drive + cwd.slice(2);
+  }
+
+  PROJECT_PATH = cwd;
+  if (DEBUG) {
+    console.error(`[MCP Bridge] Detected project path: ${PROJECT_PATH}`);
+  }
+  return PROJECT_PATH;
+}
+
 // Try to load credentials from config file (NOT the API URL - that's always localhost)
 function loadCredentialsFromConfig() {
   const configPaths = [
@@ -65,13 +89,19 @@ function loadCredentialsFromConfig() {
 loadCredentialsFromConfig();
 
 // Tool definitions for MCP protocol
+// projectPath is optional but recommended for multi-project setups
 const TOOLS = [
   {
     name: 'projexlight_init_session',
-    description: 'Initialize code generation session and get assigned tasks',
+    description: 'Initialize code generation session and get assigned tasks. For multi-project setups, projectPath routes credentials correctly.',
     inputSchema: {
       type: 'object',
-      properties: {},
+      properties: {
+        projectPath: {
+          type: 'string',
+          description: 'Unix-style path to project root (e.g., /c/Users/name/project). Auto-detected if not provided.'
+        }
+      },
       required: []
     }
   },
@@ -89,6 +119,10 @@ const TOOLS = [
           type: 'string',
           description: 'Type of task (api_endpoint, frontend, database, etc.)',
           enum: ['api_endpoint', 'frontend', 'backend', 'database', 'service', 'ui_component', 'testing']
+        },
+        projectPath: {
+          type: 'string',
+          description: 'Unix-style path to project root for multi-project setups. Auto-detected if not provided.'
         }
       },
       required: ['taskId']
@@ -119,6 +153,10 @@ const TOOLS = [
             required: ['filePath', 'content']
           },
           description: 'Array of code files to validate'
+        },
+        projectPath: {
+          type: 'string',
+          description: 'Unix-style path to project root for multi-project setups. Auto-detected if not provided.'
         }
       },
       required: ['taskId', 'codeSnippets']
@@ -143,6 +181,10 @@ const TOOLS = [
             complianceScore: { type: 'number' }
           },
           required: ['filesGenerated', 'linesOfCode', 'complianceScore']
+        },
+        projectPath: {
+          type: 'string',
+          description: 'Unix-style path to project root for multi-project setups. Auto-detected if not provided.'
         }
       },
       required: ['taskId', 'metrics']
@@ -223,12 +265,132 @@ const TOOLS = [
           type: 'string',
           description: 'The UUID of the feature being validated'
         },
-        validationResults: {
-          type: 'object',
-          description: 'Results of feature validation against acceptance criteria'
+        status: {
+          type: 'string',
+          enum: ['validated', 'validation_failed', 'partial'],
+          description: 'Validation status: validated (all pass), validation_failed (any fail), partial (some incomplete)'
+        },
+        overallResult: {
+          type: 'string',
+          enum: ['pass', 'fail', 'partial'],
+          description: 'Overall result: pass (all criteria met), fail (criteria not met), partial (some criteria met)'
+        },
+        acceptanceCriteriaResults: {
+          type: 'array',
+          description: 'Results for each acceptance criterion',
+          items: {
+            type: 'object',
+            properties: {
+              criterion: { type: 'string' },
+              status: { type: 'string', enum: ['implemented', 'partial', 'not_implemented'] },
+              notes: { type: 'string' }
+            }
+          }
+        },
+        scenarioResults: {
+          type: 'array',
+          description: 'Results for each test scenario',
+          items: {
+            type: 'object',
+            properties: {
+              scenarioId: { type: 'string' },
+              status: { type: 'string', enum: ['pass', 'fail', 'partial'] },
+              issues: { type: 'array', items: { type: 'string' } }
+            }
+          }
         }
       },
-      required: ['featureId', 'validationResults']
+      required: ['featureId', 'status', 'overallResult']
+    }
+  },
+  {
+    name: 'projexlight_get_pending_violations',
+    description: 'Get pending coding violations from pre-commit hook. Call after git commit to check for issues that need fixing.',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: 'projexlight_clear_violations',
+    description: 'Clear pending violations after fixing. Call after fixing all issues and before git commit --amend.',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: 'projexlight_get_pending_test_failures',
+    description: 'Get pending test failures from pre-push hook. Call after git push attempt to check for failed tests. Returns auto-marked manual tests and failures requiring fix.',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: 'projexlight_clear_test_failures',
+    description: 'Clear pending test failures after fixing. Call after all tests pass before pushing again.',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: 'projexlight_mark_test_manual',
+    description: 'Mark a specific test as manual (requires user approval). Only use after 3+ failures and user confirmation.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        apiDefinitionPath: {
+          type: 'string',
+          description: 'Path to the api_definition JSON file'
+        },
+        testName: {
+          type: 'string',
+          description: 'Name of the test case to mark as manual'
+        },
+        reason: {
+          type: 'string',
+          description: 'Reason for marking as manual test'
+        }
+      },
+      required: ['apiDefinitionPath', 'reason']
+    }
+  },
+  {
+    name: 'projexlight_reset_failure_counts',
+    description: 'Reset failure counts for all tests. Use after major code changes or environment fixes.',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+      required: []
+    }
+  },
+  {
+    name: 'projexlight_set_context',
+    description: 'Set project context for multi-project setups. Call once at start of session to ensure correct credentials are used.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        projectPath: {
+          type: 'string',
+          description: 'Unix-style path to project root (e.g., /c/Users/name/project)'
+        }
+      },
+      required: ['projectPath']
+    }
+  },
+  {
+    name: 'projexlight_get_context',
+    description: 'Get current project context. Shows which project credentials are active.',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+      required: []
     }
   }
 ];
@@ -246,7 +408,15 @@ const TOOL_ENDPOINTS = {
   'projexlight_quality_gates': { method: 'POST', path: '/api/instruction/quality-gates' },
   'projexlight_get_template': { method: 'POST', path: '/api/instruction/template' },
   'projexlight_self_check': { method: 'GET', path: '/api/instruction/self-check' },
-  'projexlight_submit_feature_validation': { method: 'POST', path: '/api/instruction/feature-validation' }
+  'projexlight_submit_feature_validation': { method: 'POST', path: '/api/instruction/submit-feature-validation' },
+  'projexlight_get_pending_violations': { method: 'GET', path: '/api/instruction/pending-violations' },
+  'projexlight_clear_violations': { method: 'POST', path: '/api/instruction/clear-violations' },
+  'projexlight_get_pending_test_failures': { method: 'GET', path: '/api/instruction/pending-test-failures' },
+  'projexlight_clear_test_failures': { method: 'POST', path: '/api/instruction/clear-test-failures' },
+  'projexlight_mark_test_manual': { method: 'POST', path: '/api/instruction/mark-test-manual' },
+  'projexlight_reset_failure_counts': { method: 'POST', path: '/api/instruction/reset-failure-counts' },
+  'projexlight_set_context': { method: 'POST', path: '/api/context/set' },
+  'projexlight_get_context': { method: 'GET', path: '/api/context/current' }
 };
 
 // HTTP request helper
@@ -278,14 +448,22 @@ function makeHttpRequest(method, path, body = null) {
       console.error(`[MCP Bridge] ${method} ${url.href}`);
     }
 
-    // Add authentication credentials to request body for authenticated endpoints
+    // Add authentication credentials and project context to request body
     let requestBody = body || {};
     if (isAuthenticatedEndpoint && method !== 'GET') {
+      // Auto-detect project path if not provided in the request
+      const projectPath = requestBody.projectPath || getProjectPath();
+
       requestBody = {
         ...requestBody,
         sessionToken: SESSION_TOKEN,
-        projectId: PROJECT_ID
+        projectId: PROJECT_ID,
+        projectPath: projectPath  // For multi-project credential routing
       };
+
+      if (DEBUG) {
+        console.error(`[MCP Bridge] Request includes projectPath: ${projectPath}`);
+      }
     }
 
     const req = lib.request(options, (res) => {

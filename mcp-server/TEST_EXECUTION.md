@@ -67,7 +67,7 @@ curl http://localhost:8000/config-status
 Response:
 ```json
 {
-  "config_source": "mcp_config",  // or "env_vars"
+  "config_source": "mcp_config",
   "has_projexlight_key": true,
   "has_llm_key": true,
   "llm_provider": "openai",
@@ -92,9 +92,8 @@ Response:
    │       ├── leads/
    │       └── ...
    └── mcp-server/             # MCP server files (from CLI export)
-       ├── setup-test-mcp.sh
-       ├── run-ui-tests.sh
-       ├── run-api-tests.sh
+       ├── setup-all.sh
+       ├── run-all-tests.sh
        └── ...
    ```
 
@@ -105,16 +104,19 @@ Response:
 ```bash
 cd your-project/mcp-server
 
-# 1. Start the Test MCP server
-./setup-test-mcp.sh start
+# 1. Start all MCP services
+./setup-all.sh
 
 # 2. Run all UI tests
-./run-ui-tests.sh
+./run-all-tests.sh ui
 
 # 3. Run all API tests
-./run-api-tests.sh
+./run-all-tests.sh api
 
-# 4. Check results
+# 4. Run ALL tests (UI + API)
+./run-all-tests.sh all
+
+# 5. Check results
 ls ../test-results/
 ```
 
@@ -132,11 +134,14 @@ ls ../test-results/
 ### Start/Stop Commands
 
 ```bash
-# Start Test MCP
-./setup-test-mcp.sh start
+# Start all services (recommended)
+./setup-all.sh
 
 # Check status
-./setup-test-mcp.sh status
+./setup-all.sh --status
+
+# Start Test MCP only
+./setup-test-mcp.sh start
 
 # View logs
 ./setup-test-mcp.sh logs
@@ -148,143 +153,75 @@ ls ../test-results/
 ./setup-test-mcp.sh update
 ```
 
-### Manage Both MCP Servers
+---
+
+## Test Runner
+
+The `run-all-tests.sh` script provides a unified interface for all testing:
 
 ```bash
-# Start both Dev and Test MCP
-./setup-mcp.sh start all
+# Show help
+./run-all-tests.sh
 
-# Check status of all servers
-./setup-mcp.sh status
+# Check Test MCP status
+./run-all-tests.sh status
 
-# Start only Dev MCP
-./setup-mcp.sh start dev
-
-# Start only Test MCP
-./setup-mcp.sh start test
+# Run all tests (UI + API)
+./run-all-tests.sh all
 ```
 
 ---
 
 ## UI Tests (Feature Files)
 
-### List Available Features
+### Run All UI Tests
 
 ```bash
-./run-ui-tests.sh --list
-```
-
-Output:
-```
-  FEATURE FILE                                  FEATURE ID
-  --------------------------------------------  ------------------------------------
-  lead-contact-management.feature               0d9a7b15-2c75-4ac4-8ade-bbc8dd9e4e75
-    Lead & Contact Management
-  activity-task-management.feature              abc12345-...
-    Activity & Task Management
-  ...
-
-Total: 9 feature files
-```
-
-### Run All Feature Tests
-
-```bash
-./run-ui-tests.sh
+./run-all-tests.sh ui
 ```
 
 ### Run Single Feature (by File Name)
 
 ```bash
 # With .feature extension
-./run-ui-tests.sh lead-contact-management.feature
+./run-all-tests.sh ui lead-contact-management.feature
 
 # Without extension (auto-added)
-./run-ui-tests.sh lead-contact-management
-```
-
-### Run Single Feature (by Feature ID)
-
-```bash
-# Using feature UUID directly
-./run-ui-tests.sh 0d9a7b15-2c75-4ac4-8ade-bbc8dd9e4e75
-
-# Or with --feature flag
-./run-ui-tests.sh --feature 0d9a7b15-2c75-4ac4-8ade-bbc8dd9e4e75
-```
-
-### Run Single Scenario (by Scenario ID)
-
-```bash
-./run-ui-tests.sh --scenario 8aa0cc8f-c800-480f-bb8a-4bc73296360f
-```
-
-### Run by Tag
-
-```bash
-# Run all UI tests
-./run-ui-tests.sh --tag @ui_test
-
-# Run integration tests
-./run-ui-tests.sh --tag @scenario_type:Integration
+./run-all-tests.sh ui lead-contact-management
 ```
 
 ### UI Test Options
 
 ```bash
 # Set target application URL
-./run-ui-tests.sh --base-url http://localhost:3000
+BASE_URL=http://localhost:3000 ./run-all-tests.sh ui
 
 # Run with visible browser (not headless)
-./run-ui-tests.sh --headed
+HEADLESS=false ./run-all-tests.sh ui
 
 # Record video of test execution
-./run-ui-tests.sh --video
-
-# Disable screenshots
-./run-ui-tests.sh --no-screenshots
+RECORD_VIDEO=true ./run-all-tests.sh ui
 
 # Combined options
-./run-ui-tests.sh lead-contact-management.feature \
-    --base-url http://myapp.com \
-    --headed \
-    --video
+BASE_URL=http://myapp.com HEADLESS=false RECORD_VIDEO=true ./run-all-tests.sh ui lead-contact-management.feature
 ```
 
 ---
 
 ## API Functional Tests
 
-### List API Categories
-
-```bash
-./run-api-tests.sh --list
-```
-
-Output:
-```
-  auth (2 definitions)
-    [POST] /api/auth/login
-    [GET] /api/auth/me
-
-  leads (4 definitions)
-    [POST] /api/leads/:leadId/convert
-    [GET] /api/leads/:leadId/conversion-info
-    ...
-```
-
 ### Run All API Tests
 
 ```bash
-./run-api-tests.sh
+./run-all-tests.sh api
 ```
 
 ### Run Specific Category
 
 ```bash
-./run-api-tests.sh auth
-./run-api-tests.sh leads
-./run-api-tests.sh activities
+./run-all-tests.sh api auth
+./run-all-tests.sh api leads
+./run-all-tests.sh api activities
 ```
 
 ### Dataset Filtering
@@ -293,16 +230,13 @@ The API test runner supports filtering test cases by type:
 
 ```bash
 # Run ALL test cases (default)
-./run-api-tests.sh --dataset all
+./run-all-tests.sh api --dataset all
 
 # Run only POSITIVE tests (2xx success responses)
-./run-api-tests.sh --dataset positive
+./run-all-tests.sh api --dataset positive
 
 # Run only NEGATIVE tests (4xx/5xx error responses)
-./run-api-tests.sh --dataset negative
-
-# Run only HAPPY PATH tests (priority 1 tests)
-./run-api-tests.sh --dataset happy
+./run-all-tests.sh api --dataset negative
 ```
 
 ### Dataset Types Explained
@@ -312,41 +246,22 @@ The API test runner supports filtering test cases by type:
 | `all` | All test cases | Everything |
 | `positive` | Success scenarios (2xx) | "Login with valid credentials" |
 | `negative` | Error scenarios (4xx, 5xx) | "Login with invalid password", "Missing required field" |
-| `happy` | Priority 1 happy path | Core functionality tests |
 
 ### Combine Category and Dataset
 
 ```bash
 # Run positive auth tests only
-./run-api-tests.sh auth --dataset positive
+./run-all-tests.sh api auth --dataset positive
 
 # Run negative leads tests only
-./run-api-tests.sh leads --dataset negative
-
-# Run happy path for all categories
-./run-api-tests.sh --dataset happy
-```
-
-### Custom Dataset File
-
-```bash
-# Use custom test data
-./run-api-tests.sh --dataset my_test_data.json
-
-# Custom dataset format (JSON):
-# {
-#   "data": [
-#     { "email": "user1@test.com", "password": "pass1" },
-#     { "email": "user2@test.com", "password": "pass2" }
-#   ]
-# }
+./run-all-tests.sh api leads --dataset negative
 ```
 
 ### Set API Base URL
 
 ```bash
-./run-api-tests.sh --base-url http://localhost:3020
-./run-api-tests.sh auth --base-url https://api.myapp.com
+API_BASE_URL=http://localhost:3020 ./run-all-tests.sh api
+API_BASE_URL=https://api.myapp.com ./run-all-tests.sh api auth
 ```
 
 ---
@@ -417,42 +332,10 @@ cat test-results/api/api_summary.json
 
 ```bash
 # Run UI tests against staging
-BASE_URL=https://staging.myapp.com \
-HEADLESS=false \
-./run-ui-tests.sh
+BASE_URL=https://staging.myapp.com HEADLESS=false ./run-all-tests.sh ui
 
 # Run API tests against production
-API_BASE_URL=https://api.myapp.com \
-./run-api-tests.sh --dataset positive
-```
-
----
-
-## Combined Test Runner
-
-The `run-tests.sh` script provides a unified interface:
-
-```bash
-# Run all UI tests
-./run-tests.sh ui
-
-# Run specific UI feature
-./run-tests.sh ui lead-contact-management.feature
-
-# Run all API tests
-./run-tests.sh api
-
-# Run specific API category
-./run-tests.sh api auth
-
-# Run with dataset filter
-./run-tests.sh api --dataset negative
-
-# Run ALL tests (UI + API)
-./run-tests.sh all
-
-# Check MCP status
-./run-tests.sh status
+API_BASE_URL=https://api.myapp.com ./run-all-tests.sh api --dataset positive
 ```
 
 ---
@@ -475,9 +358,6 @@ docker pull projexlight/projex-test-mcp:latest
 ### Feature file not found
 
 ```bash
-# List available features
-./run-ui-tests.sh --list
-
 # Check tests directory exists
 ls -la ../tests/features/
 ```
@@ -488,9 +368,6 @@ ls -la ../tests/features/
 # Check API is running
 curl http://localhost:3020/health
 
-# Check API base URL
-./run-api-tests.sh --base-url http://your-api-url
-
 # Run with verbose logging
 docker logs projexlight-test-mcp -f
 ```
@@ -499,7 +376,7 @@ docker logs projexlight-test-mcp -f
 
 ```bash
 # For Docker-to-host connections, use:
-API_BASE_URL=http://host.docker.internal:3020 ./run-api-tests.sh
+API_BASE_URL=http://host.docker.internal:3020 ./run-all-tests.sh api
 ```
 
 ---
@@ -570,4 +447,3 @@ Feature: Lead & Contact Management
 
 For issues or questions:
 - Check container logs: `./setup-test-mcp.sh logs`
-- GitHub Issues: https://github.com/projexlight/mcp-server/issues

@@ -1,124 +1,194 @@
 {
-  "sprintId": "7c2e0bff-17ab-4295-8aac-4ba17ca075b7",
+  "sprintId": "37698c8a-5514-4418-a7d1-ea326e259a0b",
   "sprintName": "Quick Prototype Sprint",
-  "totalTasks": 17,
+  "totalTasks": 27,
   "tasks": [
     {
-      "taskId": "2e042d28-024a-4ce8-b155-102b7886a68e",
+      "taskId": "8b271d90-cf76-42f1-ad1a-1c112546965b",
       "taskNumber": 1,
-      "title": "Implement User Interface backend logic",
+      "title": "Implement Registration Form",
       "status": "not_started",
-      "taskType": "backend"
+      "taskType": "development"
     },
     {
-      "taskId": "2dda33a0-c225-418d-90a9-66d3860a7b4b",
+      "taskId": "771fb378-e8ee-4bd4-800d-508e8023dabc",
       "taskNumber": 2,
-      "title": "Create User Interface UI components",
+      "title": "Validate User Inputs",
       "status": "not_started",
-      "taskType": "frontend"
+      "taskType": "development"
     },
     {
-      "taskId": "b7d01d9c-26f9-445b-b491-05390cff8940",
+      "taskId": "3c8b6ce2-6b44-41fb-9d5b-b801e2a36305",
       "taskNumber": 3,
-      "title": "Test CloudWatch ingestion",
+      "title": "Set Up User Authentication",
       "status": "not_started",
-      "taskType": "testing"
+      "taskType": "development"
     },
     {
-      "taskId": "0e36ab21-0498-43a2-b835-3f285a791297",
+      "taskId": "87894b11-733e-4623-b934-3ee5df847fca",
       "taskNumber": 4,
-      "title": "Validate custom logs ingestion",
+      "title": "Create User Profile Page",
       "status": "not_started",
-      "taskType": "testing"
+      "taskType": "development"
     },
     {
-      "taskId": "58094f5e-004f-4ef5-9e45-43cc175cb5d8",
+      "taskId": "eb034d81-a3b2-4803-ac56-faade8d6fcfa",
       "taskNumber": 5,
-      "title": "Test aggregation functionality",
+      "title": "Implement Profile Editing",
       "status": "not_started",
-      "taskType": "testing"
+      "taskType": "development"
     },
     {
-      "taskId": "d197c759-e906-4ae9-87a4-37753f3e314c",
+      "taskId": "546162db-61dc-4464-8db5-4938e1ed33ec",
       "taskNumber": 6,
-      "title": "Test parameter extraction",
+      "title": "Display Trip History",
       "status": "not_started",
-      "taskType": "testing"
+      "taskType": "development"
     },
     {
-      "taskId": "ef16d232-c475-47d3-b64d-30c1b1b9b048",
+      "taskId": "e9bc152c-ebf2-4ada-803a-c1b2c61fd609",
       "taskNumber": 7,
-      "title": "Set up AWS SDK",
+      "title": "Create Feedback Form",
       "status": "not_started",
       "taskType": "development"
     },
     {
-      "taskId": "b3a16c97-7b35-43c2-a1a8-88457052c273",
+      "taskId": "a3187ac4-e008-4f61-ae5a-e7382dcb6647",
       "taskNumber": 8,
-      "title": "Define log formats",
+      "title": "Implement Feedback Storage",
       "status": "not_started",
       "taskType": "development"
     },
     {
-      "taskId": "b6a90669-3dc9-4656-8c40-2f82bc28c9d2",
+      "taskId": "29ee5684-e352-487f-8a84-96b07ab896cc",
       "taskNumber": 9,
-      "title": "Set up Slack API",
+      "title": "Display User Ratings",
       "status": "not_started",
       "taskType": "development"
     },
     {
-      "taskId": "1801714c-167c-4f4b-a3f0-e33aec570ec3",
+      "taskId": "da75ee5e-ef7b-4b3a-8e3e-97db57db7b2f",
       "taskNumber": 10,
-      "title": "Define message parsing rules",
+      "title": "Design Trip Creation Form",
       "status": "not_started",
       "taskType": "development"
     },
     {
-      "taskId": "e3193953-0bca-47dc-b789-bb1585c5579a",
+      "taskId": "5a3725ac-90dc-448d-97c9-eb48e1f18f31",
       "taskNumber": 11,
-      "title": "Implement message ingestion",
+      "title": "Implement Trip Scheduling Logic",
       "status": "not_started",
       "taskType": "development"
     },
     {
-      "taskId": "7dc8cbaf-9d5b-4064-9520-c508dd80a155",
+      "taskId": "563be849-3c72-4508-b52e-a023c31c1c05",
       "taskNumber": 12,
-      "title": "Identify custom log formats",
+      "title": "Validate Trip Inputs",
       "status": "not_started",
       "taskType": "development"
     },
     {
-      "taskId": "5bccf1ef-3b7e-43bf-b343-951444dc3a30",
+      "taskId": "f8f1a25a-5efc-4248-b5c8-b490cc49a324",
       "taskNumber": 13,
-      "title": "Create ingestion pipeline",
+      "title": "Implement Matching Algorithm",
       "status": "not_started",
       "taskType": "development"
     },
     {
-      "taskId": "09d7acd9-cacd-4b51-8e28-05a770888679",
+      "taskId": "fbd21b1b-b710-4f87-920e-ed7a68973dc3",
       "taskNumber": 14,
-      "title": "Design aggregation model",
+      "title": "Display Matched Trips",
       "status": "not_started",
-      "taskType": "design"
+      "taskType": "development"
     },
     {
-      "taskId": "4e506466-ce4a-4c8e-bea9-e0dcea0d710f",
+      "taskId": "43058e9b-14c5-4ca4-ac43-2c93a04ad0c4",
       "taskNumber": 15,
-      "title": "Implement aggregation logic",
+      "title": "Notify Users of Matches",
       "status": "not_started",
       "taskType": "development"
     },
     {
-      "taskId": "f1808fcf-787c-494c-bbf2-22fe00f2a55b",
+      "taskId": "13f0476c-9431-41ee-9e90-72026e60eade",
       "taskNumber": 16,
-      "title": "Identify critical parameters",
+      "title": "Create Trip History Page",
       "status": "not_started",
       "taskType": "development"
     },
     {
-      "taskId": "24103ba8-9603-4aa9-bf42-6e36826f296c",
+      "taskId": "0441321a-17f7-4cbd-a1f3-115c0a8b7b2f",
       "taskNumber": 17,
-      "title": "Develop extraction logic",
+      "title": "Fetch User Trip Data",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "94154f0b-6cab-403c-9a9b-7f06c540b917",
+      "taskNumber": 18,
+      "title": "Implement Trip History Filtering",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "825d8a5f-ea00-439e-8cfd-df3df24de328",
+      "taskNumber": 19,
+      "title": "Research Payment Gateways",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "a7362ca5-93f9-468e-9937-4d05aa7b8878",
+      "taskNumber": 20,
+      "title": "Implement Payment Logic",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "ed5723fb-46e0-4feb-8b27-76bacb61ff2e",
+      "taskNumber": 21,
+      "title": "Test Payment Processing",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "aef26241-902d-4589-9476-63399e5362ba",
+      "taskNumber": 22,
+      "title": "Create Billing History Page",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "c100a8f7-82a7-4f57-9f58-da7fdc1cdfff",
+      "taskNumber": 23,
+      "title": "Fetch Billing Data",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "927c61fd-a77e-4756-b8d4-b0c879b28d99",
+      "taskNumber": 24,
+      "title": "Implement Billing Filters",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "194a22ca-5a7b-4984-892b-60200c25b7f8",
+      "taskNumber": 25,
+      "title": "Create Refund Request Form",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "5f40c35d-2465-4ccf-a1c1-aa3ecf5d3968",
+      "taskNumber": 26,
+      "title": "Implement Refund Processing Logic",
+      "status": "not_started",
+      "taskType": "development"
+    },
+    {
+      "taskId": "c7dbb577-7993-452f-83d5-99054dd482af",
+      "taskNumber": 27,
+      "title": "Notify Users of Refund Status",
       "status": "not_started",
       "taskType": "development"
     }

@@ -1,84 +1,48 @@
 import { Request, Response } from 'express';
-import { authService, RegisterData, LoginData } from '../services/authService';
+import authService from '../services/authService';
 
-export class AuthController {
+/**
+ * AuthController handles authentication HTTP requests
+ */
+export const authController = {
   /**
    * Register a new user
+   * POST /api/auth/register
    */
-  async register(req: Request, res: Response) {
+  async register(req: Request, res: Response): Promise<void> {
     try {
-      const data: RegisterData = req.body;
+      const { email, password } = req.body;
 
-      // Basic validation
-      if (!data.email || !data.password) {
-        return res.status(400).json({
+      if (!email || !password) {
+        res.status(400).json({
           success: false,
-          error: 'Email and password are required'
+          error: 'Email and password are required',
         });
+        return;
       }
 
-      const result = await authService.register(data);
-
-      if (!result.success) {
-        return res.status(400).json({
-          success: false,
-          error: result.error
-        });
-      }
+      const result = await authService.register({ email, password });
 
       res.status(201).json({
         success: true,
-        data: result.user
+        data: result,
       });
     } catch (error) {
-      console.error('Register controller error:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Internal server error'
-      });
-    }
-  }
-
-  /**
-   * Login user
-   */
-  async login(req: Request, res: Response) {
-    try {
-      const data: LoginData = req.body;
-
-      // Basic validation
-      if (!data.email || !data.password) {
-        return res.status(400).json({
+      if (error instanceof Error && error.message.includes('already exists')) {
+        res.status(409).json({
           success: false,
-          error: 'Email and password are required'
+          error: error.message,
         });
+        return;
       }
 
-      const result = await authService.login(data);
-
-      if (!result.success) {
-        return res.status(401).json({
-          success: false,
-          error: result.error
-        });
-      }
-
-      res.json({
-        success: true,
-        data: {
-          user: result.user,
-          token: result.token
-        }
-      });
-    } catch (error) {
-      console.error('Login controller error:', error);
+      console.error('Registration error:', error);
       res.status(500).json({
         success: false,
-        error: 'Internal server error'
+        error: 'Internal server error',
       });
     }
-  }
-}
+  },
+};
 
-// Singleton instance
-export const authController = new AuthController();
+export default authController;

@@ -4,7 +4,7 @@
 
 - **Docker Desktop** (Windows/Mac) or **Docker Engine** (Linux)
 - **Git** for version control
-- **VS Code** with **Cline extension** installed
+- **Claude Code CLI** - Install: `npm install -g @anthropic-ai/claude-code`
 
 ## 🚀 Quick Start (3 Steps)
 
@@ -12,25 +12,32 @@
 
 ```bash
 cd mcp-server
-docker-compose up -d
+./setup-all.sh
 ```
 
-Wait 30 seconds, then verify:
+This smart script will:
+- Create containers if they don't exist
+- Reuse existing containers (multi-project support)
+- Set up database and install git hooks
+- Register your project automatically
+
+Wait about 30 seconds for services to initialize, then verify:
 ```bash
 curl http://localhost:8766/health
 ```
 
 ### Step 2: Launch Your AI Coding Tool
 
-1. Open this folder in **VS Code**
-2. Open the **Cline** panel from the sidebar
-3. Start a new chat
+```bash
+cd ..
+claude
+```
 
 ### Step 3: Start Coding Session
 
 Tell your AI assistant:
 ```
-Read .cline/instructions/bootstrap.md and start
+Read .claude/instructions/bootstrap.md and start
 ```
 
 ---
@@ -38,17 +45,39 @@ Read .cline/instructions/bootstrap.md and start
 ## Project Info
 
 - **Sprint:** Quick Prototype Sprint
-- **Tasks:** 17
-- **CLI Tool:** cline
+- **Tasks:** 27
+- **CLI Tool:** claude
 
 ## Key Files
 
 | File | Description |
 |------|-------------|
-| `.cline/instructions/bootstrap.md` | **START HERE** |
+| `.claude/instructions/bootstrap.md` | **START HERE** |
 | `.projexlight/context/requirements.md` | Project requirements |
 | `.projexlight/context/task-list.json` | Task list |
 | `.mcp.json` | MCP configuration |
+
+## MCP Server Management
+
+```bash
+./setup-all.sh --status    # Check status
+./setup-dev-mcp.sh logs    # View logs
+./setup-all.sh --force     # Restart services
+```
+
+### Multi-Project Support
+
+Multiple projects can share the same MCP containers. Manage registered projects at:
+- **Dev MCP:** http://localhost:8766/projects
+- **Test MCP:** http://localhost:8000/projects
+
+### Running Tests
+
+```bash
+./run-all-tests.sh ui      # UI tests
+./run-all-tests.sh api     # API tests
+./run-all-tests.sh all     # All tests
+```
 
 ## Configure MCP Server (Optional)
 
@@ -124,8 +153,8 @@ Auto-configured via `.mcp.json` in project root:
 **MCP Server not working?**
 ```bash
 curl http://localhost:8766/health
-docker logs projexlight-mcp
-cd mcp-server && docker-compose restart
+./setup-dev-mcp.sh logs
+cd mcp-server && ./setup-all.sh --force
 ```
 
 ---

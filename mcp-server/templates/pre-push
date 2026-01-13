@@ -68,6 +68,41 @@ else
     PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 fi
 
+# ============================================================
+# MULTI-PROJECT SUPPORT: Detect project path for credential routing
+# ============================================================
+# Convert Windows path to Unix format for Docker compatibility
+# C:\Users\name\project -> /c/Users/name/project
+to_unix_path() {
+    local path="$1"
+    # Already Unix path
+    if [[ "$path" == /* ]]; then
+        echo "$path"
+        return
+    fi
+    # Convert backslashes to forward slashes
+    path="${path//\\//}"
+    # Convert Windows drive letter: C:/... -> /c/...
+    if [[ "$path" =~ ^([A-Za-z]):(.*)$ ]]; then
+        local drive="${BASH_REMATCH[1]}"
+        local rest="${BASH_REMATCH[2]}"
+        path="/${drive,,}${rest}"
+    fi
+    echo "$path"
+}
+
+# Get the project path for multi-project context routing
+# Priority: PROJEXLIGHT_PROJECT_PATH env var > git repo root converted to Unix
+if [ -n "${PROJEXLIGHT_PROJECT_PATH:-}" ]; then
+    PROJECT_PATH="$PROJEXLIGHT_PROJECT_PATH"
+elif [ "$OS_TYPE" = "linux" ] && [ -d "/workspace" ]; then
+    # Inside Docker - check if HOST_PROJECT_PATH was passed
+    PROJECT_PATH="${HOST_PROJECT_PATH:-/workspace}"
+else
+    # On host - convert Windows path to Unix format
+    PROJECT_PATH=$(to_unix_path "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+fi
+
 echo -e "${BLUE}🚀 ProjexLight Pre-Push Hook${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "   OS Detected: ${GREEN}${OS_TYPE}${NC}"
@@ -596,10 +631,12 @@ fi
 API_TEST_TIMEOUT="${API_TEST_TIMEOUT:-120}"
 
 # Make curl request with full HTTP response (including status code)
+# Include projectPath for multi-project credential routing
 HTTP_RESPONSE=$(curl -s -w "\n%{http_code}" --max-time ${API_TEST_TIMEOUT} -X POST "${MCP_SERVER_URL}/api/test" \
     -H "Content-Type: application/json" \
     -d "{
         \"project_root\": \"/workspace\",
+        \"projectPath\": \"${PROJECT_PATH}\",
         \"triggered_by\": \"git_push\",
         \"changed_files\": ${CHANGED_FILES_JSON},
         \"local_server_running\": true,
@@ -840,8 +877,23 @@ EOF
         echo -e "      ${YELLOW}${PROJECT_ROOT}/.projexlight/feedback/${NC}"
         echo -e "      ${YELLOW}${PROJECT_ROOT}/.projexlight/reports/${NC}"
         echo ""
-        echo -e "${BLUE}🤖 To fix with LLM:${NC}"
-        echo -e "   ${YELLOW}\"Read ${FAILURE_LATEST} and fix the failed API tests\"${NC}"
+        echo -e "${BLUE}══════════════════════════════════════════════════════════════${NC}"
+        echo -e "${BLUE}🤖 LLM NEXT STEP - Call pending-test-failures to get fix instructions:${NC}"
+        echo -e "${BLUE}══════════════════════════════════════════════════════════════${NC}"
+        echo -e ""
+        echo -e "   ${GREEN}MCP Tool:${NC}  projexlight_get_pending_test_failures"
+        echo -e "   ${GREEN}curl:${NC}      curl http://localhost:8766/api/instruction/pending-test-failures"
+        echo -e ""
+        echo -e "   ${YELLOW}The response includes:${NC}"
+        echo -e "   - failures[] with ROOT_CAUSE_ANALYSIS for each"
+        echo -e "   - healingPrompt with step-by-step fix instructions"
+        echo -e "   - investigation_steps to find the root cause"
+        echo -e ""
+        echo -e "   ${YELLOW}After fixing:${NC}"
+        echo -e "   1. git add . && git commit -m 'fix: resolve API test failures'"
+        echo -e "   2. Call projexlight_clear_test_failures (or curl POST .../clear-test-failures)"
+        echo -e "   3. git push (to re-run tests)"
+        echo -e "${BLUE}══════════════════════════════════════════════════════════════${NC}"
         echo ""
 
         # Check if running in interactive mode (terminal attached)
@@ -878,10 +930,12 @@ fi
 # ============================================================
 echo -e "\n${BLUE}🔍 Scanning for duplicate components in changed files...${NC}"
 
+# Include projectPath for multi-project credential routing
 COMPONENT_SCAN_RESULT=$(curl -s -X POST "${MCP_SERVER_URL}/api/components/scan" \
     -H "Content-Type: application/json" \
     -d "{
         \"project_root\": \"/workspace\",
+        \"projectPath\": \"${PROJECT_PATH}\",
         \"triggered_by\": \"git_push\",
         \"changed_files\": ${CHANGED_FILES_JSON}
     }" 2>&1)

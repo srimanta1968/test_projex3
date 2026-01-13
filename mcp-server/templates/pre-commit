@@ -24,6 +24,43 @@ else
     PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 fi
 
+# ============================================================
+# MULTI-PROJECT SUPPORT: Detect project path for credential routing
+# ============================================================
+# Convert Windows path to Unix format for Docker compatibility
+# C:\Users\name\project -> /c/Users/name/project
+to_unix_path() {
+    local path="$1"
+    # Already Unix path
+    if [[ "$path" == /* ]]; then
+        echo "$path"
+        return
+    fi
+    # Convert backslashes to forward slashes
+    path="${path//\\//}"
+    # Convert Windows drive letter: C:/... -> /c/...
+    if [[ "$path" =~ ^([A-Za-z]):(.*)$ ]]; then
+        local drive="${BASH_REMATCH[1]}"
+        local rest="${BASH_REMATCH[2]}"
+        path="/${drive,,}${rest}"
+    fi
+    echo "$path"
+}
+
+# Get the project path for multi-project context routing
+# Priority: PROJEXLIGHT_PROJECT_PATH env var > git repo root converted to Unix
+if [ -n "${PROJEXLIGHT_PROJECT_PATH:-}" ]; then
+    PROJECT_PATH="$PROJEXLIGHT_PROJECT_PATH"
+elif [ -d "/workspace" ]; then
+    # Inside Docker - check if HOST_PROJECT_PATH was passed
+    PROJECT_PATH="${HOST_PROJECT_PATH:-/workspace}"
+else
+    # On host - convert Windows path to Unix format
+    PROJECT_PATH=$(to_unix_path "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+fi
+
+echo -e "   ${BLUE}Project path (for multi-project):${NC} ${PROJECT_PATH}"
+
 # Create reports directories
 # pre-commit/ - Immediate fixes required (duplicates, blocking violations)
 # todos/ - Can be fixed at end of sprint
@@ -71,10 +108,10 @@ echo -e "\n${BLUE}📋 Scanning ${FILE_COUNT} staged file(s)...${NC}"
 # Convert file list to JSON array
 FILES_JSON=$(echo "$STAGED_FILES" | jq -R -s -c 'split("\n")[:-1]')
 
-# Send request to MCP server
+# Send request to MCP server with workspace path and project path for multi-project routing
 SCAN_RESULT=$(curl -s -X POST "${MCP_SERVER_URL}/api/pre-commit-scan" \
     -H "Content-Type: application/json" \
-    -d "{\"stagedFiles\": ${FILES_JSON}}" 2>&1)
+    -d "{\"stagedFiles\": ${FILES_JSON}, \"workspacePath\": \"${PROJECT_ROOT}\", \"projectPath\": \"${PROJECT_PATH}\"}" 2>&1)
 
 CURL_EXIT=$?
 
@@ -159,10 +196,22 @@ EOF
     echo "$PRECOMMIT_REPORT" | jq '.' > "$PRECOMMIT_REPORT_FILE"
     cp "$PRECOMMIT_REPORT_FILE" "$PRECOMMIT_LATEST"
 
-    echo -e "${BLUE}📄 Violation report saved to:${NC}"
-    echo -e "   ${PRECOMMIT_LATEST}"
-    echo -e "${YELLOW}💡 Ask your LLM to fix these issues:${NC}"
-    echo -e "   \"Please read ${PRECOMMIT_LATEST} and fix the violations\""
+    echo -e "${BLUE}══════════════════════════════════════════════════════════════${NC}"
+    echo -e "${BLUE}🤖 LLM NEXT STEP - Call pending-violations to get fix instructions:${NC}"
+    echo -e "${BLUE}══════════════════════════════════════════════════════════════${NC}"
+    echo -e ""
+    echo -e "   ${GREEN}MCP Tool:${NC}  projexlight_get_pending_violations"
+    echo -e "   ${GREEN}curl:${NC}      curl http://localhost:8766/api/instruction/pending-violations"
+    echo -e ""
+    echo -e "   ${YELLOW}The response includes:${NC}"
+    echo -e "   - violations[] with fix instructions for each"
+    echo -e "   - fixPrompt with step-by-step guidance"
+    echo -e ""
+    echo -e "   ${YELLOW}After fixing:${NC}"
+    echo -e "   1. Fix each violation in your code"
+    echo -e "   2. git add . && git commit (re-runs pre-commit hook)"
+    echo -e "   3. Call projexlight_clear_violations when all fixed"
+    echo -e "${BLUE}══════════════════════════════════════════════════════════════${NC}"
     echo -e ""
 
     exit 1

@@ -1,12 +1,17 @@
-import { Router } from 'express';
-import { authController } from '../controllers/authController';
+import { Router, Request, Response, RequestHandler } from 'express';
+import authController from '../controllers/authController';
 
-const router = Router();
+/**
+ * Auth Routes - handles user authentication endpoints
+ */
+const router: Router = Router();
 
-// POST /api/auth/register
-router.post('/register', authController.register.bind(authController));
-
-// POST /api/auth/login
-router.post('/login', authController.login.bind(authController));
+/**
+ * @route POST /api/auth/register
+ * @desc Register a new user
+ * @access Public
+ */
+const registerHandler: RequestHandler = authController.register as RequestHandler;
+router.post('/register', registerHandler);
 
 export default router;

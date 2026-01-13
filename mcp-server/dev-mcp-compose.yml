@@ -23,9 +23,29 @@ services:
     ports:
       - "${MCP_DEV_PORT:-8766}:8766"
     volumes:
+      # ============================================================
+      # MULTI-PROJECT VOLUME MOUNTS
+      # ============================================================
+      # Owner project (first project that created containers)
       - ../:/workspace                             # Project root (read-write for git hooks)
+
+      # Additional projects (dynamically mounted via setup-all.sh)
+      # These are set via .env file when new projects are registered
+      - ${ADDITIONAL_PROJECT_1:-/dev/null}:/projects/additional1
+      - ${ADDITIONAL_PROJECT_2:-/dev/null}:/projects/additional2
+      - ${ADDITIONAL_PROJECT_3:-/dev/null}:/projects/additional3
+
+      # ============================================================
+      # PER-PROJECT CONFIG & DATA DIRECTORIES
+      # ============================================================
       - ./feedback:/feedback                       # Feedback files (read-write)
-      - ./mcp-config.json:/app/mcp-config.json:ro  # Encrypted configuration
+      - ./mcp-config.json:/app/mcp-config.json:ro  # Owner project configuration
+      - ./registered_projects:/app/registered_projects  # Multi-project registry
+
+      # Per-project .projexlight folders (mounted automatically)
+      # Owner project: ../.projexlight is accessible via /workspace/.projexlight
+      # Additional projects: accessible via /projects/additionalN/.projexlight
+
     extra_hosts:
       - "host.docker.internal:host-gateway"        # Enable host network access
     env_file:
@@ -37,6 +57,8 @@ services:
       - MCP_SERVER_HOST=0.0.0.0
       - MCP_CONFIG_FILE=/app/mcp-config.json
       - MCP_TYPE=dev
+      # Multi-project path mappings (JSON format, set by setup-all.sh)
+      - PROJECT_PATH_MAPPINGS=${PROJECT_PATH_MAPPINGS:-}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8766/health"]

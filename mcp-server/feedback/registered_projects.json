@@ -1,0 +1,27 @@
+{
+  "7c131623-3508-4cda-8e8c-e59918ba9411": {
+    "projectId": "7c131623-3508-4cda-8e8c-e59918ba9411",
+    "projectName": "test_projex3",
+    "projectPath": "/c/Users/srima/test_projex3",
+    "workspacePath": "/c/Users/srima/test_projex3",
+    "containerPath": "/projects/additional1",
+    "databaseName": "ride_share_db",
+    "databaseType": "postgresql",
+    "databaseConfig": {
+      "enabled": true,
+      "type": "postgresql",
+      "host": "host.docker.internal",
+      "port": 5432,
+      "database": "ride_share_db",
+      "username": "postgres",
+      "password": "postgres"
+    },
+    "apiKey": "eHDoNEt+jOWgBiIcesFzd8FL/IrxNRkTvyek40pzjb7HdLTyrSPfnTPyMjINHAecvaUs8A1wAO+NMvKUGOqaCDcHpFDvyc3WuIepVjRQIMVQOAlEH1PbIqBxWeDlYrpWoU1l5HL8gICmZNdsjQk/PfLzK/3aLc3AAoI9pWB5M1lg1VV1cwAudkHBfbcMlhvm9pMyppxozcHBW+FLTw==",
+    "sprintId": "37698c8a-5514-4418-a7d1-ea326e259a0b",
+    "registeredAt": "2026-01-13T05:12:35.084138Z",
+    "lastSeen": "2026-01-13T05:12:35.084145Z",
+    "status": "active",
+    "isOwner": false,
+    "schemaSyncEnabled": true
+  }
+}

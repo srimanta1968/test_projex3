@@ -4,13 +4,13 @@ dotenv.config();
 export const config = {
   nodeEnv: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT || '3000', 10),
-  appName: process.env.APP_NAME || 'Log Analysis',
+  appName: process.env.APP_NAME || 'Ride Share',
 
   // Database
   db: {
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT || '5432', 10),
-    name: process.env.DB_NAME || 'log_analysis_db',
+    name: process.env.DB_NAME || 'ride_share_db',
     user: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || 'postgres',
     ssl: process.env.DB_SSL === 'true',

@@ -60,6 +60,21 @@ check_prerequisites() {
     mkdir -p "$SCRIPT_DIR/feedback" 2>/dev/null || true
 }
 
+# Check if container is already running and healthy
+container_running_healthy() {
+    if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+        if curl -sf http://localhost:${MCP_DEV_PORT:-$DEFAULT_PORT}/health > /dev/null 2>&1; then
+            return 0  # Running and healthy
+        fi
+    fi
+    return 1
+}
+
+# Check if container exists (running or stopped)
+container_exists() {
+    docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"
+}
+
 create_sample_config() {
     cat > "$SCRIPT_DIR/mcp-config.json" << 'EOF'
 {
@@ -94,10 +109,23 @@ EOF
 }
 
 start_server() {
-    print_msg "$BLUE" "Starting Dev MCP Server..."
+    # Check if already running and healthy
+    if container_running_healthy; then
+        print_msg "$GREEN" "[OK] Dev MCP Server is already running and healthy on port ${MCP_DEV_PORT:-$DEFAULT_PORT}"
+        print_msg "$BLUE" "[INFO] Skipping creation - reusing existing container"
+        return 0
+    fi
 
-    cd "$SCRIPT_DIR"
-    docker-compose -f dev-mcp-compose.yml up -d
+    # Check if container exists but not healthy
+    if container_exists; then
+        print_msg "$YELLOW" "[INFO] Container exists but not healthy. Restarting..."
+        cd "$SCRIPT_DIR"
+        docker-compose -f dev-mcp-compose.yml restart
+    else
+        print_msg "$BLUE" "Starting Dev MCP Server..."
+        cd "$SCRIPT_DIR"
+        docker-compose -f dev-mcp-compose.yml up -d
+    fi
 
     # Wait for health check
     print_msg "$YELLOW" "Waiting for server to be ready..."

@@ -23,10 +23,24 @@ services:
     ports:
       - "${MCP_TEST_PORT:-8000}:8000"
     volumes:
+      # ============================================================
+      # MULTI-PROJECT VOLUME MOUNTS
+      # ============================================================
+      # Owner project (first project that created containers)
       - ${PROJECT_PATH:-../}:/workspace                                  # Project root (read-write for git hooks)
+
+      # Additional projects (dynamically mounted via setup-all.sh)
+      - ${ADDITIONAL_PROJECT_1:-/dev/null}:/projects/additional1
+      - ${ADDITIONAL_PROJECT_2:-/dev/null}:/projects/additional2
+      - ${ADDITIONAL_PROJECT_3:-/dev/null}:/projects/additional3
+
+      # ============================================================
+      # PER-PROJECT CONFIG & DATA DIRECTORIES
+      # ============================================================
       - ./feedback:/feedback                                             # Feedback files (read-write)
       - ${RESULTS_PATH:-../test-results}:/results                        # Test results output
       - ${MCP_CONFIG_FILE:-./mcp-config.json}:/app/mcp-config.json:ro   # Encrypted configuration
+      - ./registered_projects:/app/registered_projects                   # Multi-project registry
     extra_hosts:
       - "host.docker.internal:host-gateway"        # Enable host network access
     env_file:
@@ -38,6 +52,8 @@ services:
       - MCP_SERVER_HOST=0.0.0.0
       - MCP_CONFIG_FILE=/app/mcp-config.json
       - MCP_TYPE=test
+      # Multi-project path mappings (JSON format, set by setup-all.sh)
+      - PROJECT_PATH_MAPPINGS=${PROJECT_PATH_MAPPINGS:-}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
