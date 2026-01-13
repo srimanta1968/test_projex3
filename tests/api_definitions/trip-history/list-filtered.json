@@ -1,0 +1,30 @@
+{
+  "endpoint": "/api/trip-history",
+  "method": "GET",
+  "taskId": "94154f0b-6cab-403c-9a9b-7f06c540b917",
+  "requiresAuth": true,
+  "priority": 31,
+  "dependsOn": ["POST /api/auth/register"],
+  "captureResponse": {},
+  "testCases": [
+    {
+      "name": "Get filtered trip history",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "queryParams": {
+        "destination": "New York",
+        "startDate": "2024-01-01",
+        "endDate": "2024-12-31"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "trips": []
+        }
+      }
+    }
+  ]
+}

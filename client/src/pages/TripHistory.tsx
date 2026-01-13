@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface TripHistoryItem {
@@ -14,54 +14,89 @@ interface TripHistoryError {
   message: string;
 }
 
+interface Filters {
+  destination: string;
+  startDate: string;
+  endDate: string;
+}
+
 export default function TripHistory() {
   const navigate = useNavigate();
   const [trips, setTrips] = useState<TripHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<TripHistoryError | null>(null);
+  const [filters, setFilters] = useState<Filters>({
+    destination: '',
+    startDate: '',
+    endDate: '',
+  });
+
+  const fetchTripHistory = useCallback(async (currentFilters: Filters) => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const params = new URLSearchParams();
+      if (currentFilters.destination) {
+        params.append('destination', currentFilters.destination);
+      }
+      if (currentFilters.startDate) {
+        params.append('startDate', currentFilters.startDate);
+      }
+      if (currentFilters.endDate) {
+        params.append('endDate', currentFilters.endDate);
+      }
+
+      const url = `/api/trip-history${params.toString() ? `?${params.toString()}` : ''}`;
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          navigate('/login');
+          return;
+        }
+        throw new Error(data.error || 'Failed to load trip history');
+      }
+
+      setTrips(data.data.trips || []);
+    } catch (err) {
+      setError({
+        message: err instanceof Error ? err.message : 'Failed to load trip history',
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate]);
 
   useEffect(() => {
-    const fetchTripHistory = async () => {
-      const token = localStorage.getItem('token');
+    fetchTripHistory(filters);
+  }, [fetchTripHistory, filters]);
 
-      if (!token) {
-        navigate('/login');
-        return;
-      }
+  const handleFilterChange = (field: keyof Filters, value: string) => {
+    setFilters((prev) => ({ ...prev, [field]: value }));
+  };
 
-      try {
-        const response = await fetch('/api/trip-history', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            navigate('/login');
-            return;
-          }
-          throw new Error(data.error || 'Failed to load trip history');
-        }
-
-        setTrips(data.data.trips || []);
-      } catch (err) {
-        setError({
-          message: err instanceof Error ? err.message : 'Failed to load trip history',
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTripHistory();
-  }, [navigate]);
+  const handleClearFilters = () => {
+    setFilters({ destination: '', startDate: '', endDate: '' });
+  };
 
   const formatDate = (dateString: string): string => {
     if (!dateString) return 'N/A';
@@ -108,6 +143,54 @@ export default function TripHistory() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Filter Trips</h2>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Destination
+                </label>
+                <input
+                  type="text"
+                  value={filters.destination}
+                  onChange={(e) => handleFilterChange('destination', e.target.value)}
+                  placeholder="Search destination..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  value={filters.startDate}
+                  onChange={(e) => handleFilterChange('startDate', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  End Date
+                </label>
+                <input
+                  type="date"
+                  value={filters.endDate}
+                  onChange={(e) => handleFilterChange('endDate', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="flex items-end">
+                <button
+                  onClick={handleClearFilters}
+                  className="w-full px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-md"
+                >
+                  Clear Filters
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div className="bg-white rounded-lg shadow-md p-6">
             <h1 className="text-2xl font-bold text-gray-800 mb-6">Trip History</h1>
 

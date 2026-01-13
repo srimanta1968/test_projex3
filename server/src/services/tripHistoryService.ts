@@ -13,13 +13,19 @@ export interface TripHistoryResponse {
   trips: TripHistoryItem[];
 }
 
+export interface TripHistoryFilters {
+  destination?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
 export const tripHistoryService = {
   /**
-   * Get trip history for a user
+   * Get trip history for a user with optional filters
    */
-  async getTripHistory(userId: string): Promise<TripHistoryResponse> {
-    const trips = await dataService.query<TripHistoryItem>(
-      `SELECT
+  async getTripHistory(userId: string, filters?: TripHistoryFilters): Promise<TripHistoryResponse> {
+    let query = `
+      SELECT
         th.id,
         th.history_id,
         th.trip_id,
@@ -29,9 +35,32 @@ export const tripHistoryService = {
        FROM trip_history th
        LEFT JOIN trips t ON th.trip_id = t.id
        WHERE th.user_id = $1
-       ORDER BY th.completed_at DESC`,
-      [userId]
-    );
+    `;
+
+    const params: (string | Date)[] = [userId];
+    let paramIndex = 2;
+
+    if (filters?.destination) {
+      query += ` AND LOWER(t.destination) LIKE LOWER($${paramIndex})`;
+      params.push(`%${filters.destination}%`);
+      paramIndex++;
+    }
+
+    if (filters?.startDate) {
+      query += ` AND th.completed_at >= $${paramIndex}::timestamp`;
+      params.push(filters.startDate);
+      paramIndex++;
+    }
+
+    if (filters?.endDate) {
+      query += ` AND th.completed_at <= $${paramIndex}::timestamp`;
+      params.push(filters.endDate);
+      paramIndex++;
+    }
+
+    query += ` ORDER BY th.completed_at DESC`;
+
+    const trips = await dataService.query<TripHistoryItem>(query, params);
 
     return {
       trips: trips.map((trip) => ({
