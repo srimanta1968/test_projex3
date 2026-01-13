@@ -1,12 +1,12 @@
 {
-  "last_scan": "2026-01-13T20:09:06.550610Z",
+  "last_scan": "2026-01-13T20:33:45.203689Z",
   "scanned_files": {
     ".claude/settings.local.json": {
-      "hash": "c7ff96cbd894b353f67f3bf3406866542505e8c38729c5ad08b9ae4b747f2d3c",
+      "hash": "39d887b17be540d93dac46fe25a9dcbe81330cc732302e17d6ac3d4f5974d57d",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-13T05:29:39.069894Z",
-      "linesOfCode": 20
+      "timestamp": "2026-01-13T20:33:40.273804Z",
+      "linesOfCode": 24
     },
     "client/package.json": {
       "hash": "867d8e58d7023de1bbda0ac4aef8c9c0432305cdc0aa0d1f5478253706826e52",
@@ -124,7 +124,7 @@
       "linesOfCode": 87
     },
     "server/src/routes/authRoutes.ts": {
-      "hash": "decd133cde3f20f8c409b2d9b4966fb23519082d6f776b2212eba18ca51327f4",
+      "hash": "4e46653500faa0b259b30cf393bb22506599dbf432a705aae57d22f0699d9a9f",
       "compliance": 80,
       "violations": [
         {
@@ -152,7 +152,7 @@
           "filePath": "server/src/routes/authRoutes.ts"
         }
       ],
-      "timestamp": "2026-01-13T05:32:29.040690Z",
+      "timestamp": "2026-01-13T20:33:41.375386Z",
       "linesOfCode": 21
     },
     "server/src/services/authService.ts": {
@@ -190,18 +190,18 @@
       "linesOfCode": 36
     },
     ".mcp-cache/pre_commit_cache.json": {
-      "hash": "d07ebb98b067b9da017fc158d47c0adde39065310fcb2682938302a192eca905",
+      "hash": "69f996cbbcf24ad68f4a2a67c5198263fb20aff64a8d18b6baa0854f58b107ec",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-13T05:32:28.128056Z",
-      "linesOfCode": 227
+      "timestamp": "2026-01-13T20:33:40.925077Z",
+      "linesOfCode": 544
     },
     ".mcp-cache/violations_latest.json": {
-      "hash": "19e0f4e9aa83deb608a5a2b1995ece53d58e11498b222071fcb321ff30d30030",
+      "hash": "bdb32e59f2b7cc8d03c6704827a5ce95883e0324207fe6181205aa6c616f7509",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-13T05:32:28.147244Z",
-      "linesOfCode": 35
+      "timestamp": "2026-01-13T20:33:41.013557Z",
+      "linesOfCode": 25
     },
     ".mcp-cache/violations_report_20260113_052445.json": {
       "hash": "bca743f87336bdc29434bc3c398b4bc71005a6ec6549ff7938b2e06b5a95cb53",
@@ -239,10 +239,10 @@
       "linesOfCode": 88
     },
     "tests/api_definitions/auth/login.json": {
-      "hash": "6d0d76da9df2a1235db8d6c9e74c0036091af41a24ab80c17b277bc6d939bab5",
+      "hash": "28b37087f127189e07c1d47cb6d40312006bd022eb5fc68f0b3a125be0b4e052",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-13T20:09:03.479141Z",
+      "timestamp": "2026-01-13T20:33:42.080283Z",
       "linesOfCode": 35
     },
     "client/src/pages/Profile.tsx": {
@@ -509,6 +509,69 @@
       "violations": [],
       "timestamp": "2026-01-13T19:41:13.615113Z",
       "linesOfCode": 30
+    },
+    ".mcp-cache/api_test_cache.json": {
+      "hash": "c0ee487e26d4cfc673cf48818e12003f792d8643f5e8785407d6a8952f48e09d",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T20:33:40.293464Z",
+      "linesOfCode": 33
+    },
+    ".mcp-cache/component_scan_cache.json": {
+      "hash": "daa4bf83ec925f684754a17762dff9b5e59857a17b8ef5f10615e6ce3d21cf59",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T20:33:40.314615Z",
+      "linesOfCode": 14
+    },
+    ".mcp-cache/test_failure_counts.json": {
+      "hash": "58916038013a1b26a60f6a0ebb69ba7d3a6bf3a102a9f74ef058f4e728d599c9",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T20:33:40.968683Z",
+      "linesOfCode": 3
+    },
+    ".mcp-cache/violations_report_20260113_053230.json": {
+      "hash": "377cc9d4e1dd2acefff15c9608933647ed6e4b00b6af9bad9e6bf161dd134b75",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T20:33:41.057184Z",
+      "linesOfCode": 43
+    },
+    ".mcp-cache/violations_report_20260113_055057.json": {
+      "hash": "2d83d597f4fe793f3fed2c560c1664e1ecf21cf6b5d333114eeb0d27a25baed8",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T20:33:41.100841Z",
+      "linesOfCode": 63
+    },
+    ".mcp-cache/violations_report_20260113_055523.json": {
+      "hash": "8ee95175cdd7a2c8ef4d071ffc1664b95b92e5abbc12f94ae9e958142c27b1d2",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T20:33:41.149906Z",
+      "linesOfCode": 63
+    },
+    ".mcp-cache/violations_report_20260113_191350.json": {
+      "hash": "5380168dde1ebd403e074ae67ed99a75d132356d542ccd61e56286ab04aecd56",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T20:33:41.196500Z",
+      "linesOfCode": 63
+    },
+    ".mcp-cache/violations_report_20260113_194116.json": {
+      "hash": "bdb32e59f2b7cc8d03c6704827a5ce95883e0324207fe6181205aa6c616f7509",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T20:33:41.225445Z",
+      "linesOfCode": 25
+    },
+    "server/package-lock.json": {
+      "hash": "6558e692eefb763244620018147726905d57cfd58c76d3d5b9868001eb7530ce",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T20:33:41.353479Z",
+      "linesOfCode": 1942
     }
   },
   "registered_apis": {
@@ -539,6 +602,14 @@
     "GET:/api/feedback/rating": {
       "filePath": "server/src/routes/feedbackRoutes.ts",
       "timestamp": "2026-01-13T19:13:50.065279Z"
+    },
+    "POST:/api/auth/register": {
+      "filePath": "server/src/routes/authRoutes.ts",
+      "timestamp": "2026-01-13T20:33:45.203699Z"
+    },
+    "POST:/api/auth/login": {
+      "filePath": "server/src/routes/authRoutes.ts",
+      "timestamp": "2026-01-13T20:33:45.203701Z"
     }
   }
 }
