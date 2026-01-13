@@ -1,0 +1,25 @@
+{
+  "endpoint": "/api/payments",
+  "method": "GET",
+  "taskId": "a7362ca5-93f9-468e-9937-4d05aa7b8878",
+  "requiresAuth": true,
+  "priority": 61,
+  "dependsOn": ["POST /api/auth/register"],
+  "captureResponse": {},
+  "testCases": [
+    {
+      "name": "Get user payments",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "payments": []
+        }
+      }
+    }
+  ]
+}
