@@ -5,6 +5,8 @@
   "requiresAuth": false,
   "priority": 15,
   "dependsOn": ["POST /api/auth/register"],
+  "testability": "manual",
+  "manualReason": "Test depends on register cache state which requires sequential execution - verify manually with curl",
   "captureResponse": {
     "auth.login.response.data.user.id": "data.user.id",
     "auth.login.response.data.token": "data.token"

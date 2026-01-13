@@ -12,6 +12,10 @@ interface ProfileError {
   message: string;
 }
 
+interface UserRating {
+  averageRating: number | null;
+}
+
 interface PreferencesForm {
   notifications: boolean;
   theme: 'light' | 'dark';
@@ -29,6 +33,8 @@ export default function Profile() {
     notifications: true,
     theme: 'light',
   });
+  const [userRating, setUserRating] = useState<UserRating | null>(null);
+  const [ratingLoading, setRatingLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -80,6 +86,39 @@ export default function Profile() {
 
     fetchProfile();
   }, [navigate]);
+
+  useEffect(() => {
+    const fetchUserRating = async () => {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        setRatingLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/feedback/rating', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          setUserRating(data.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch user rating:', err);
+      } finally {
+        setRatingLoading(false);
+      }
+    };
+
+    fetchUserRating();
+  }, []);
 
   const handleSavePreferences = async (e: FormEvent) => {
     e.preventDefault();
@@ -214,6 +253,49 @@ export default function Profile() {
                     <span className="text-gray-600">Profile ID:</span>
                     <span className="font-medium text-sm">{profile?.id || 'N/A'}</span>
                   </div>
+                </div>
+              </div>
+
+              <div className="border-b pb-4">
+                <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">
+                  Your Rating
+                </h2>
+                <div className="bg-gray-50 rounded p-4">
+                  {ratingLoading ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                      <span className="ml-2 text-gray-600">Loading rating...</span>
+                    </div>
+                  ) : userRating?.averageRating !== null && userRating?.averageRating !== undefined ? (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <span className="text-3xl text-yellow-400 mr-2">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <span
+                              key={star}
+                              className={
+                                star <= Math.round(userRating.averageRating || 0)
+                                  ? 'text-yellow-400'
+                                  : 'text-gray-300'
+                              }
+                            >
+                              ★
+                            </span>
+                          ))}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-2xl font-bold text-gray-800">
+                          {userRating.averageRating.toFixed(1)}
+                        </span>
+                        <span className="text-gray-500 text-sm ml-1">/ 5</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-sm text-center">
+                      No ratings yet. Share feedback to get rated!
+                    </p>
+                  )}
                 </div>
               </div>
 
