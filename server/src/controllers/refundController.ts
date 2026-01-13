@@ -141,6 +141,69 @@ export const refundController = {
   },
 
   /**
+   * Update refund status (approve/reject)
+   */
+  async updateRefundStatus(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          success: false,
+          error: 'Authentication required',
+        });
+        return;
+      }
+
+      const { refund_id } = req.params;
+      const { status } = req.body;
+
+      if (!refund_id) {
+        res.status(400).json({
+          success: false,
+          error: 'Refund ID is required',
+        });
+        return;
+      }
+
+      if (!status) {
+        res.status(400).json({
+          success: false,
+          error: 'Status is required',
+        });
+        return;
+      }
+
+      if (!['approved', 'rejected'].includes(status)) {
+        res.status(400).json({
+          success: false,
+          error: "Invalid status. Must be 'approved' or 'rejected'",
+        });
+        return;
+      }
+
+      const refund = await refundService.updateRefundStatus(refund_id, req.user.userId, status);
+
+      if (!refund) {
+        res.status(404).json({
+          success: false,
+          error: 'Refund not found',
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        data: { refund },
+      });
+    } catch (error) {
+      console.error('Update refund status error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to update refund status',
+      });
+    }
+  },
+
+  /**
    * Process an approved refund
    */
   async processRefund(req: AuthenticatedRequest, res: Response): Promise<void> {

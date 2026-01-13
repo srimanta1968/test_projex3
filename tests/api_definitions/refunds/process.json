@@ -1,0 +1,94 @@
+{
+  "endpoint": "/api/refunds/:refund_id/process",
+  "method": "PUT",
+  "taskId": "5f40c35d-2465-4ccf-a1c1-aa3ecf5d3968",
+  "description": "Process an approved refund and update payment status",
+  "authentication": {
+    "required": true,
+    "type": "Bearer token"
+  },
+  "parameters": {
+    "path": {
+      "refund_id": {
+        "type": "string",
+        "required": true,
+        "description": "UUID of the refund to process"
+      }
+    }
+  },
+  "testCases": [
+    {
+      "name": "Successfully process an approved refund",
+      "description": "Process refund that has been approved, updates payment to refunded",
+      "setup": {
+        "requireApprovedRefund": true
+      },
+      "request": {
+        "params": {
+          "refund_id": "{{approved_refund_id}}"
+        }
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "refund": {
+            "status": "processed"
+          }
+        }
+      }
+    },
+    {
+      "name": "Fail to process pending refund",
+      "description": "Cannot process a refund that is not approved",
+      "setup": {
+        "requirePendingRefund": true
+      },
+      "request": {
+        "params": {
+          "refund_id": "{{pending_refund_id}}"
+        }
+      },
+      "expectedStatus": 404,
+      "expectedResponse": {
+        "success": false,
+        "error": "Refund not found or not approved"
+      }
+    },
+    {
+      "name": "Fail to process non-existent refund",
+      "description": "Returns 404 for refund that does not exist",
+      "request": {
+        "params": {
+          "refund_id": "00000000-0000-0000-0000-000000000000"
+        }
+      },
+      "expectedStatus": 404,
+      "expectedResponse": {
+        "success": false,
+        "error": "Refund not found or not approved"
+      }
+    },
+    {
+      "name": "Require authentication",
+      "description": "Returns 401 without valid token",
+      "skipAuth": true,
+      "request": {
+        "params": {
+          "refund_id": "{{refund_id}}"
+        }
+      },
+      "expectedStatus": 401,
+      "expectedResponse": {
+        "success": false,
+        "error": "No token provided"
+      }
+    }
+  ],
+  "businessRules": [
+    "Only approved refunds can be processed",
+    "Processing updates the original payment status to 'refunded'",
+    "Processed refunds cannot be processed again",
+    "User can only process their own refunds"
+  ]
+}

@@ -38,6 +38,17 @@ router.get(
 );
 
 /**
+ * @route PUT /api/refunds/:refund_id/status
+ * @desc Update refund status (approve/reject)
+ * @access Private
+ */
+router.put(
+  '/:refund_id/status',
+  authenticateToken as RequestHandler,
+  refundController.updateRefundStatus as RequestHandler
+);
+
+/**
  * @route PUT /api/refunds/:refund_id/process
  * @desc Process an approved refund
  * @access Private

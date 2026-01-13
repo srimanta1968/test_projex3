@@ -1,0 +1,132 @@
+{
+  "endpoint": "/api/refunds/:refund_id/status",
+  "method": "PUT",
+  "taskId": "5f40c35d-2465-4ccf-a1c1-aa3ecf5d3968",
+  "description": "Update refund status (approve/reject)",
+  "authentication": {
+    "required": true,
+    "type": "Bearer token"
+  },
+  "parameters": {
+    "path": {
+      "refund_id": {
+        "type": "string",
+        "required": true,
+        "description": "UUID of the refund to update"
+      }
+    },
+    "body": {
+      "status": {
+        "type": "string",
+        "required": true,
+        "enum": ["approved", "rejected"],
+        "description": "New status for the refund"
+      }
+    }
+  },
+  "testCases": [
+    {
+      "name": "Approve a pending refund",
+      "description": "Update refund status to approved",
+      "setup": {
+        "requirePendingRefund": true
+      },
+      "request": {
+        "params": {
+          "refund_id": "{{pending_refund_id}}"
+        },
+        "body": {
+          "status": "approved"
+        }
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "refund": {
+            "status": "approved"
+          }
+        }
+      }
+    },
+    {
+      "name": "Reject a pending refund",
+      "description": "Update refund status to rejected",
+      "setup": {
+        "requirePendingRefund": true
+      },
+      "request": {
+        "params": {
+          "refund_id": "{{pending_refund_id}}"
+        },
+        "body": {
+          "status": "rejected"
+        }
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "refund": {
+            "status": "rejected"
+          }
+        }
+      }
+    },
+    {
+      "name": "Reject invalid status value",
+      "description": "Only approved/rejected allowed",
+      "request": {
+        "params": {
+          "refund_id": "{{refund_id}}"
+        },
+        "body": {
+          "status": "invalid"
+        }
+      },
+      "expectedStatus": 400,
+      "expectedResponse": {
+        "success": false,
+        "error": "Invalid status. Must be 'approved' or 'rejected'"
+      }
+    },
+    {
+      "name": "Reject missing status",
+      "description": "Status field is required",
+      "request": {
+        "params": {
+          "refund_id": "{{refund_id}}"
+        },
+        "body": {}
+      },
+      "expectedStatus": 400,
+      "expectedResponse": {
+        "success": false,
+        "error": "Status is required"
+      }
+    },
+    {
+      "name": "Fail for non-existent refund",
+      "description": "Returns 404 for refund that does not exist",
+      "request": {
+        "params": {
+          "refund_id": "00000000-0000-0000-0000-000000000000"
+        },
+        "body": {
+          "status": "approved"
+        }
+      },
+      "expectedStatus": 404,
+      "expectedResponse": {
+        "success": false,
+        "error": "Refund not found"
+      }
+    }
+  ],
+  "businessRules": [
+    "Only pending refunds can be approved or rejected",
+    "Valid status values are 'approved' and 'rejected'",
+    "Status updates record the timestamp",
+    "User can only update their own refunds"
+  ]
+}
