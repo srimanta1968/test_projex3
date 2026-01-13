@@ -9,6 +9,7 @@ import TripCreation from './pages/TripCreation';
 import MatchedTrips from './pages/MatchedTrips';
 import Payments from './pages/Payments';
 import BillingHistory from './pages/BillingHistory';
+import Refunds from './pages/Refunds';
 
 interface User {
   id: string;
@@ -83,6 +84,7 @@ function Navigation() {
               <Link to="/trip-history" className="hover:underline">Trips</Link>
               <Link to="/payments" className="hover:underline">Payments</Link>
               <Link to="/billing" className="hover:underline">Billing</Link>
+              <Link to="/refunds" className="hover:underline">Refunds</Link>
               <Link to="/feedback" className="hover:underline">Feedback</Link>
               <span className="text-sm">{user.email}</span>
               <button
@@ -144,6 +146,7 @@ function App() {
           <Route path="/matched-trips" element={<MatchedTrips />} />
           <Route path="/payments" element={<Payments />} />
           <Route path="/billing" element={<BillingHistory />} />
+          <Route path="/refunds" element={<Refunds />} />
           <Route path="/feedback" element={<Feedback />} />
         </Routes>
       </div>

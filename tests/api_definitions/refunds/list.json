@@ -1,0 +1,24 @@
+{
+  "endpoint": "/api/refunds",
+  "method": "GET",
+  "taskId": "194a22ca-5a7b-4984-892b-60200c25b7f8",
+  "requiresAuth": true,
+  "priority": 69,
+  "dependsOn": ["POST /api/auth/register"],
+  "testCases": [
+    {
+      "name": "Get user refunds",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "refunds": []
+        }
+      }
+    }
+  ]
+}

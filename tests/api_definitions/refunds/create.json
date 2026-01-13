@@ -1,0 +1,34 @@
+{
+  "endpoint": "/api/refunds",
+  "method": "POST",
+  "taskId": "194a22ca-5a7b-4984-892b-60200c25b7f8",
+  "requiresAuth": true,
+  "priority": 68,
+  "dependsOn": ["POST /api/auth/register", "POST /api/payments"],
+  "captureResponse": {
+    "refunds.create.response.data.refund.id": "data.refund.id"
+  },
+  "testCases": [
+    {
+      "name": "Create refund request",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "payload": {
+        "payment_id": "{{cache:payments.scenario.response.data.payment.id}}",
+        "reason": "{{static:Product not as described}}",
+        "amount": 50.00
+      },
+      "expectedStatus": 201,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "refund": {
+            "status": "pending"
+          }
+        }
+      }
+    }
+  ]
+}
