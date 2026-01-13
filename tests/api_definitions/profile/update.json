@@ -1,0 +1,35 @@
+{
+  "endpoint": "/api/profile",
+  "method": "PUT",
+  "taskId": "eb034d81-a3b2-4803-ac56-faade8d6fcfa",
+  "requiresAuth": true,
+  "priority": 25,
+  "dependsOn": ["POST /api/auth/register", "GET /api/profile"],
+  "testCases": [
+    {
+      "name": "Update user profile preferences",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "payload": {
+        "preferences": {
+          "notifications": true,
+          "theme": "dark"
+        }
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "profile": {
+            "id": "string",
+            "user_id": "string",
+            "preferences": "object",
+            "trip_history": "object"
+          }
+        }
+      }
+    }
+  ]
+}
