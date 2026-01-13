@@ -8,7 +8,9 @@
       "mcp__projexlight__projexlight_get_instruction",
       "mcp__projexlight__projexlight_validate",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "mcp__projexlight__projexlight_get_pending_violations",
+      "mcp__projexlight__projexlight_complete_task"
     ]
   },
   "enableAllProjectMcpServers": true,

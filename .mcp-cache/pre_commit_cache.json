@@ -1,0 +1,186 @@
+{
+  "last_scan": "2026-01-13T05:24:45.194017Z",
+  "scanned_files": {
+    ".claude/settings.local.json": {
+      "hash": "732b68a80bfb9bef91867bb970d43bf60e0609f3c4466b563a8191c71abefe26",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:24:42.780996Z",
+      "linesOfCode": 18
+    },
+    "client/package.json": {
+      "hash": "867d8e58d7023de1bbda0ac4aef8c9c0432305cdc0aa0d1f5478253706826e52",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:24:42.830424Z",
+      "linesOfCode": 26
+    },
+    "client/src/App.tsx": {
+      "hash": "f5e6e2b2ff94d11638b5afaa7a750f2bf695ce5a72cda0a8692e3156d2c78d25",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:24:42.846439Z",
+      "linesOfCode": 31
+    },
+    "client/src/pages/Register.tsx": {
+      "hash": "b3f6ef3b503f760558627bf3905a31e9b02333760e67bc302aab958d36ce58f8",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:24:43.415529Z",
+      "linesOfCode": 150
+    },
+    "mcp-server/mcp-bridge.js": {
+      "hash": "3b37b49d2be0cfbf52f6ef60fc8697d4f25298676bed524e96281c97052d00fa",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:24:43.797029Z",
+      "linesOfCode": 585
+    },
+    "mcp-server/mcp-config.json": {
+      "hash": "19a9e85568c950321c9ed4cdd9f6d3e4a80c94ffd2e37468605119c843e7de02",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:24:43.808358Z",
+      "linesOfCode": 19
+    },
+    "server/package.json": {
+      "hash": "4cae2bac7d51c57d9c257693c7ab47ad687830b1c25ec49ec75d1328a198fd83",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:24:43.861883Z",
+      "linesOfCode": 34
+    },
+    "server/src/app.ts": {
+      "hash": "859119cd3c48918d921f07408befdd0761df1795e222bcc76792fa9c4bd09d8f",
+      "compliance": 95,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/app.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T05:24:43.878274Z",
+      "linesOfCode": 28
+    },
+    "server/src/config/env.ts": {
+      "hash": "47df3340452eac91bc86c1f18ae5de06d161d25b6b79629b200ea0cbd471a7f0",
+      "compliance": 95,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/config/env.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T05:24:43.898436Z",
+      "linesOfCode": 30
+    },
+    "server/src/controllers/authController.ts": {
+      "hash": "584e6e080e1dfe6e6ef23ace2ccc6ebcfd031e7c618577b74c7442db0f04bcfd",
+      "compliance": 85,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/controllers/authController.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T05:24:43.918584Z",
+      "linesOfCode": 42
+    },
+    "server/src/routes/authRoutes.ts": {
+      "hash": "a21fec9f8ff691db7297495491977b26629b31bc16a08e6c44723a6808763635",
+      "compliance": 80,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/authRoutes.ts"
+        },
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/authRoutes.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T05:24:43.945791Z",
+      "linesOfCode": 14
+    },
+    "server/src/services/authService.ts": {
+      "hash": "0108b505d136927dbaed3f53153ba1c6b42ff426cfa8e7b252aef49b3c2a2bf0",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:24:44.295525Z",
+      "linesOfCode": 67
+    },
+    "server/src/services/dataService.ts": {
+      "hash": "e3596bee2fb8e1b364284d7d3b4b048011fd2f04b13b8ac1ce66862894648143",
+      "compliance": 75,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-11",
+          "description": "Direct database access - use DataService/ORM instead",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/services/dataService.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T05:24:44.313684Z",
+      "linesOfCode": 63
+    },
+    "tests/api_definitions/auth/register.json": {
+      "hash": "8e4f332be9e545239b99e3cded4d36a98be112564d48157fb67e1304d21e22f6",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:24:44.335751Z",
+      "linesOfCode": 35
+    }
+  },
+  "registered_apis": {
+    "POST:/register": {
+      "filePath": "server/src/routes/authRoutes.ts",
+      "timestamp": "2026-01-13T05:24:45.194077Z"
+    }
+  }
+}

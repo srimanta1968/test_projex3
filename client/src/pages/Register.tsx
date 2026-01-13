@@ -11,6 +11,39 @@ interface RegisterError {
   message: string;
 }
 
+interface ValidationErrors {
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+}
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
+
+function validateForm(data: RegisterFormData): ValidationErrors {
+  const errors: ValidationErrors = {};
+
+  if (!data.email.trim()) {
+    errors.email = 'Email is required';
+  } else if (!EMAIL_REGEX.test(data.email)) {
+    errors.email = 'Invalid email format';
+  }
+
+  if (!data.password) {
+    errors.password = 'Password is required';
+  } else if (data.password.length < 8) {
+    errors.password = 'Password must be at least 8 characters';
+  } else if (!PASSWORD_REGEX.test(data.password)) {
+    errors.password = 'Password must contain uppercase, lowercase, number, and special character (@$!%*?&)';
+  }
+
+  if (data.password !== data.confirmPassword) {
+    errors.confirmPassword = 'Passwords do not match';
+  }
+
+  return errors;
+}
+
 export default function Register() {
   const [formData, setFormData] = useState<RegisterFormData>({
     email: '',
@@ -19,25 +52,24 @@ export default function Register() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<RegisterError | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<ValidationErrors>({});
   const [success, setSuccess] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setError(null);
+    setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+    setFieldErrors({});
 
-    if (formData.password !== formData.confirmPassword) {
-      setError({ field: 'confirmPassword', message: 'Passwords do not match' });
-      return;
-    }
-
-    if (formData.password.length < 8) {
-      setError({ field: 'password', message: 'Password must be at least 8 characters' });
+    const validationErrors = validateForm(formData);
+    if (Object.keys(validationErrors).length > 0) {
+      setFieldErrors(validationErrors);
       return;
     }
 
@@ -107,9 +139,14 @@ export default function Register() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                fieldErrors.email ? 'border-red-500' : 'border-gray-300'
+              }`}
               placeholder="you@example.com"
             />
+            {fieldErrors.email && (
+              <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>
+            )}
           </div>
 
           <div>
@@ -123,12 +160,17 @@ export default function Register() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                fieldErrors.password ? 'border-red-500' : 'border-gray-300'
+              }`}
               placeholder="At least 8 characters"
             />
-            {error?.field === 'password' && (
-              <p className="mt-1 text-sm text-red-600">{error.message}</p>
+            {fieldErrors.password && (
+              <p className="mt-1 text-sm text-red-600">{fieldErrors.password}</p>
             )}
+            <p className="mt-1 text-xs text-gray-500">
+              Must contain uppercase, lowercase, number, and special character
+            </p>
           </div>
 
           <div>
@@ -142,11 +184,13 @@ export default function Register() {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                fieldErrors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+              }`}
               placeholder="Re-enter your password"
             />
-            {error?.field === 'confirmPassword' && (
-              <p className="mt-1 text-sm text-red-600">{error.message}</p>
+            {fieldErrors.confirmPassword && (
+              <p className="mt-1 text-sm text-red-600">{fieldErrors.confirmPassword}</p>
             )}
           </div>
 

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import authService from '../services/authService';
+import { validateRegistrationInput, sanitizeEmail } from '../utils/validation';
 
 /**
  * AuthController handles authentication HTTP requests
@@ -13,15 +14,24 @@ export const authController = {
     try {
       const { email, password } = req.body;
 
-      if (!email || !password) {
+      // Validate inputs
+      const validation = validateRegistrationInput({ email, password });
+      if (!validation.isValid) {
         res.status(400).json({
           success: false,
-          error: 'Email and password are required',
+          error: 'Validation failed',
+          errors: validation.errors,
         });
         return;
       }
 
-      const result = await authService.register({ email, password });
+      // Sanitize email
+      const sanitizedEmail = sanitizeEmail(email);
+
+      const result = await authService.register({
+        email: sanitizedEmail,
+        password
+      });
 
       res.status(201).json({
         success: true,
