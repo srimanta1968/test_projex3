@@ -27,6 +27,17 @@ router.get(
 );
 
 /**
+ * @route GET /api/refunds/notifications
+ * @desc Get refund status notifications for the user
+ * @access Private
+ */
+router.get(
+  '/notifications',
+  authenticateToken as RequestHandler,
+  refundController.getRefundNotifications as RequestHandler
+);
+
+/**
  * @route GET /api/refunds/:refund_id
  * @desc Get a specific refund
  * @access Private

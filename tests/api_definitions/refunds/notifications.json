@@ -1,0 +1,45 @@
+{
+  "endpoint": "/api/refunds/notifications",
+  "method": "GET",
+  "taskId": "c7dbb577-7993-452f-83d5-99054dd482af",
+  "description": "Get refund status notifications for the authenticated user",
+  "requiresAuth": true,
+  "priority": 75,
+  "dependsOn": ["POST /api/auth/register"],
+  "testCases": [
+    {
+      "name": "Get refund notifications for user",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "notifications": []
+        }
+      }
+    }
+  ],
+  "responseSchema": {
+    "notifications": {
+      "type": "array",
+      "items": {
+        "id": "string",
+        "type": "string (refund_approved | refund_rejected | refund_processed)",
+        "message": "string",
+        "refund_id": "string",
+        "amount": "number",
+        "status": "string",
+        "created_at": "timestamp"
+      }
+    }
+  },
+  "businessRules": [
+    "Returns notifications for refund status changes",
+    "Shows approved, rejected, and processed refunds",
+    "Ordered by most recent first",
+    "User can only see their own notifications"
+  ]
+}

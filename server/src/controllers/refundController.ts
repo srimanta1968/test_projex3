@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../middleware/authMiddleware';
 import { refundService, CreateRefundInput } from '../services/refundService';
+import { notificationService } from '../services/notificationService';
 
 /**
  * Controller for handling refund-related requests
@@ -190,6 +191,14 @@ export const refundController = {
         return;
       }
 
+      // Create notification for status change
+      await notificationService.createRefundNotification(
+        req.user.userId,
+        refund.refund_id,
+        refund.amount,
+        status
+      );
+
       res.status(200).json({
         success: true,
         data: { refund },
@@ -236,6 +245,14 @@ export const refundController = {
         return;
       }
 
+      // Create notification for processed refund
+      await notificationService.createRefundNotification(
+        req.user.userId,
+        refund.refund_id,
+        refund.amount,
+        'processed'
+      );
+
       res.status(200).json({
         success: true,
         data: { refund },
@@ -245,6 +262,33 @@ export const refundController = {
       res.status(500).json({
         success: false,
         error: 'Failed to process refund',
+      });
+    }
+  },
+  /**
+   * Get refund notifications for the authenticated user
+   */
+  async getRefundNotifications(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          success: false,
+          error: 'Authentication required',
+        });
+        return;
+      }
+
+      const result = await notificationService.getRefundNotifications(req.user.userId);
+
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      console.error('Get refund notifications error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve refund notifications',
       });
     }
   },
