@@ -1,0 +1,25 @@
+{
+  "endpoint": "/api/trip-history",
+  "method": "GET",
+  "taskId": "546162db-61dc-4464-8db5-4938e1ed33ec",
+  "requiresAuth": true,
+  "priority": 30,
+  "dependsOn": ["POST /api/auth/register"],
+  "testCases": [
+    {
+      "name": "Get user trip history",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "payload": {},
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "trips": "array"
+        }
+      }
+    }
+  ]
+}

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-do
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
+import TripHistory from './pages/TripHistory';
 
 interface User {
   id: string;
@@ -35,6 +36,7 @@ function Navigation() {
           {user ? (
             <>
               <Link to="/profile" className="hover:underline">Profile</Link>
+              <Link to="/trip-history" className="hover:underline">Trips</Link>
               <span className="text-sm">{user.email}</span>
               <button
                 onClick={handleLogout}
@@ -90,6 +92,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/trip-history" element={<TripHistory />} />
         </Routes>
       </div>
     </BrowserRouter>
