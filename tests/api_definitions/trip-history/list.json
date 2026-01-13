@@ -1,7 +1,7 @@
 {
   "endpoint": "/api/trip-history",
   "method": "GET",
-  "taskId": "546162db-61dc-4464-8db5-4938e1ed33ec",
+  "taskId": "13f0476c-9431-41ee-9e90-72026e60eade",
   "requiresAuth": true,
   "priority": 30,
   "dependsOn": ["POST /api/auth/register"],
