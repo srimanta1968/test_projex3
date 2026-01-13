@@ -121,6 +121,23 @@ export const tripService = {
       },
     };
   },
+
+  /**
+   * Delete/cancel a trip
+   */
+  async deleteTrip(tripId: string, userId: string): Promise<boolean> {
+    const existingTrip = await this.getTripById(tripId, userId);
+    if (!existingTrip) {
+      return false;
+    }
+
+    await dataService.query(
+      `DELETE FROM trips WHERE id = $1 AND user_id = $2`,
+      [tripId, userId]
+    );
+
+    return true;
+  },
 };
 
 export default tripService;

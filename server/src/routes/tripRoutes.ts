@@ -37,4 +37,15 @@ router.put(
   tripController.updateTrip as RequestHandler
 );
 
+/**
+ * @route DELETE /api/trips/:id
+ * @desc Cancel/delete a trip
+ * @access Private
+ */
+router.delete(
+  '/:id',
+  authenticateToken as RequestHandler,
+  tripController.deleteTrip as RequestHandler
+);
+
 export default router;

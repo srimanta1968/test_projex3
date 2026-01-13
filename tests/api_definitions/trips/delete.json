@@ -1,0 +1,26 @@
+{
+  "endpoint": "/api/trips/:id",
+  "method": "DELETE",
+  "taskId": "563be849-3c72-4508-b52e-a023c31c1c05",
+  "requiresAuth": true,
+  "priority": 50,
+  "dependsOn": ["POST /api/auth/register", "POST /api/trips"],
+  "testCases": [
+    {
+      "name": "Cancel/delete a trip",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "pathParams": {
+        "id": "{{cache:trips.create.response.data.trip.id}}"
+      },
+      "payload": {},
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "message": "string"
+      }
+    }
+  ]
+}

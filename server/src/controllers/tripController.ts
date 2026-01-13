@@ -141,6 +141,52 @@ export const tripController = {
       });
     }
   },
+
+  /**
+   * Delete/cancel a trip
+   */
+  async deleteTrip(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          success: false,
+          error: 'Authentication required',
+        });
+        return;
+      }
+
+      const { id } = req.params;
+
+      if (!id) {
+        res.status(400).json({
+          success: false,
+          error: 'Trip ID is required',
+        });
+        return;
+      }
+
+      const deleted = await tripService.deleteTrip(id, req.user.userId);
+
+      if (!deleted) {
+        res.status(404).json({
+          success: false,
+          error: 'Trip not found',
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Trip cancelled successfully',
+      });
+    } catch (error) {
+      console.error('Delete trip error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to cancel trip',
+      });
+    }
+  },
 };
 
 export default tripController;
