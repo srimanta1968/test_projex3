@@ -1,0 +1,33 @@
+{
+  "last_test_run": "2026-01-13T20:09:18.100042",
+  "tested_apis": {
+    "POST:/api/auth/login": {
+      "lastTested": "2026-01-13T20:09:18.100053",
+      "fileHash": null
+    },
+    "POST:/api/auth/register": {
+      "lastTested": "2026-01-13T20:09:18.100056",
+      "fileHash": null
+    },
+    "POST:/api/feedback": {
+      "lastTested": "2026-01-13T20:09:18.100058",
+      "fileHash": null
+    },
+    "GET:/api/feedback/rating": {
+      "lastTested": "2026-01-13T20:09:18.100060",
+      "fileHash": null
+    },
+    "GET:/api/profile": {
+      "lastTested": "2026-01-13T20:09:18.100062",
+      "fileHash": null
+    },
+    "PUT:/api/profile": {
+      "lastTested": "2026-01-13T20:09:18.100063",
+      "fileHash": null
+    },
+    "GET:/api/trip-history": {
+      "lastTested": "2026-01-13T20:09:18.100065",
+      "fileHash": null
+    }
+  }
+}

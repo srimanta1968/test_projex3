@@ -23,3 +23,5 @@ const loginHandler: RequestHandler = authController.login as RequestHandler;
 router.post('/login', loginHandler);
 
 export default router;
+
+//testing

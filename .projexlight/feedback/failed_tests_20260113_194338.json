@@ -1,0 +1,39 @@
+{
+  "type": "failed_tests",
+  "timestamp": "2026-01-13T19:43:38.266404",
+  "totalFailures": 1,
+  "instructions": [
+    {
+      "endpoint": "POST /api/auth/login",
+      "issue": "Test failed with status 401",
+      "errorMessage": "Status 401 - Error: Invalid email or password",
+      "suggestedFix": "The request was rejected due to missing or invalid authentication.\n\n**Possible causes:**\n1. No Authorization header provided\n2. Token has expired\n3. Token is malformed or invalid\n4. JWT_SECRET mismatch between server and test\n\n**Recommended actions:**\n1. Ensure registration and login are executed first (priority: 1, 2)\n2. Check that cacheResponse saves the token correctly\n3. Verify JWT_SECRET matches in both server .env and test environment\n\nCheck your auth endpoint definition:\n```json\n{\n  \"priority\": 1,\n  \"captureResponse\": {\"auth.token\": \"data.token\"}\n}\n```",
+      "priority": "high",
+      "debug": {
+        "fullUrl": "http://localhost:3000/api/auth/login",
+        "requestBody": {
+          "email": "testuser_417791@example.com",
+          "password": "TestPass123!"
+        },
+        "responseBody": "{\n  \"success\": false,\n  \"error\": \"Invalid email or password\"\n}",
+        "curlCommand": "curl \\\n  -X \\\n  POST \\\n  -H Content-Type: application/json \\\n  -H Accept: application/json \\\n  -d '{\n  \"email\": \"testuser_417791@example.com\",\n  \"password\": \"TestPass123!\"\n}' \\\n  \"http://localhost:3000/api/auth/login\"",
+        "instructions": [
+          "Copy the curl command below to reproduce the request locally",
+          "Make sure your local server is running on the same port",
+          "Replace host.docker.internal with localhost if running outside Docker",
+          "Check the response body for detailed error information"
+        ]
+      },
+      "errorCategory": {
+        "category": "authentication",
+        "subcategory": "unauthorized",
+        "severity": "error",
+        "title": "Authentication Required",
+        "description": "Request requires valid authentication token",
+        "guidance": "The request was rejected due to missing or invalid authentication.\n\n**Possible causes:**\n1. No Authorization header provided\n2. Token has expired\n3. Token is malformed or invalid\n4. JWT_SECRET mismatch between server and test\n\n**Recommended actions:**\n1. Ensure registration and login are executed first (priority: 1, 2)\n2. Check that cacheResponse saves the token correctly\n3. Verify JWT_SECRET matches in both server .env and test environment\n\nCheck your auth endpoint definition:\n```json\n{\n  \"priority\": 1,\n  \"captureResponse\": {\"auth.token\": \"data.token\"}\n}\n```",
+        "isExpected": false
+      }
+    }
+  ],
+  "llm_prompt": "# Failed API Tests - Fix Required\n\n1 API test(s) failed. Please review and fix the following issues:\n\n## Failed Tests:\n\n### Issue 1:\n- **endpoint**: POST /api/auth/login\n- **issue**: Test failed with status 401\n- **errorMessage**: Status 401 - Error: Invalid email or password\n- **suggestedFix**: The request was rejected due to missing or invalid authentication.\n\n**Possible causes:**\n1. No Authorization header provided\n2. Token has expired\n3. Token is malformed or invalid\n4. JWT_SECRET mismatch between server and test\n\n**Recommended actions:**\n1. Ensure registration and login are executed first (priority: 1, 2)\n2. Check that cacheResponse saves the token correctly\n3. Verify JWT_SECRET matches in both server .env and test environment\n\nCheck your auth endpoint definition:\n```json\n{\n  \"priority\": 1,\n  \"captureResponse\": {\"auth.token\": \"data.token\"}\n}\n```\n- **debug**: {'fullUrl': 'http://localhost:3000/api/auth/login', 'requestBody': {'email': 'testuser_417791@example.com', 'password': 'TestPass123!'}, 'responseBody': '{\\n  \"success\": false,\\n  \"error\": \"Invalid email or password\"\\n}', 'curlCommand': 'curl \\\\\\n  -X \\\\\\n  POST \\\\\\n  -H Content-Type: application/json \\\\\\n  -H Accept: application/json \\\\\\n  -d \\'{\\n  \"email\": \"testuser_417791@example.com\",\\n  \"password\": \"TestPass123!\"\\n}\\' \\\\\\n  \"http://localhost:3000/api/auth/login\"', 'instructions': ['Copy the curl command below to reproduce the request locally', 'Make sure your local server is running on the same port', 'Replace host.docker.internal with localhost if running outside Docker', 'Check the response body for detailed error information']}\n- **errorCategory**: {'category': 'authentication', 'subcategory': 'unauthorized', 'severity': 'error', 'title': 'Authentication Required', 'description': 'Request requires valid authentication token', 'guidance': 'The request was rejected due to missing or invalid authentication.\\n\\n**Possible causes:**\\n1. No Authorization header provided\\n2. Token has expired\\n3. Token is malformed or invalid\\n4. JWT_SECRET mismatch between server and test\\n\\n**Recommended actions:**\\n1. Ensure registration and login are executed first (priority: 1, 2)\\n2. Check that cacheResponse saves the token correctly\\n3. Verify JWT_SECRET matches in both server .env and test environment\\n\\nCheck your auth endpoint definition:\\n```json\\n{\\n  \"priority\": 1,\\n  \"captureResponse\": {\"auth.token\": \"data.token\"}\\n}\\n```', 'isExpected': False}\n\n## Instructions:\n1. Review each failed endpoint\n2. Check the error messages and status codes\n3. Implement the suggested fixes\n4. Re-run tests to verify fixes\n5. Ensure all tests pass before committing\n\n## Priority:\nHIGH - These failures may block deployment"
+}

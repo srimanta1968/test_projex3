@@ -16,7 +16,7 @@
         "Content-Type": "application/json"
       },
       "payload": {
-        "email": "{{cache:auth.email}}",
+        "email": "{{cache:auth.register.response.data.user.email}}",
         "password": "{{static:TestPass123!}}"
       },
       "expectedStatus": 200,

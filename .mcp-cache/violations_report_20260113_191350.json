@@ -1,0 +1,63 @@
+{
+  "timestamp": "2026-01-13T19:13:50.024639Z",
+  "summary": {
+    "totalViolations": 5,
+    "critical": 0,
+    "major": 0,
+    "minor": 5,
+    "filesAffected": 4,
+    "filesScanned": 6,
+    "avgCompliance": 91.67
+  },
+  "violationsByFile": {
+    "server/src/app.ts": [
+      {
+        "line": 0,
+        "severity": "minor",
+        "rule": "SC-05",
+        "message": "",
+        "codeSnippet": "",
+        "suggestedFix": ""
+      }
+    ],
+    "server/src/controllers/feedbackController.ts": [
+      {
+        "line": 0,
+        "severity": "minor",
+        "rule": "SC-02",
+        "message": "",
+        "codeSnippet": "",
+        "suggestedFix": ""
+      }
+    ],
+    "server/src/routes/feedbackRoutes.ts": [
+      {
+        "line": 0,
+        "severity": "minor",
+        "rule": "SC-05",
+        "message": "",
+        "codeSnippet": "",
+        "suggestedFix": ""
+      },
+      {
+        "line": 0,
+        "severity": "minor",
+        "rule": "SC-02",
+        "message": "",
+        "codeSnippet": "",
+        "suggestedFix": ""
+      }
+    ],
+    "server/src/services/feedbackService.ts": [
+      {
+        "line": 0,
+        "severity": "minor",
+        "rule": "SC-06",
+        "message": "",
+        "codeSnippet": "",
+        "suggestedFix": ""
+      }
+    ]
+  },
+  "llmFixPrompt": "\nPlease fix the following 5 coding standard violation(s) in my codebase:\n\n\n\ud83d\udcc1 File: server/src/app.ts\n   - Line 0: SC-05 - \n\n\ud83d\udcc1 File: server/src/controllers/feedbackController.ts\n   - Line 0: SC-02 - \n\n\ud83d\udcc1 File: server/src/routes/feedbackRoutes.ts\n   - Line 0: SC-05 - \n   - Line 0: SC-02 - \n\n\ud83d\udcc1 File: server/src/services/feedbackService.ts\n   - Line 0: SC-06 - \n\nPlease:\n1. Open each file and navigate to the specified line numbers\n2. Apply the suggested fixes or refactor the code to comply with the coding standards\n3. Ensure the fixes don't break existing functionality\n4. Run tests after making changes\n"
+}

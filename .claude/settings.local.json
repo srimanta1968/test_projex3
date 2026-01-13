@@ -10,7 +10,11 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "mcp__projexlight__projexlight_get_pending_violations",
-      "mcp__projexlight__projexlight_complete_task"
+      "mcp__projexlight__projexlight_complete_task",
+      "mcp__projexlight__projexlight_submit_feature_validation",
+      "Bash(git push)",
+      "Bash(echo:*)",
+      "mcp__projexlight__projexlight_clear_test_failures"
     ]
   },
   "enableAllProjectMcpServers": true,

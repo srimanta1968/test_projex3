@@ -1,5 +1,5 @@
 {
-  "last_scan": "2026-01-13T05:29:40.351931Z",
+  "last_scan": "2026-01-13T20:09:06.550610Z",
   "scanned_files": {
     ".claude/settings.local.json": {
       "hash": "c7ff96cbd894b353f67f3bf3406866542505e8c38729c5ad08b9ae4b747f2d3c",
@@ -16,11 +16,11 @@
       "linesOfCode": 26
     },
     "client/src/App.tsx": {
-      "hash": "f5e6e2b2ff94d11638b5afaa7a750f2bf695ce5a72cda0a8692e3156d2c78d25",
+      "hash": "723e37acf26eb6549c1ca5f662503bea64199989ffc33aa570dda1b6d218b51b",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-13T05:24:42.846439Z",
-      "linesOfCode": 31
+      "timestamp": "2026-01-13T19:13:45.528715Z",
+      "linesOfCode": 95
     },
     "client/src/pages/Register.tsx": {
       "hash": "5d8a329c323bd0efd3d5a30cda134743e3369719e3f99ac57cd507e7d88868ad",
@@ -64,7 +64,7 @@
       "linesOfCode": 34
     },
     "server/src/app.ts": {
-      "hash": "859119cd3c48918d921f07408befdd0761df1795e222bcc76792fa9c4bd09d8f",
+      "hash": "ed30051d77368a45aa2c5bb3336d3dea39e98a63d5a613b75bfa91cee1545fcd",
       "compliance": 95,
       "violations": [
         {
@@ -80,11 +80,11 @@
           "filePath": "server/src/app.ts"
         }
       ],
-      "timestamp": "2026-01-13T05:24:43.878274Z",
-      "linesOfCode": 28
+      "timestamp": "2026-01-13T19:13:46.437237Z",
+      "linesOfCode": 34
     },
     "server/src/config/env.ts": {
-      "hash": "47df3340452eac91bc86c1f18ae5de06d161d25b6b79629b200ea0cbd471a7f0",
+      "hash": "7d08848372d03fa2e02cf5eb22dc3dba82a8e83ce90a89ab8a3e6b152cf0c949",
       "compliance": 95,
       "violations": [
         {
@@ -100,11 +100,11 @@
           "filePath": "server/src/config/env.ts"
         }
       ],
-      "timestamp": "2026-01-13T05:24:43.898436Z",
+      "timestamp": "2026-01-13T19:41:13.585277Z",
       "linesOfCode": 30
     },
     "server/src/controllers/authController.ts": {
-      "hash": "8bed07e7d4ab994b2670ade10ad9fe9b09ef8e40578043041600db90aeaaffa9",
+      "hash": "76007f7d3c621a7382691ee7202c69d6ba904ce25e1498833e40fc31f9f1619e",
       "compliance": 85,
       "violations": [
         {
@@ -120,11 +120,11 @@
           "filePath": "server/src/controllers/authController.ts"
         }
       ],
-      "timestamp": "2026-01-13T05:29:39.570847Z",
-      "linesOfCode": 49
+      "timestamp": "2026-01-13T05:32:28.997442Z",
+      "linesOfCode": 87
     },
     "server/src/routes/authRoutes.ts": {
-      "hash": "a21fec9f8ff691db7297495491977b26629b31bc16a08e6c44723a6808763635",
+      "hash": "decd133cde3f20f8c409b2d9b4966fb23519082d6f776b2212eba18ca51327f4",
       "compliance": 80,
       "violations": [
         {
@@ -152,15 +152,15 @@
           "filePath": "server/src/routes/authRoutes.ts"
         }
       ],
-      "timestamp": "2026-01-13T05:24:43.945791Z",
-      "linesOfCode": 14
+      "timestamp": "2026-01-13T05:32:29.040690Z",
+      "linesOfCode": 21
     },
     "server/src/services/authService.ts": {
-      "hash": "0108b505d136927dbaed3f53153ba1c6b42ff426cfa8e7b252aef49b3c2a2bf0",
+      "hash": "777889bad9b9a64985cd8cb3329ead4cf9d8e230328f39a93ba9fa2063494a50",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-13T05:24:44.295525Z",
-      "linesOfCode": 67
+      "timestamp": "2026-01-13T05:32:29.732173Z",
+      "linesOfCode": 104
     },
     "server/src/services/dataService.ts": {
       "hash": "e3596bee2fb8e1b364284d7d3b4b048011fd2f04b13b8ac1ce66862894648143",
@@ -183,25 +183,25 @@
       "linesOfCode": 63
     },
     "tests/api_definitions/auth/register.json": {
-      "hash": "8e4f332be9e545239b99e3cded4d36a98be112564d48157fb67e1304d21e22f6",
+      "hash": "214c5048e31f0a29fcf9cb67c21bc0273a8f82f4fd9cd24b4ed79a4afbb702d2",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-13T05:24:44.335751Z",
-      "linesOfCode": 35
+      "timestamp": "2026-01-13T05:32:29.773194Z",
+      "linesOfCode": 36
     },
     ".mcp-cache/pre_commit_cache.json": {
-      "hash": "acf118fee89f281f95bd5716af3a1aff124eb89f613fafcf8cde302e298d1923",
+      "hash": "d07ebb98b067b9da017fc158d47c0adde39065310fcb2682938302a192eca905",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-13T05:29:39.096362Z",
-      "linesOfCode": 186
+      "timestamp": "2026-01-13T05:32:28.128056Z",
+      "linesOfCode": 227
     },
     ".mcp-cache/violations_latest.json": {
-      "hash": "bca743f87336bdc29434bc3c398b4bc71005a6ec6549ff7938b2e06b5a95cb53",
+      "hash": "19e0f4e9aa83deb608a5a2b1995ece53d58e11498b222071fcb321ff30d30030",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-13T05:29:39.111804Z",
-      "linesOfCode": 73
+      "timestamp": "2026-01-13T05:32:28.147244Z",
+      "linesOfCode": 35
     },
     ".mcp-cache/violations_report_20260113_052445.json": {
       "hash": "bca743f87336bdc29434bc3c398b4bc71005a6ec6549ff7938b2e06b5a95cb53",
@@ -216,12 +216,329 @@
       "violations": [],
       "timestamp": "2026-01-13T05:29:39.596316Z",
       "linesOfCode": 93
+    },
+    ".mcp-cache/violations_report_20260113_052940.json": {
+      "hash": "19e0f4e9aa83deb608a5a2b1995ece53d58e11498b222071fcb321ff30d30030",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:32:28.169530Z",
+      "linesOfCode": 35
+    },
+    "client/src/pages/Login.tsx": {
+      "hash": "9a5f60b7f271163601ac338a360da71730c750be4a602e7c2fa82a52ef33390a",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:32:28.657978Z",
+      "linesOfCode": 114
+    },
+    "server/src/middleware/authMiddleware.ts": {
+      "hash": "67f19ab3ece00358c85180b50122d9be86632040a21c1ed7be984b443477e55c",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:32:29.022537Z",
+      "linesOfCode": 88
+    },
+    "tests/api_definitions/auth/login.json": {
+      "hash": "6d0d76da9df2a1235db8d6c9e74c0036091af41a24ab80c17b277bc6d939bab5",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T20:09:03.479141Z",
+      "linesOfCode": 35
+    },
+    "client/src/pages/Profile.tsx": {
+      "hash": "351e6fd7fda680544c08abfe0c0b3cfe482a546da39426d98788c2ce9f8de65d",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T19:41:13.024504Z",
+      "linesOfCode": 362
+    },
+    "server/src/controllers/profileController.ts": {
+      "hash": "87c42df9e254f6a6bd3535c4655ae620b3d3f4797229186990c229536fa8d511",
+      "compliance": 85,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/controllers/profileController.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T05:50:55.095195Z",
+      "linesOfCode": 64
+    },
+    "server/src/routes/profileRoutes.ts": {
+      "hash": "c53a2af895f6ba7eb56f8cbe044ad014f74a8310d6948224743890d41a88d309",
+      "compliance": 80,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/profileRoutes.ts"
+        },
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/profileRoutes.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T05:50:55.127330Z",
+      "linesOfCode": 25
+    },
+    "server/src/services/profileService.ts": {
+      "hash": "b141b9460a7cbc89fd6b01d878063ce77e942e761b158e3e86e30706923e7fa6",
+      "compliance": 90,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-06",
+          "description": "Missing try/catch error handling",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/services/profileService.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T05:50:55.835001Z",
+      "linesOfCode": 75
+    },
+    "tests/api_definitions/profile/get.json": {
+      "hash": "3fb6907a9cd155bb6159342e3a35f25b858b885113857201d95ee439109449a0",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:50:55.866820Z",
+      "linesOfCode": 33
+    },
+    "tests/api_definitions/profile/update.json": {
+      "hash": "ef1d681bb19ccf288aaf25a0916df96ce0d4ccab0396bf2dc8da96606eb6a588",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:52:43.891389Z",
+      "linesOfCode": 35
+    },
+    "client/src/pages/TripHistory.tsx": {
+      "hash": "156644ed3e9b05a9589b07e002b2cdad54e8ff131d78903c43e281a62d6edd63",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:55:20.578437Z",
+      "linesOfCode": 140
+    },
+    "server/src/controllers/tripHistoryController.ts": {
+      "hash": "eabbc23956d2e002f1b8d65d43f0efdfe50f3aff934535730fdb6b5901b13da2",
+      "compliance": 85,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/controllers/tripHistoryController.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T05:55:20.945399Z",
+      "linesOfCode": 31
+    },
+    "server/src/routes/tripHistoryRoutes.ts": {
+      "hash": "c567693776d43d1b1fc097295f010b004bd05c67a5a65b03a7ffd6b80e3954a2",
+      "compliance": 80,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/tripHistoryRoutes.ts"
+        },
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/tripHistoryRoutes.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T05:55:20.971144Z",
+      "linesOfCode": 15
+    },
+    "server/src/services/tripHistoryService.ts": {
+      "hash": "43bf1eb29384db955565ab17c1e71b20f594db332a0568fb67dd85a3a2d1d1ba",
+      "compliance": 90,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-06",
+          "description": "Missing try/catch error handling",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/services/tripHistoryService.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T05:55:21.315569Z",
+      "linesOfCode": 44
+    },
+    "tests/api_definitions/trip-history/list.json": {
+      "hash": "d188edcd1996a2127b6788ec343d6d5673b00ce38fc22ef40863e69e347cc142",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:55:21.334713Z",
+      "linesOfCode": 25
+    },
+    "client/src/pages/Feedback.tsx": {
+      "hash": "5df8c2501029881ae96e20f33a8b71157899b940a5480295364b6745289199f8",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T19:13:46.100601Z",
+      "linesOfCode": 152
+    },
+    "server/src/controllers/feedbackController.ts": {
+      "hash": "8c188d7e5ef5aa3d367d08f6e4b828da0c5e302305ca6fc37db8fc00cf19da88",
+      "compliance": 85,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/controllers/feedbackController.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T19:13:46.455296Z",
+      "linesOfCode": 103
+    },
+    "server/src/routes/feedbackRoutes.ts": {
+      "hash": "153fc165f5edb3fb88a4f6cfb1c71cfaea56c59bd63dc0e27a96c5fec07858fe",
+      "compliance": 80,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-05",
+          "description": "Missing TypeScript types/interfaces",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/feedbackRoutes.ts"
+        },
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-02",
+          "description": "API JSON definition not found - create it first",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/routes/feedbackRoutes.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T19:13:46.475910Z",
+      "linesOfCode": 35
+    },
+    "server/src/services/feedbackService.ts": {
+      "hash": "6e89f90890fe6f4636fdeef35317dcdcd46b76e9fb711ded99862ac4cbbd09a8",
+      "compliance": 90,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-06",
+          "description": "Missing try/catch error handling",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "server/src/services/feedbackService.ts"
+        }
+      ],
+      "timestamp": "2026-01-13T19:13:47.466986Z",
+      "linesOfCode": 78
+    },
+    "server/tsconfig.json": {
+      "hash": "82d914bd90b38071fee09cc7db97080d40112fd86c0a7def34c8ce56ace02f74",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T19:41:13.615113Z",
+      "linesOfCode": 30
     }
   },
   "registered_apis": {
     "POST:/register": {
       "filePath": "server/src/routes/authRoutes.ts",
-      "timestamp": "2026-01-13T05:24:45.194077Z"
+      "timestamp": "2026-01-13T05:32:30.936704Z"
+    },
+    "POST:/login": {
+      "filePath": "server/src/routes/authRoutes.ts",
+      "timestamp": "2026-01-13T05:32:30.936707Z"
+    },
+    "GET:/": {
+      "filePath": "server/src/routes/tripHistoryRoutes.ts",
+      "timestamp": "2026-01-13T05:55:23.477094Z"
+    },
+    "PUT:/": {
+      "filePath": "server/src/routes/profileRoutes.ts",
+      "timestamp": "2026-01-13T05:50:57.337558Z"
+    },
+    "POST:/api/feedback/": {
+      "filePath": "server/src/routes/feedbackRoutes.ts",
+      "timestamp": "2026-01-13T19:13:50.065267Z"
+    },
+    "GET:/api/feedback/": {
+      "filePath": "server/src/routes/feedbackRoutes.ts",
+      "timestamp": "2026-01-13T19:13:50.065275Z"
+    },
+    "GET:/api/feedback/rating": {
+      "filePath": "server/src/routes/feedbackRoutes.ts",
+      "timestamp": "2026-01-13T19:13:50.065279Z"
     }
   }
 }
