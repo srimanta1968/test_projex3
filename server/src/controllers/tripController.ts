@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../middleware/authMiddleware';
 import { tripService, CreateTripInput, UpdateTripInput } from '../services/tripService';
+import { validateTripInput, validateTripUpdateInput } from '../utils/tripValidation';
 
 export const tripController = {
   /**
@@ -18,27 +19,12 @@ export const tripController = {
 
       const { destination, departure_time } = req.body as CreateTripInput;
 
-      if (!destination || !destination.trim()) {
+      const validation = validateTripInput({ destination, departure_time });
+      if (!validation.isValid) {
         res.status(400).json({
           success: false,
-          error: 'Destination is required',
-        });
-        return;
-      }
-
-      if (!departure_time) {
-        res.status(400).json({
-          success: false,
-          error: 'Departure time is required',
-        });
-        return;
-      }
-
-      const departureDate = new Date(departure_time);
-      if (isNaN(departureDate.getTime())) {
-        res.status(400).json({
-          success: false,
-          error: 'Invalid departure time format',
+          error: 'Validation failed',
+          errors: validation.errors,
         });
         return;
       }
@@ -120,15 +106,14 @@ export const tripController = {
         return;
       }
 
-      if (departure_time) {
-        const departureDate = new Date(departure_time);
-        if (isNaN(departureDate.getTime())) {
-          res.status(400).json({
-            success: false,
-            error: 'Invalid departure time format',
-          });
-          return;
-        }
+      const validation = validateTripUpdateInput({ destination, departure_time });
+      if (!validation.isValid) {
+        res.status(400).json({
+          success: false,
+          error: 'Validation failed',
+          errors: validation.errors,
+        });
+        return;
       }
 
       const result = await tripService.updateTrip(id, req.user.userId, {

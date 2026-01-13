@@ -6,8 +6,36 @@ interface TripFormData {
   departure_time: string;
 }
 
+interface FieldErrors {
+  destination?: string;
+  departure_time?: string;
+}
+
 interface TripError {
   message: string;
+}
+
+function validateTripForm(data: TripFormData): FieldErrors {
+  const errors: FieldErrors = {};
+
+  if (!data.destination.trim()) {
+    errors.destination = 'Destination is required';
+  } else if (data.destination.trim().length < 2) {
+    errors.destination = 'Destination must be at least 2 characters';
+  } else if (data.destination.trim().length > 255) {
+    errors.destination = 'Destination must be less than 255 characters';
+  }
+
+  if (!data.departure_time) {
+    errors.departure_time = 'Departure time is required';
+  } else {
+    const departureDate = new Date(data.departure_time);
+    if (departureDate <= new Date()) {
+      errors.departure_time = 'Departure time must be in the future';
+    }
+  }
+
+  return errors;
 }
 
 export default function TripCreation() {
@@ -18,12 +46,26 @@ export default function TripCreation() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<TripError | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [success, setSuccess] = useState(false);
+  const [touched, setTouched] = useState<{ [key: string]: boolean }>({});
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setError(null);
+
+    if (touched[name]) {
+      const newErrors = validateTripForm({ ...formData, [name]: value });
+      setFieldErrors((prev) => ({ ...prev, [name]: newErrors[name as keyof FieldErrors] }));
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    const errors = validateTripForm(formData);
+    setFieldErrors((prev) => ({ ...prev, [name]: errors[name as keyof FieldErrors] }));
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -38,19 +80,12 @@ export default function TripCreation() {
       return;
     }
 
-    if (!formData.destination.trim()) {
-      setError({ message: 'Please enter a destination' });
-      return;
-    }
+    const errors = validateTripForm(formData);
+    setFieldErrors(errors);
+    setTouched({ destination: true, departure_time: true });
 
-    if (!formData.departure_time) {
-      setError({ message: 'Please select a departure time' });
-      return;
-    }
-
-    const departureDate = new Date(formData.departure_time);
-    if (departureDate <= new Date()) {
-      setError({ message: 'Departure time must be in the future' });
+    if (Object.keys(errors).length > 0) {
+      setError({ message: 'Please fix the validation errors' });
       return;
     }
 
@@ -78,11 +113,16 @@ export default function TripCreation() {
           navigate('/login');
           return;
         }
+        if (data.errors) {
+          setFieldErrors(data.errors);
+        }
         throw new Error(data.error || 'Failed to create trip');
       }
 
       setSuccess(true);
       setFormData({ destination: '', departure_time: '' });
+      setFieldErrors({});
+      setTouched({});
     } catch (err) {
       setError({
         message: err instanceof Error ? err.message : 'Failed to create trip',
@@ -96,6 +136,14 @@ export default function TripCreation() {
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     return now.toISOString().slice(0, 16);
+  };
+
+  const getInputClassName = (fieldName: keyof FieldErrors) => {
+    const baseClass = 'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2';
+    if (fieldErrors[fieldName] && touched[fieldName]) {
+      return `${baseClass} border-red-500 focus:ring-red-500`;
+    }
+    return `${baseClass} border-gray-300 focus:ring-blue-500`;
   };
 
   return (
@@ -140,9 +188,13 @@ export default function TripCreation() {
                   name="destination"
                   value={formData.destination}
                   onChange={handleInputChange}
+                  onBlur={handleBlur}
                   placeholder="Enter your destination"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={getInputClassName('destination')}
                 />
+                {fieldErrors.destination && touched.destination && (
+                  <p className="mt-1 text-sm text-red-600">{fieldErrors.destination}</p>
+                )}
               </div>
 
               <div>
@@ -158,9 +210,13 @@ export default function TripCreation() {
                   name="departure_time"
                   value={formData.departure_time}
                   onChange={handleInputChange}
+                  onBlur={handleBlur}
                   min={getMinDateTime()}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={getInputClassName('departure_time')}
                 />
+                {fieldErrors.departure_time && touched.departure_time && (
+                  <p className="mt-1 text-sm text-red-600">{fieldErrors.departure_time}</p>
+                )}
               </div>
 
               <button
