@@ -1,0 +1,33 @@
+{
+  "endpoint": "/api/profile",
+  "method": "GET",
+  "taskId": "87894b11-733e-4623-b934-3ee5df847fca",
+  "requiresAuth": true,
+  "priority": 20,
+  "dependsOn": ["POST /api/auth/register"],
+  "captureResponse": {
+    "profile.get.response.data.profile.id": "data.profile.id"
+  },
+  "testCases": [
+    {
+      "name": "Get user profile",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "payload": {},
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "profile": {
+            "id": "string",
+            "user_id": "string",
+            "preferences": "object",
+            "trip_history": "object"
+          }
+        }
+      }
+    }
+  ]
+}

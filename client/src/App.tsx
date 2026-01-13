@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import Profile from './pages/Profile';
 
 interface User {
   id: string;
@@ -33,6 +34,7 @@ function Navigation() {
         <div className="space-x-4">
           {user ? (
             <>
+              <Link to="/profile" className="hover:underline">Profile</Link>
               <span className="text-sm">{user.email}</span>
               <button
                 onClick={handleLogout}
@@ -87,6 +89,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </div>
     </BrowserRouter>
