@@ -11,6 +11,7 @@ import tripRoutes from './routes/tripRoutes';
 import matchingRoutes from './routes/matchingRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import paymentRoutes from './routes/paymentRoutes';
+import billingRoutes from './routes/billingRoutes';
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use('/api/trips', tripRoutes);
 app.use('/api/matching', matchingRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/billing', billingRoutes);
 
 // Error handling
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

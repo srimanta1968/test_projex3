@@ -1,0 +1,28 @@
+{
+  "endpoint": "/api/billing",
+  "method": "GET",
+  "taskId": "aef26241-902d-4589-9476-63399e5362ba",
+  "requiresAuth": true,
+  "priority": 65,
+  "dependsOn": ["POST /api/auth/register"],
+  "testCases": [
+    {
+      "name": "Get user billing history",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
+      },
+      "expectedStatus": 200,
+      "expectedResponse": {
+        "success": true,
+        "data": {
+          "records": [],
+          "summary": {
+            "totalSpent": 0,
+            "recordCount": 0
+          }
+        }
+      }
+    }
+  ]
+}
