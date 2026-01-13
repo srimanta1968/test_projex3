@@ -53,6 +53,51 @@ export const authController = {
       });
     }
   },
+
+  /**
+   * Login an existing user
+   * POST /api/auth/login
+   */
+  async login(req: Request, res: Response): Promise<void> {
+    try {
+      const { email, password } = req.body;
+
+      if (!email || !password) {
+        res.status(400).json({
+          success: false,
+          error: 'Email and password are required',
+        });
+        return;
+      }
+
+      // Sanitize email
+      const sanitizedEmail = sanitizeEmail(email);
+
+      const result = await authService.login({
+        email: sanitizedEmail,
+        password
+      });
+
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('Invalid email or password')) {
+        res.status(401).json({
+          success: false,
+          error: error.message,
+        });
+        return;
+      }
+
+      console.error('Login error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Internal server error',
+      });
+    }
+  },
 };
 
 export default authController;

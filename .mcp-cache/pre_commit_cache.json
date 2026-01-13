@@ -1,12 +1,12 @@
 {
-  "last_scan": "2026-01-13T05:24:45.194017Z",
+  "last_scan": "2026-01-13T05:29:40.351931Z",
   "scanned_files": {
     ".claude/settings.local.json": {
-      "hash": "732b68a80bfb9bef91867bb970d43bf60e0609f3c4466b563a8191c71abefe26",
+      "hash": "c7ff96cbd894b353f67f3bf3406866542505e8c38729c5ad08b9ae4b747f2d3c",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-13T05:24:42.780996Z",
-      "linesOfCode": 18
+      "timestamp": "2026-01-13T05:29:39.069894Z",
+      "linesOfCode": 20
     },
     "client/package.json": {
       "hash": "867d8e58d7023de1bbda0ac4aef8c9c0432305cdc0aa0d1f5478253706826e52",
@@ -23,11 +23,24 @@
       "linesOfCode": 31
     },
     "client/src/pages/Register.tsx": {
-      "hash": "b3f6ef3b503f760558627bf3905a31e9b02333760e67bc302aab958d36ce58f8",
-      "compliance": 100,
-      "violations": [],
-      "timestamp": "2026-01-13T05:24:43.415529Z",
-      "linesOfCode": 150
+      "hash": "5d8a329c323bd0efd3d5a30cda134743e3369719e3f99ac57cd507e7d88868ad",
+      "compliance": 75,
+      "violations": [
+        {
+          "line": 0,
+          "severity": "minor",
+          "category": "general",
+          "rule": "SC-12",
+          "description": "Potential hardcoded secrets detected",
+          "currentCode": "",
+          "autoFixable": false,
+          "confidence": 90,
+          "source": "local_rules",
+          "filePath": "client/src/pages/Register.tsx"
+        }
+      ],
+      "timestamp": "2026-01-13T05:29:39.155066Z",
+      "linesOfCode": 188
     },
     "mcp-server/mcp-bridge.js": {
       "hash": "3b37b49d2be0cfbf52f6ef60fc8697d4f25298676bed524e96281c97052d00fa",
@@ -91,7 +104,7 @@
       "linesOfCode": 30
     },
     "server/src/controllers/authController.ts": {
-      "hash": "584e6e080e1dfe6e6ef23ace2ccc6ebcfd031e7c618577b74c7442db0f04bcfd",
+      "hash": "8bed07e7d4ab994b2670ade10ad9fe9b09ef8e40578043041600db90aeaaffa9",
       "compliance": 85,
       "violations": [
         {
@@ -107,8 +120,8 @@
           "filePath": "server/src/controllers/authController.ts"
         }
       ],
-      "timestamp": "2026-01-13T05:24:43.918584Z",
-      "linesOfCode": 42
+      "timestamp": "2026-01-13T05:29:39.570847Z",
+      "linesOfCode": 49
     },
     "server/src/routes/authRoutes.ts": {
       "hash": "a21fec9f8ff691db7297495491977b26629b31bc16a08e6c44723a6808763635",
@@ -175,6 +188,34 @@
       "violations": [],
       "timestamp": "2026-01-13T05:24:44.335751Z",
       "linesOfCode": 35
+    },
+    ".mcp-cache/pre_commit_cache.json": {
+      "hash": "acf118fee89f281f95bd5716af3a1aff124eb89f613fafcf8cde302e298d1923",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:29:39.096362Z",
+      "linesOfCode": 186
+    },
+    ".mcp-cache/violations_latest.json": {
+      "hash": "bca743f87336bdc29434bc3c398b4bc71005a6ec6549ff7938b2e06b5a95cb53",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:29:39.111804Z",
+      "linesOfCode": 73
+    },
+    ".mcp-cache/violations_report_20260113_052445.json": {
+      "hash": "bca743f87336bdc29434bc3c398b4bc71005a6ec6549ff7938b2e06b5a95cb53",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:29:39.129958Z",
+      "linesOfCode": 73
+    },
+    "server/src/utils/validation.ts": {
+      "hash": "a8f418da10e335540f6b550786f4d20a53e9e5066f6a5685507a6d30f5d69d0e",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-13T05:29:39.596316Z",
+      "linesOfCode": 93
     }
   },
   "registered_apis": {

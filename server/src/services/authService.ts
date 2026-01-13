@@ -8,6 +8,11 @@ export interface RegisterInput {
   password: string;
 }
 
+export interface LoginInput {
+  email: string;
+  password: string;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -71,6 +76,49 @@ export const authService = {
         user: {
           id: newUser.id,
           email: newUser.email,
+        },
+        token,
+      };
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Login an existing user
+   */
+  async login(input: LoginInput): Promise<AuthResponse> {
+    try {
+      const { email, password } = input;
+
+      // Find user by email
+      const user = await dataService.queryOne<User>(
+        'SELECT id, email, password_hash FROM users WHERE email = $1',
+        [email]
+      );
+
+      if (!user) {
+        throw new Error('Invalid email or password');
+      }
+
+      // Verify password
+      const isValidPassword = await bcrypt.compare(password, user.password_hash);
+
+      if (!isValidPassword) {
+        throw new Error('Invalid email or password');
+      }
+
+      // Generate JWT token
+      const token = jwt.sign(
+        { userId: user.id, email: user.email },
+        config.jwt.secret,
+        { expiresIn: config.jwt.expiresIn }
+      );
+
+      return {
+        user: {
+          id: user.id,
+          email: user.email,
         },
         token,
       };
