@@ -17,7 +17,7 @@
       },
       "payload": {
         "destination": "{{dynamic:city}}",
-        "departure_time": "{{dynamic:futureDate}}"
+        "departure_time": "{{dynamic:futuredatetime}}"
       },
       "expectedStatus": 201,
       "expectedResponse": {
