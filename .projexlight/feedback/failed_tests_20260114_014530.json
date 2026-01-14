@@ -1,0 +1,38 @@
+{
+  "type": "failed_tests",
+  "timestamp": "2026-01-14T01:45:30.315386",
+  "totalFailures": 1,
+  "instructions": [
+    {
+      "endpoint": "PUT /api/refunds/:refund_id/cancel",
+      "issue": "Test failed with status 404",
+      "errorMessage": "Status 404 - Error: Refund not found or cannot be cancelled",
+      "suggestedFix": "The endpoint or resource was not found.\n\n**Possible causes:**\n1. Resource hasn't been created yet (POST not run before GET)\n2. Incorrect ID in path parameter\n3. Resource was deleted\n4. Endpoint path is incorrect\n\n**Recommended actions:**\n1. Ensure POST endpoint runs before GET/PUT/DELETE (use priority field)\n2. Use {{cache:resource.id}} to capture and reuse created IDs\n3. Add dependsOn to enforce execution order\n\nExample fix:\n```json\n{\n  \"endpoint\": \"/api/refunds/:refund_id/cancel\",\n  \"method\": \"PUT\",\n  \"dependsOn\": [\"POST /api/resource\"],\n  \"pathParams\": {\n    \"id\": \"{{cache:resource.id}}\"\n  }\n}\n```",
+      "priority": "high",
+      "debug": {
+        "fullUrl": "http://localhost:3000/api/refunds/2a4d93f8-571b-420e-b90f-1c54f7065534/cancel",
+        "requestBody": {
+          "_test": "true"
+        },
+        "responseBody": "{\n  \"success\": false,\n  \"error\": \"Refund not found or cannot be cancelled\"\n}",
+        "curlCommand": "curl \\\n  -X \\\n  PUT \\\n  -H Content-Type: application/json \\\n  -H Accept: application/json \\\n  -H Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMTNlMWExOC0xN2QyLTQ0NzItYWZlNi0xYzIyNmU1NzVlYjMiLCJlbWFpbCI6InRlc3R1c2VyXzEyOTA4OEBleGFtcGxlLmNvbSIsImlhdCI6MTc2ODM1NTEyOSwiZXhwIjoxNzY4OTU5OTI5fQ.16TSNZaTDWK4eBZf2KBWQfCp9eR0NHqxllqHCvMBtAs \\\n  -d '{\n  \"_test\": \"true\"\n}' \\\n  \"http://localhost:3000/api/refunds/2a4d93f8-571b-420e-b90f-1c54f7065534/cancel\"",
+        "instructions": [
+          "Copy the curl command below to reproduce the request locally",
+          "Make sure your local server is running on the same port",
+          "Replace host.docker.internal with localhost if running outside Docker",
+          "Check the response body for detailed error information"
+        ]
+      },
+      "errorCategory": {
+        "category": "not_found",
+        "subcategory": "resource_missing",
+        "severity": "warning",
+        "title": "Resource Not Found",
+        "description": "The requested resource does not exist",
+        "guidance": "The endpoint or resource was not found.\n\n**Possible causes:**\n1. Resource hasn't been created yet (POST not run before GET)\n2. Incorrect ID in path parameter\n3. Resource was deleted\n4. Endpoint path is incorrect\n\n**Recommended actions:**\n1. Ensure POST endpoint runs before GET/PUT/DELETE (use priority field)\n2. Use {{cache:resource.id}} to capture and reuse created IDs\n3. Add dependsOn to enforce execution order\n\nExample fix:\n```json\n{\n  \"endpoint\": \"/api/refunds/:refund_id/cancel\",\n  \"method\": \"PUT\",\n  \"dependsOn\": [\"POST /api/resource\"],\n  \"pathParams\": {\n    \"id\": \"{{cache:resource.id}}\"\n  }\n}\n```",
+        "isExpected": false
+      }
+    }
+  ],
+  "llm_prompt": "# Failed API Tests - Fix Required\n\n1 API test(s) failed. Please review and fix the following issues:\n\n## Failed Tests:\n\n### Issue 1:\n- **endpoint**: PUT /api/refunds/:refund_id/cancel\n- **issue**: Test failed with status 404\n- **errorMessage**: Status 404 - Error: Refund not found or cannot be cancelled\n- **suggestedFix**: The endpoint or resource was not found.\n\n**Possible causes:**\n1. Resource hasn't been created yet (POST not run before GET)\n2. Incorrect ID in path parameter\n3. Resource was deleted\n4. Endpoint path is incorrect\n\n**Recommended actions:**\n1. Ensure POST endpoint runs before GET/PUT/DELETE (use priority field)\n2. Use {{cache:resource.id}} to capture and reuse created IDs\n3. Add dependsOn to enforce execution order\n\nExample fix:\n```json\n{\n  \"endpoint\": \"/api/refunds/:refund_id/cancel\",\n  \"method\": \"PUT\",\n  \"dependsOn\": [\"POST /api/resource\"],\n  \"pathParams\": {\n    \"id\": \"{{cache:resource.id}}\"\n  }\n}\n```\n- **debug**: {'fullUrl': 'http://localhost:3000/api/refunds/2a4d93f8-571b-420e-b90f-1c54f7065534/cancel', 'requestBody': {'_test': 'true'}, 'responseBody': '{\\n  \"success\": false,\\n  \"error\": \"Refund not found or cannot be cancelled\"\\n}', 'curlCommand': 'curl \\\\\\n  -X \\\\\\n  PUT \\\\\\n  -H Content-Type: application/json \\\\\\n  -H Accept: application/json \\\\\\n  -H Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMTNlMWExOC0xN2QyLTQ0NzItYWZlNi0xYzIyNmU1NzVlYjMiLCJlbWFpbCI6InRlc3R1c2VyXzEyOTA4OEBleGFtcGxlLmNvbSIsImlhdCI6MTc2ODM1NTEyOSwiZXhwIjoxNzY4OTU5OTI5fQ.16TSNZaTDWK4eBZf2KBWQfCp9eR0NHqxllqHCvMBtAs \\\\\\n  -d \\'{\\n  \"_test\": \"true\"\\n}\\' \\\\\\n  \"http://localhost:3000/api/refunds/2a4d93f8-571b-420e-b90f-1c54f7065534/cancel\"', 'instructions': ['Copy the curl command below to reproduce the request locally', 'Make sure your local server is running on the same port', 'Replace host.docker.internal with localhost if running outside Docker', 'Check the response body for detailed error information']}\n- **errorCategory**: {'category': 'not_found', 'subcategory': 'resource_missing', 'severity': 'warning', 'title': 'Resource Not Found', 'description': 'The requested resource does not exist', 'guidance': 'The endpoint or resource was not found.\\n\\n**Possible causes:**\\n1. Resource hasn\\'t been created yet (POST not run before GET)\\n2. Incorrect ID in path parameter\\n3. Resource was deleted\\n4. Endpoint path is incorrect\\n\\n**Recommended actions:**\\n1. Ensure POST endpoint runs before GET/PUT/DELETE (use priority field)\\n2. Use {{cache:resource.id}} to capture and reuse created IDs\\n3. Add dependsOn to enforce execution order\\n\\nExample fix:\\n```json\\n{\\n  \"endpoint\": \"/api/refunds/:refund_id/cancel\",\\n  \"method\": \"PUT\",\\n  \"dependsOn\": [\"POST /api/resource\"],\\n  \"pathParams\": {\\n    \"id\": \"{{cache:resource.id}}\"\\n  }\\n}\\n```', 'isExpected': False}\n\n## Instructions:\n1. Review each failed endpoint\n2. Check the error messages and status codes\n3. Implement the suggested fixes\n4. Re-run tests to verify fixes\n5. Ensure all tests pass before committing\n\n## Priority:\nHIGH - These failures may block deployment"
+}

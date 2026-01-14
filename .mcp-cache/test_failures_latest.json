@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-01-14T01:20:43.330415Z",
-  "triggeredBy": "manual",
+  "timestamp": "2026-01-14T01:47:34.558390Z",
+  "triggeredBy": "git_push",
   "summary": {
-    "totalAPIs": 27,
+    "totalAPIs": 2,
     "newAPIs": 0,
     "modifiedAPIs": 0,
     "passedAPIs": 26,
@@ -11,7 +11,7 @@
     "duplicateAPIs": 0,
     "blockingConflicts": 0,
     "duplicateWarnings": 0,
-    "testDurationMs": 1149
+    "testDurationMs": 1490
   },
   "failures": [
     {
@@ -20,7 +20,7 @@
       "method": "PUT",
       "status": "failed",
       "statusCode": 404,
-      "responseTimeMs": 9,
+      "responseTimeMs": 17,
       "requestBody": {
         "_test": "true"
       },
@@ -30,13 +30,13 @@
         "error": "Refund not found or cannot be cancelled"
       },
       "errorMessage": "Status 404 - Error: Refund not found or cannot be cancelled",
-      "fullUrl": "http://localhost:3000/api/refunds/60487590-b64d-4505-a892-99aa544d9350/cancel",
+      "fullUrl": "http://localhost:3000/api/refunds/0556c882-14bb-47f9-8682-aac8cbf9f761/cancel",
       "requestHeaders": {
         "Content-Type": "application/json",
         "Accept": "application/json",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTdjMjM2Ny0xOTI3LTRmYjEtOGFhYi04NGQ3MzVmMWI3MzkiLCJlbWFpbCI6InRlc3R1c2VyXzY0MzkzNUBleGFtcGxlLmNvbSIsImlhdCI6MTc2ODM1MzY0NCwiZXhwIjoxNzY4OTU4NDQ0fQ.kW5aKaKyVQGRScAYupLkYBwBL54ZT1_djlpz8AmQBE4"
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZmZmYTM1MS0wYmFmLTRkOTQtYTMyZS04NzAxNTQ4N2NkZGQiLCJlbWFpbCI6InRlc3R1c2VyXzI1NTA4N0BleGFtcGxlLmNvbSIsImlhdCI6MTc2ODM1NTI1NSwiZXhwIjoxNzY4OTYwMDU1fQ.HZcncl8kTY3Ze6kvxTYg62tEff5EL_B9uOciUQA9i60"
       },
-      "curlCommand": "curl \\\n  -X \\\n  PUT \\\n  -H Content-Type: application/json \\\n  -H Accept: application/json \\\n  -H Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTdjMjM2Ny0xOTI3LTRmYjEtOGFhYi04NGQ3MzVmMWI3MzkiLCJlbWFpbCI6InRlc3R1c2VyXzY0MzkzNUBleGFtcGxlLmNvbSIsImlhdCI6MTc2ODM1MzY0NCwiZXhwIjoxNzY4OTU4NDQ0fQ.kW5aKaKyVQGRScAYupLkYBwBL54ZT1_djlpz8AmQBE4 \\\n  -d '{\n  \"_test\": \"true\"\n}' \\\n  \"http://localhost:3000/api/refunds/60487590-b64d-4505-a892-99aa544d9350/cancel\"",
+      "curlCommand": "curl \\\n  -X \\\n  PUT \\\n  -H Content-Type: application/json \\\n  -H Accept: application/json \\\n  -H Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZmZmYTM1MS0wYmFmLTRkOTQtYTMyZS04NzAxNTQ4N2NkZGQiLCJlbWFpbCI6InRlc3R1c2VyXzI1NTA4N0BleGFtcGxlLmNvbSIsImlhdCI6MTc2ODM1NTI1NSwiZXhwIjoxNzY4OTYwMDU1fQ.HZcncl8kTY3Ze6kvxTYg62tEff5EL_B9uOciUQA9i60 \\\n  -d '{\n  \"_test\": \"true\"\n}' \\\n  \"http://localhost:3000/api/refunds/0556c882-14bb-47f9-8682-aac8cbf9f761/cancel\"",
       "constraintInfo": null,
       "testability": "auto",
       "setupScript": null,
