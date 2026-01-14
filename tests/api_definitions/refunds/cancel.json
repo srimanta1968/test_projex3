@@ -21,20 +21,9 @@
       }
     }
   ],
-  "responseSchema": {
-    "refund": {
-      "id": "string",
-      "refund_id": "string",
-      "status": "cancelled",
-      "amount": "number",
-      "reason": "string"
-    }
-  },
   "businessRules": [
     "Only pending refunds can be cancelled",
     "User can only cancel their own refunds",
     "Cancelled refunds cannot be reactivated"
-  ],
-  "testability": "manual",
-  "testabilityReason": "Requires creating a refund first, then cancelling it - multi-step flow"
+  ]
 }
