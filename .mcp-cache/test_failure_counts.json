@@ -1,3 +1,11 @@
 {
-  "/api/auth/login:POST:": 1
+  "/api/auth/login:POST:": 1,
+  "/api/trips:POST:": 1,
+  "/api/refunds:POST:": 1,
+  "/api/refunds:GET:": 1,
+  "/api/refunds/notifications:GET:": 1,
+  "/api/disputes:GET:": 1,
+  "/api/refunds/:refund_id/status:PUT:": 1,
+  "/api/refunds/:refund_id/process:PUT:": 1,
+  "/api/refunds/:refund_id/cancel:PUT:": 1
 }

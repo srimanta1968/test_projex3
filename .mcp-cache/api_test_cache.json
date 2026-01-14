@@ -1,32 +1,112 @@
 {
-  "last_test_run": "2026-01-13T21:13:32.182781",
+  "last_test_run": "2026-01-14T01:20:45.107200",
   "tested_apis": {
     "POST:/api/auth/login": {
-      "lastTested": "2026-01-13T21:13:32.182794",
+      "lastTested": "2026-01-14T01:20:45.107209",
       "fileHash": null
     },
     "POST:/api/auth/register": {
-      "lastTested": "2026-01-13T21:13:32.182790",
+      "lastTested": "2026-01-14T01:20:45.107212",
       "fileHash": null
     },
     "POST:/api/feedback": {
-      "lastTested": "2026-01-13T20:09:18.100058",
+      "lastTested": "2026-01-14T01:20:45.107222",
       "fileHash": null
     },
     "GET:/api/feedback/rating": {
-      "lastTested": "2026-01-13T20:09:18.100060",
+      "lastTested": "2026-01-14T01:20:45.107223",
       "fileHash": null
     },
     "GET:/api/profile": {
-      "lastTested": "2026-01-13T20:09:18.100062",
+      "lastTested": "2026-01-14T01:20:45.107234",
       "fileHash": null
     },
     "PUT:/api/profile": {
-      "lastTested": "2026-01-13T20:09:18.100063",
+      "lastTested": "2026-01-14T01:20:45.107236",
       "fileHash": null
     },
     "GET:/api/trip-history": {
-      "lastTested": "2026-01-13T20:09:18.100065",
+      "lastTested": "2026-01-14T01:20:45.107246",
+      "fileHash": null
+    },
+    "POST:/api/trips": {
+      "lastTested": "2026-01-14T01:20:45.107247",
+      "fileHash": null
+    },
+    "POST:/api/matching/find": {
+      "lastTested": "2026-01-14T01:20:45.107224",
+      "fileHash": null
+    },
+    "GET:/api/matching": {
+      "lastTested": "2026-01-14T01:20:45.107226",
+      "fileHash": null
+    },
+    "POST:/api/payments": {
+      "lastTested": "2026-01-14T01:20:45.107230",
+      "fileHash": null
+    },
+    "GET:/api/billing": {
+      "lastTested": "2026-01-14T01:20:45.107216",
+      "fileHash": null
+    },
+    "GET:/api/billing/:record_id": {
+      "lastTested": "2026-01-14T01:20:45.107214",
+      "fileHash": null
+    },
+    "POST:/api/disputes": {
+      "lastTested": "2026-01-14T01:20:45.107217",
+      "fileHash": null
+    },
+    "GET:/api/disputes": {
+      "lastTested": "2026-01-14T01:20:45.107219",
+      "fileHash": null
+    },
+    "GET:/api/notifications": {
+      "lastTested": "2026-01-14T01:20:45.107227",
+      "fileHash": null
+    },
+    "PUT:/api/payments/:payment_id/complete": {
+      "lastTested": "2026-01-14T01:20:45.107228",
+      "fileHash": null
+    },
+    "GET:/api/payments/:payment_id": {
+      "lastTested": "2026-01-14T01:20:45.107232",
+      "fileHash": null
+    },
+    "GET:/api/payments": {
+      "lastTested": "2026-01-14T01:20:45.107233",
+      "fileHash": null
+    },
+    "PUT:/api/refunds/:refund_id/cancel": {
+      "lastTested": "2026-01-14T01:20:45.107237",
+      "fileHash": null
+    },
+    "POST:/api/refunds": {
+      "lastTested": "2026-01-14T01:20:45.107239",
+      "fileHash": null
+    },
+    "GET:/api/refunds": {
+      "lastTested": "2026-01-14T01:20:45.107240",
+      "fileHash": null
+    },
+    "GET:/api/refunds/notifications": {
+      "lastTested": "2026-01-14T01:20:45.107242",
+      "fileHash": null
+    },
+    "PUT:/api/refunds/:refund_id/process": {
+      "lastTested": "2026-01-14T01:20:45.107243",
+      "fileHash": null
+    },
+    "PUT:/api/refunds/:refund_id/status": {
+      "lastTested": "2026-01-14T01:20:45.107244",
+      "fileHash": null
+    },
+    "DELETE:/api/trips/:id": {
+      "lastTested": "2026-01-14T01:20:45.107249",
+      "fileHash": null
+    },
+    "PUT:/api/trips/:id": {
+      "lastTested": "2026-01-14T01:20:45.107250",
       "fileHash": null
     }
   }

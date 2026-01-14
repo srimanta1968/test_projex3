@@ -1,54 +1,54 @@
 {
-  "timestamp": "2026-01-13T20:54:12.261628Z",
-  "triggeredBy": "git_push",
+  "timestamp": "2026-01-14T01:20:43.330415Z",
+  "triggeredBy": "manual",
   "summary": {
-    "totalAPIs": 2,
+    "totalAPIs": 27,
     "newAPIs": 0,
     "modifiedAPIs": 0,
-    "passedAPIs": 6,
+    "passedAPIs": 26,
     "failedAPIs": 1,
     "skippedAPIs": 0,
     "duplicateAPIs": 0,
     "blockingConflicts": 0,
     "duplicateWarnings": 0,
-    "testDurationMs": 790
+    "testDurationMs": 1149
   },
   "failures": [
     {
       "apiId": null,
-      "endpoint": "/api/auth/login",
-      "method": "POST",
+      "endpoint": "/api/refunds/:refund_id/cancel",
+      "method": "PUT",
       "status": "failed",
-      "statusCode": 401,
-      "responseTimeMs": 11,
+      "statusCode": 404,
+      "responseTimeMs": 9,
       "requestBody": {
-        "email": "testuser_652960@example.com",
-        "password": "TestPass123!"
+        "_test": "true"
       },
-      "responseBody": "{\n  \"success\": false,\n  \"error\": \"Invalid email or password\"\n}",
+      "responseBody": "{\n  \"success\": false,\n  \"error\": \"Refund not found or cannot be cancelled\"\n}",
       "responseData": {
         "success": false,
-        "error": "Invalid email or password"
+        "error": "Refund not found or cannot be cancelled"
       },
-      "errorMessage": "Status 401 - Error: Invalid email or password",
-      "fullUrl": "http://localhost:3000/api/auth/login",
+      "errorMessage": "Status 404 - Error: Refund not found or cannot be cancelled",
+      "fullUrl": "http://localhost:3000/api/refunds/60487590-b64d-4505-a892-99aa544d9350/cancel",
       "requestHeaders": {
         "Content-Type": "application/json",
-        "Accept": "application/json"
+        "Accept": "application/json",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTdjMjM2Ny0xOTI3LTRmYjEtOGFhYi04NGQ3MzVmMWI3MzkiLCJlbWFpbCI6InRlc3R1c2VyXzY0MzkzNUBleGFtcGxlLmNvbSIsImlhdCI6MTc2ODM1MzY0NCwiZXhwIjoxNzY4OTU4NDQ0fQ.kW5aKaKyVQGRScAYupLkYBwBL54ZT1_djlpz8AmQBE4"
       },
-      "curlCommand": "curl \\\n  -X \\\n  POST \\\n  -H Content-Type: application/json \\\n  -H Accept: application/json \\\n  -d '{\n  \"email\": \"testuser_652960@example.com\",\n  \"password\": \"TestPass123!\"\n}' \\\n  \"http://localhost:3000/api/auth/login\"",
+      "curlCommand": "curl \\\n  -X \\\n  PUT \\\n  -H Content-Type: application/json \\\n  -H Accept: application/json \\\n  -H Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTdjMjM2Ny0xOTI3LTRmYjEtOGFhYi04NGQ3MzVmMWI3MzkiLCJlbWFpbCI6InRlc3R1c2VyXzY0MzkzNUBleGFtcGxlLmNvbSIsImlhdCI6MTc2ODM1MzY0NCwiZXhwIjoxNzY4OTU4NDQ0fQ.kW5aKaKyVQGRScAYupLkYBwBL54ZT1_djlpz8AmQBE4 \\\n  -d '{\n  \"_test\": \"true\"\n}' \\\n  \"http://localhost:3000/api/refunds/60487590-b64d-4505-a892-99aa544d9350/cancel\"",
       "constraintInfo": null,
       "testability": "auto",
       "setupScript": null,
       "setupScriptStatus": null,
       "setupScriptError": null,
       "errorCategory": {
-        "category": "authentication",
-        "subcategory": "unauthorized",
-        "severity": "error",
-        "title": "Authentication Required",
-        "description": "Request requires valid authentication token",
-        "guidance": "The request was rejected due to missing or invalid authentication.\n\n**Possible causes:**\n1. No Authorization header provided\n2. Token has expired\n3. Token is malformed or invalid\n4. JWT_SECRET mismatch between server and test\n\n**Recommended actions:**\n1. Ensure registration and login are executed first (priority: 1, 2)\n2. Check that cacheResponse saves the token correctly\n3. Verify JWT_SECRET matches in both server .env and test environment\n\nCheck your auth endpoint definition:\n```json\n{\n  \"priority\": 1,\n  \"captureResponse\": {\"auth.token\": \"data.token\"}\n}\n```",
+        "category": "not_found",
+        "subcategory": "resource_missing",
+        "severity": "warning",
+        "title": "Resource Not Found",
+        "description": "The requested resource does not exist",
+        "guidance": "The endpoint or resource was not found.\n\n**Possible causes:**\n1. Resource hasn't been created yet (POST not run before GET)\n2. Incorrect ID in path parameter\n3. Resource was deleted\n4. Endpoint path is incorrect\n\n**Recommended actions:**\n1. Ensure POST endpoint runs before GET/PUT/DELETE (use priority field)\n2. Use {{cache:resource.id}} to capture and reuse created IDs\n3. Add dependsOn to enforce execution order\n\nExample fix:\n```json\n{\n  \"endpoint\": \"/api/refunds/:refund_id/cancel\",\n  \"method\": \"PUT\",\n  \"dependsOn\": [\"POST /api/resource\"],\n  \"pathParams\": {\n    \"id\": \"{{cache:resource.id}}\"\n  }\n}\n```",
         "isExpected": false
       },
       "requiresRole": [],
@@ -62,31 +62,24 @@
       "requestBodyTemplate": null,
       "responseSchema": null,
       "sampleInput": {
-        "email": "testuser_652960@example.com",
-        "password": "TestPass123!"
+        "_test": "true"
       },
-      "sampleOutput": "{\n  \"success\": false,\n  \"error\": \"Invalid email or password\"\n}",
+      "sampleOutput": "{\n  \"success\": false,\n  \"error\": \"Refund not found or cannot be cancelled\"\n}",
       "dataSource": "verified",
       "testCases": [
         {
-          "name": "Login with valid credentials",
+          "name": "Cancel pending refund",
           "headers": {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
           },
           "payload": {
-            "email": "{{cache:auth.register.response.data.user.email}}",
-            "password": "{{static:TestPass123!}}"
+            "_test": "{{static:true}}"
           },
           "expectedStatus": 200,
           "expectedResponse": {
             "success": true,
-            "data": {
-              "user": {
-                "id": "string",
-                "email": "string"
-              },
-              "token": "string"
-            }
+            "message": "Refund request cancelled successfully"
           }
         }
       ]

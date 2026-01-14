@@ -13,7 +13,9 @@
         "Content-Type": "application/json",
         "Authorization": "Bearer {{cache:auth.register.response.data.token}}"
       },
-      "payload": {},
+      "payload": {
+        "_test": "{{static:true}}"
+      },
       "expectedStatus": 200,
       "expectedResponse": {
         "success": true,

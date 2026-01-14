@@ -14,6 +14,21 @@
       "scanId": "5b1ba30a-df02-4bee-93de-dbd1ce8bccb8",
       "timestamp": "2026-01-13T21:13:32.800140",
       "duplicatesFound": 0
+    },
+    {
+      "scanId": "29ad98e2-5830-4a1e-93d3-67be9978512d",
+      "timestamp": "2026-01-14T01:06:58.967073",
+      "duplicatesFound": 0
+    },
+    {
+      "scanId": "b4ab7818-587b-4519-968a-45dacb57077c",
+      "timestamp": "2026-01-14T01:14:55.023229",
+      "duplicatesFound": 0
+    },
+    {
+      "scanId": "a4dc94e2-3f6e-498c-94b4-a01e2f71a85f",
+      "timestamp": "2026-01-14T01:18:38.416932",
+      "duplicatesFound": 0
     }
   ]
 }
