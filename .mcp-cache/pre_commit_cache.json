@@ -1,5 +1,5 @@
 {
-  "last_scan": "2026-01-14T01:44:42.932406Z",
+  "last_scan": "2026-01-14T02:22:39.483359Z",
   "scanned_files": {
     ".claude/settings.local.json": {
       "hash": "6179bdcc57637eb9aaff3e56e45322e06a8b1488f48fedcc767e716c723ce9cc",
@@ -124,7 +124,7 @@
       "linesOfCode": 87
     },
     "server/src/routes/authRoutes.ts": {
-      "hash": "4ec56fc624651be98ace74225e90e6e7e4f460a12c3a2c17a1baabeccd71e39f",
+      "hash": "4e46653500faa0b259b30cf393bb22506599dbf432a705aae57d22f0699d9a9f",
       "compliance": 80,
       "violations": [
         {
@@ -152,7 +152,7 @@
           "filePath": "server/src/routes/authRoutes.ts"
         }
       ],
-      "timestamp": "2026-01-14T01:44:30.592622Z",
+      "timestamp": "2026-01-14T02:16:27.504650Z",
       "linesOfCode": 21
     },
     "server/src/services/authService.ts": {
@@ -190,18 +190,18 @@
       "linesOfCode": 36
     },
     ".mcp-cache/pre_commit_cache.json": {
-      "hash": "7001cbae598edf7110fa7ed90ca56b8e93d7d749e8efc63c72c257896ddd83e5",
+      "hash": "c64d7d0f5a0fb2688cef4ed4e1e782e17f22091f192feeee1394629ba9d85d35",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-14T01:44:30.225706Z",
-      "linesOfCode": 1501
+      "timestamp": "2026-01-14T02:22:26.962615Z",
+      "linesOfCode": 1529
     },
     ".mcp-cache/violations_latest.json": {
-      "hash": "be73f4f5c4d28a56278f40b2754e856030f4f1e7c185b0d7cebaeee78a70e8de",
+      "hash": "fc56e3fe7823b3670886286405118fed6eaec2e8a0508c9078188a68a0efa7fc",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-14T01:44:30.314144Z",
-      "linesOfCode": 111
+      "timestamp": "2026-01-14T02:22:26.993887Z",
+      "linesOfCode": 33
     },
     ".mcp-cache/violations_report_20260113_052445.json": {
       "hash": "bca743f87336bdc29434bc3c398b4bc71005a6ec6549ff7938b2e06b5a95cb53",
@@ -511,10 +511,10 @@
       "linesOfCode": 30
     },
     ".mcp-cache/api_test_cache.json": {
-      "hash": "2448c815d884a42ed8f3e930ffd9c7223880febcd76432ea80fe17e8b205624d",
+      "hash": "253cc9c65517748a1a8ae71fb84acf1bbab37e4d226d7b2690d2d7601a31977f",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-14T01:44:29.697509Z",
+      "timestamp": "2026-01-14T02:22:26.931954Z",
       "linesOfCode": 113
     },
     ".mcp-cache/component_scan_cache.json": {
@@ -1393,17 +1393,17 @@
       "linesOfCode": 42
     },
     "tests/api_definitions/refunds/cancel.json": {
-      "hash": "f9fbfe1e1435e1acd253c22b470fce1224636241f3b9a98a55ba7865e8a8bd9e",
+      "hash": "78c5ce1338a135e2727d4b1f8d4bb57531b2185e87615cba46b61ec516f9d617",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-14T01:44:31.349564Z",
-      "linesOfCode": 31
+      "timestamp": "2026-01-14T02:22:27.909759Z",
+      "linesOfCode": 29
     },
     ".mcp-cache/test_failures_latest.json": {
-      "hash": "f9671e8565fd090e47594fb7f72f3f29490f4458fae1066acd214b7d9090373b",
+      "hash": "e8faf26c7b4bc850d5f26146f72b630a97a0f970a366af117a827c4d4a0e46b9",
       "compliance": 100,
       "violations": [],
-      "timestamp": "2026-01-14T01:44:30.259030Z",
+      "timestamp": "2026-01-14T02:22:26.979099Z",
       "linesOfCode": 89
     },
     ".mcp-cache/violations_report_20260113_221845.json": {
@@ -1419,6 +1419,13 @@
       "violations": [],
       "timestamp": "2026-01-14T01:44:30.469404Z",
       "linesOfCode": 2382
+    },
+    ".mcp-cache/violations_report_20260114_014442.json": {
+      "hash": "196fabd8f103addb0a391743a1a716830c66cd3572abdf9400922dacd130d7a6",
+      "compliance": 100,
+      "violations": [],
+      "timestamp": "2026-01-14T02:16:27.426639Z",
+      "linesOfCode": 33
     }
   },
   "registered_apis": {
@@ -1452,11 +1459,11 @@
     },
     "POST:/api/auth/register": {
       "filePath": "server/src/routes/authRoutes.ts",
-      "timestamp": "2026-01-14T01:44:42.932420Z"
+      "timestamp": "2026-01-14T02:22:39.483368Z"
     },
     "POST:/api/auth/login": {
       "filePath": "server/src/routes/authRoutes.ts",
-      "timestamp": "2026-01-14T01:44:42.932425Z"
+      "timestamp": "2026-01-14T02:22:39.483372Z"
     },
     "POST:/": {
       "filePath": "server/src/routes/refundRoutes.ts",

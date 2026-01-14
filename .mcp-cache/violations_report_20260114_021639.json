@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-01-14T02:22:39.442957Z",
+  "timestamp": "2026-01-14T02:16:39.471097Z",
   "summary": {
     "totalViolations": 2,
     "critical": 0,
     "major": 0,
-    "minor": 0,
+    "minor": 2,
     "filesAffected": 1,
-    "filesScanned": 5,
-    "avgCompliance": 136.0
+    "filesScanned": 6,
+    "avgCompliance": 96.67
   },
   "violationsByFile": {
     "server/src/routes/authRoutes.ts": [

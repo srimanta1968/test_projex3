@@ -1,5 +1,5 @@
 # Coding Standards Violations Report
-Generated: 2026-01-14 02:22:39 UTC
+Generated: 2026-01-14 02:16:39 UTC
 
 ## Summary
 | Metric | Value |
@@ -7,10 +7,10 @@ Generated: 2026-01-14 02:22:39 UTC
 | Total Violations | 2 |
 | 🔴 Critical | 0 |
 | 🟠 Major | 0 |
-| 🟡 Minor | 0 |
+| 🟡 Minor | 2 |
 | Files Affected | 1 |
-| Files Scanned | 5 |
-| Avg Compliance | 136.0% |
+| Files Scanned | 6 |
+| Avg Compliance | 96.67% |
 
 ## Violations by File
 
